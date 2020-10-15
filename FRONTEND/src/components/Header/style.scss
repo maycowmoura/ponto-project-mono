@@ -1,0 +1,41 @@
+@import '../../utils/variables.scss';
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: $header-height;
+  background-color: #2176AE;
+  user-select: none;
+  z-index: 10;
+
+  > div {
+    padding: 0 12px;
+    
+    svg {
+      font-size: 28px;
+      transform: none;
+      cursor: pointer;
+      transition: .3s;
+
+      &:active {
+        opacity: .6;
+      }
+    }
+  }
+
+  .title {
+    flex: 1;
+    text-align: center;
+    @extend %ellipsis-sencond-line;
+    -webkit-line-clamp: 1;
+  }
+
+  .bigger {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,36 @@
+#list-marks {
+  .period-menu {
+    p {
+      font-size: 16px;
+      margin-top: 16px;
+    }
+
+    .select-date {
+      margin-bottom: 40px;
+    }
+  }
+
+  .settings-menu label {
+    margin: 32px 0;
+  }
+
+  .settings-menu,
+  .period-menu {
+    button {
+      float: right;
+    }
+  }
+
+  .comments-menu {
+    padding: 16px;
+
+    p {
+      margin: 0;
+    }
+
+    small {
+      font-style: italic;
+      color: #b4b4b4;
+    }
+  }
+}

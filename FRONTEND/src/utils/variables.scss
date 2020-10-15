@@ -1,0 +1,37 @@
+$header-height: 60px;
+$footer-height: 100px;
+
+
+
+%ellipsis-sencond-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+%card {
+  padding: 22px 16px;
+  background-color: #36373c;
+  border-radius: 8px;
+  box-shadow: 4px 4px 7px 0px #0000003d;
+  user-select: none;
+  outline: none;
+}
+
+%page-in {
+  animation: page-in 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both
+}
+
+@keyframes page-in {
+  0% {
+    transform: translateZ(-1400px) translateY(200px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}

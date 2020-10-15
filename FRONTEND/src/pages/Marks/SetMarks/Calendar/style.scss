@@ -1,0 +1,115 @@
+@import '../../../../utils/variables.scss';
+
+#calendar {
+  padding: 16px;
+  padding-top: 76px;
+  height: 100%;
+  overflow: hidden;
+
+  header .go-today {
+    svg {
+      font-size: 24px;
+    }
+
+    span {
+      display: block;
+      font-size: 12px;
+      text-align: center;
+    }
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    @extend %page-in;
+
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-around;
+      font-size: 26px;
+      margin-bottom: 37px;
+      padding: 16px;
+      border: 1px solid rgba(180, 180, 180, 0.335);
+      user-select: none;
+
+      svg {
+        font-size: 37px;
+        transform: none;
+        transition: .3s;
+        cursor: pointer;
+
+        &:active {
+          opacity: .4;
+        }
+      }
+    }
+
+    .calendar-weekdays {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: 14px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(180, 180, 180, 0.335);
+
+      span {
+        min-width: 14.285%;
+        max-width: 14.285%;
+        font-size: 14px;
+        text-align: center;
+        color: #b4b4b4;
+      }
+    }
+
+    .calendar-days {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 500px;
+
+      .day {
+        position: relative;
+        min-width: 14.285%;
+        max-width: 14.285%;
+        padding-top: 14.285%;
+        background-color: transparent;
+        color: #FFF;
+        border-radius: 50%;
+        border: none;
+        outline: none;
+        transition: background-color .3s;
+
+        &:hover,
+        &:active {
+          background-color: #4d4d4d;
+        }
+
+        &.weekend {
+          color: #fd4545;
+        }
+
+        &.today {
+          color: #FBB13C;
+          font-weight: bold;
+        }
+
+        span {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}

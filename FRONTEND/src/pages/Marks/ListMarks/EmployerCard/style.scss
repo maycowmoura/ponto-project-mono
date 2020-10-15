@@ -1,0 +1,101 @@
+@import '../../../../utils/variables.scss';
+
+.employer-mark {
+  @extend %card;
+  padding-bottom: 0;
+  margin: 32px 8px;
+
+  .headings {
+    display: flex;
+    align-items: center;
+  }
+
+  .icon {
+    border-radius: 50%;
+    background-color: #b4b4b4;
+    width: 45px;
+    min-width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+  }
+
+  .text {
+    * {
+      text-transform: uppercase;
+      margin: 0;
+      @extend %ellipsis-sencond-line;
+    }
+
+    p {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 300;
+      -webkit-line-clamp: 1;
+    }
+  }
+
+  .marks {
+    max-height: 0;
+    opacity: 0;
+    padding: 0;
+    overflow-y: hidden;
+    overflow-x: visible;
+    transition: .5s;
+
+    &.expanded {
+      opacity: 1;
+      max-height: 700px;
+      overflow-y: unset;
+    }
+
+    .weekdays {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 28px;
+      border-top: 1px solid #626262;
+      margin: 0 -16px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+
+      span {
+        min-width: 14.285%;
+        max-width: 14.285%;
+        font-size: 14px;
+        text-align: center;
+        color: #b4b4b4;
+
+        &.weekend-day {
+          color: #ff6a6a;
+        }
+      }
+    }
+  }
+
+  .expander {
+    text-align: center;
+    font-size: 14px;
+    padding: 12px;
+    margin-top: 22px;
+    border-top: 1px solid #626262;
+    cursor: pointer;
+
+    svg {
+      font-size: 22px;
+      animation: rotate180 .3s;
+    }
+  }
+}
+
+
+
+@keyframes rotate180 {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(0);
+  }
+}

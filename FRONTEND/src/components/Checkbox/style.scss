@@ -1,0 +1,23 @@
+.checkbox {
+  display: block;
+  cursor: pointer;
+
+  input {
+    display: none;
+  }
+
+  svg {
+    animation: spin .3s;
+    margin-right: 12px;
+  }
+
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: initial;
+  }
+}

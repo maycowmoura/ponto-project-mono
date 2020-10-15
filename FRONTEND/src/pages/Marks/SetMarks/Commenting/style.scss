@@ -1,0 +1,93 @@
+#commenting {
+  padding: 16px;
+  padding-bottom: 70px; // finish button height
+
+  &.animated {
+    animation: slide-in-fwd-bottom 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    transition: .3s;
+  }
+
+  .textarea-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #b4b4b4;
+    margin-bottom: 24px;
+
+    svg {
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    input {
+      display: none;
+    }
+
+    svg {
+      font-size: 36px;
+      margin-right: 12px;
+    }
+
+    input:checked ~ svg, input:checked ~ span {
+      color: #FBB13C;
+    }
+  }
+
+  .suggestions {
+    margin: 40px 0;
+
+    button {
+      border-radius: 50px;
+      padding: 10px 16px;
+      margin: 8px;
+      border: none;
+      font-size: 16px;
+      background-color: #37393e;
+      color: #FFF;
+      outline: none;
+      user-select: none;
+      transition: .3s;
+      
+      &:active {
+        background-color: #4d5057;
+      }
+    }
+  }
+
+  .finish {
+    position: fixed;
+    bottom: 8px;
+    right: 16px;
+    padding: 12px 20px;
+    border-radius: 4px;
+    background-color: #2176AE;
+    color: #FFF;
+    border: none;
+  }
+}
+
+
+@keyframes slide-in-fwd-bottom {
+  0% {
+    transform: translateZ(-1400px) translateY(200px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}

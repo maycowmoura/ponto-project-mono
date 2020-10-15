@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+
+Header set Access-Control-Allow-Origin "*"
+
+# Options ~index
+
+php_value date.timezone 'America/Sao_Paulo'
+php_value upload_max_filesize 30M
+php_value post_max_size 150M
+php_value max_execution_time 300
+php_value max_input_time 300

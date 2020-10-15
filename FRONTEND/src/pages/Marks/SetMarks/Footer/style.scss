@@ -1,0 +1,112 @@
+@import '../../../../utils/variables.scss';
+
+#set-marks footer {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding-top: 8px;
+  width: 100%;
+  height: $footer-height;
+  background-color: hsl(228, 6%, 17%);
+  box-shadow: 0 -2px 11px 0px #131313;
+  transition: .3s;
+
+  .progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-top: 2px solid #1d689a;
+    transition: width .9s;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+    color: #FFF;
+    padding: 16px 20px;
+    font-size: 12px;
+    text-align: center;
+    outline: none;
+    user-select: none;
+
+    &:active {
+      opacity: .4;
+    }
+
+    &.miss {
+      color: #fd4545;
+    }
+
+    &.day-off {
+      color: #0eb33e;
+      padding-bottom: 10px; // corrige um bug de altura do botão ao escrollar
+    }
+
+    &.send {
+      color: lighten(#2176ae, 20%);
+      animation: slide-up .3s backwards;
+    }
+
+    svg {
+      display: block;
+      font-size: 46px;
+      margin: auto;
+      margin-bottom: 4px;
+    }
+  }
+
+  fieldset {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+
+    // chrome, edge and safari
+    &::-webkit-scrollbar {
+      display: none;
+      scrollbar-width: none; // for firefox only
+    }
+
+    // @include desktop {
+    //   &::-webkit-scrollbar {
+    //     display: initial;
+    //     width: 12px;
+    //     height: 8px;
+    //   }
+
+    //   &::-webkit-scrollbar-thumb {
+    //     border-radius: 10px;
+    //     background-color: #dddddd;
+    //   }
+
+    //   // for firefox only
+    //   scrollbar-color: #dddddd transparent;
+    //   scrollbar-width: thin;
+    // }
+  }
+
+  button,
+  fieldset {
+    transition: .3s;
+
+    &:disabled {
+      opacity: 0;
+      transform: translateY(100%);
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,54 @@
+@import '../../utils/variables.scss';
+
+#dashboard {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  padding-top: $header-height + 12px;
+  height: 100%;
+
+  main {
+    @extend %page-in;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    column-gap: 16px;
+    row-gap: 16px;
+    width: 100%;
+
+    button {
+      @extend %card;
+      text-align: center;
+      padding: 26px 16px;
+      padding-bottom: 14px;
+      transition: background-color .3s;
+
+      &:hover,
+      &:active {
+        background-color: lighten(#36373c, 10%);
+      }
+
+      svg {
+        display: block;
+        font-size: 40px;
+        margin: auto;
+        margin-bottom: 18px;
+        color: #03a9f4;
+        transform: none;
+      }
+    }
+  }
+
+  .marks-menu .filter-by-place {
+    border-bottom: 1px solid #5e6068;
+    padding-bottom: 32px;
+    margin-bottom: 16px;
+
+    label {
+      font-size: 16px;
+      margin-top: 26px;
+    }
+  }
+
+
+}

@@ -1,0 +1,18 @@
+.select-date {
+  display: flex;
+  justify-content: space-around;
+
+  select {
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    color: #FFF;
+    outline: none;
+    width: unset;
+
+    option {
+      background-color: transparent;
+      color: #000;
+    }
+  }
+}

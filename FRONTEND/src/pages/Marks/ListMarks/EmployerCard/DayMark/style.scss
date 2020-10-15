@@ -1,0 +1,159 @@
+.employer-mark {
+
+  //
+  //  LAYOUT CALENDAR
+  //
+
+  .calendar {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -16px;
+    padding-bottom: 8px;
+
+    section {
+      position: relative;
+      max-width: 14.28%;
+      min-width: 14.28%;
+      border: 1px solid transparent;
+      text-align: center;
+      padding: 9px 2px;
+      transition: all .7s, border-color .3s;
+
+      &:active {
+        border-color: #797979 !important;
+      }
+
+      &.weekend-day {
+        color: #ff6a6a;
+
+        .month {
+          color: #ff6a6ab3 !important;
+        }
+      }
+
+      svg {
+        font-size: 13px;
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        color: #FBB13C;
+      }
+
+      .date {
+        strong {
+          display: block;
+          font-size: 24px;
+
+          .month-grid {
+            display: none;
+          }
+        }
+
+        &.hide-month .month {
+          display: none;
+        }
+
+        .month {
+          display: block;
+          font-size: 11px;
+          font-weight: 600;
+          margin-top: -10px;
+          margin-bottom: 2px;
+          padding-left: 2px; // para corrigir o letter-spacing
+          color: #a9a7a7;
+          letter-spacing: 2px;
+          text-align: center;
+          text-transform: lowercase;
+        }
+
+        .weekday {
+          display: none;
+        }
+      }
+
+      .time {
+        span {
+          font-size: 10px;
+          display: none;
+        }
+
+        &.weekend,
+        &.missed .missed,
+        &.extra_before .time_in,
+        &.extra_after .time_out {
+          display: block;
+          color: #2fff37;
+        }
+
+        &:not(.missed) {
+
+          .time_in,
+          .time_out {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+
+  //
+  //  LAYOUT GRID
+  //
+
+  .marks.grid {
+    &.expanded {
+      max-height: 1600px;
+    }
+
+    .weekdays {
+      display: none;
+    }
+
+    .calendar {
+      margin: 0;
+      margin-top: 32px;
+      align-items: center;
+
+      section {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: calc(50% - 8px);
+        min-width: calc(50% - 8px);
+        padding: 8px 4px;
+        margin: 4px auto !important;
+        border: 1px solid #626262;
+
+        .date,
+        .time {
+          width: calc(50% - 8px);
+          margin: auto;
+        }
+
+        .date {
+          .month {
+            display: none;
+          }
+
+          .month-grid {
+            display: initial;
+            font-size: 14px;
+          }
+
+          .weekday {
+            display: block;
+            font-size: 14px;
+            margin-top: -8px;
+            text-transform: lowercase;
+          }
+
+        }
+
+        .time span {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+.employer-mark .calculations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  align-items: center;
+  margin-top: 38px;
+
+  div {
+    padding: 4px;
+    font-size: 14px;
+    font-style: italic;
+
+    &.green span {
+      color: #31c239;
+    }
+
+    &.red span {
+      color: #ff6a6a;
+    }
+
+    span {
+      font-weight: 500;
+    }
+  }
+}
