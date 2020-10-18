@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import './style.scss';
 
 
-export default function FloatMenu({ title = '', closeMenu, children }) {
+export default function FloatMenu({ title = '', closeMenu, children, className }) {
 
   useEffect(() => {
     window.location.hash = 'float-menu';
@@ -21,7 +21,7 @@ export default function FloatMenu({ title = '', closeMenu, children }) {
 
   return (
     <div id="float-menu" onClick={closeMenu}>
-      <div id="float-menu-inner" onClick={e => e.stopPropagation()}>
+      <div id="float-menu-inner" className={className} onClick={e => e.stopPropagation()}>
         <h4>{title}</h4>
         {children}
       </div>

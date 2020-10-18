@@ -46,34 +46,31 @@ export default function Dashboard() {
 
 
       {showMarksMenu &&
-        <FloatMenu title="Gerenciar Marcações" closeMenu={() => setShowMarksMenu(false)}>
-          <div className="marks-menu">
+        <FloatMenu title="Gerenciar Marcações" className="marks-menu" closeMenu={() => setShowMarksMenu(false)}>
+          {hasMultiplePlaces &&
+            <div className="filter-by-place">
+              <label>Filtrar por local:</label>
+              <select
+                className="border"
+                multiple
+                onChange={e => setPlaceFilter(e.target.value)}
+              >
+                <option value="all" hidden selected>Todos os locais</option>
+                {data.places.map(({ id, name }) =>
+                  <option key={id} value={id}>{name}</option>
+                )}
+              </select>
+            </div>
+          }
 
-            {hasMultiplePlaces &&
-              <div className="filter-by-place">
-                <label>Filtrar por local:</label>
-                <select
-                  className="border"
-                  multiple
-                  onChange={e => setPlaceFilter(e.target.value)}
-                >
-                  <option value="all" hidden selected>Todos os locais</option>
-                  {data.places.map(({ id, name }) =>
-                    <option key={id} value={id}>{name}</option>
-                  )}
-                </select>
-              </div>
-            }
-
-            <ul>
-              <li onClick={() => history.push('/marks/set')}>
-                <FiEdit /> Editar ou fazer marcações
+          <ul>
+            <li onClick={() => history.push('/marks/set')}>
+              <FiEdit /> Editar ou fazer marcações
               </li>
-              <li onClick={() => history.push('/marks/list')}>
-                <FaList /> Listar marcações
+            <li onClick={() => history.push('/marks/list')}>
+              <FaList /> Listar marcações
             </li>
-            </ul>
-          </div>
+          </ul>
         </FloatMenu>
       }
     </div>

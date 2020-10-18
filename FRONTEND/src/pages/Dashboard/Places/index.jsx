@@ -65,14 +65,12 @@ export default function Places() {
 
 
       {showNewPlaceMenu &&
-        <FloatMenu title="Novo Local" closeMenu={() => setShowNewPlaceMenu()}>
-          <div className="new-place-menu">
-            <input type="text" placeholder="Nome do novo local" />
-            <small>
-              Após adicionar, você pode transferir funcionários para este local usando a aba Gerenciar Funcionários.
+        <FloatMenu title="Novo Local" className="new-place-menu" closeMenu={() => setShowNewPlaceMenu()}>
+          <input type="text" placeholder="Nome do novo local" />
+          <small>
+            Após adicionar, você pode transferir funcionários para este local usando a aba Gerenciar Funcionários.
             </small>
-            <button>Adicionar</button>
-          </div>
+          <button>Adicionar</button>
         </FloatMenu>
       }
 

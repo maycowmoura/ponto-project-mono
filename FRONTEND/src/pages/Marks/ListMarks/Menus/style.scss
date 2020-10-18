@@ -22,7 +22,9 @@
   }
 
   .comments-menu {
-    padding: 16px;
+    > div {
+      padding: 16px;
+    }
 
     p {
       margin: 0;
