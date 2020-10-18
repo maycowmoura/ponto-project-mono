@@ -1,6 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import './style.scss';
-import MainContext from '../../../../contexts/MainContext';
+import { useMainContext } from '../../../../contexts/MainContext';
+import LoadingInner from '../../../../components/LoadingInner';
 import Calculations from './Calculations';
 import DayMark from './DayMark';
 import { FaRegArrowAltCircleDown as ArrowDown, FaRegArrowAltCircleUp as ArrowUp } from 'react-icons/fa';
@@ -9,16 +10,31 @@ import { FaUser } from 'react-icons/fa';
 
 
 export default function EmployerMark({ employer, setShowComment, viewGrid }) {
-  const { name, job, marks } = employer;
-  const { data: { user_type } } = useContext(MainContext);
+  const { id, name, job } = employer;
+  const { data: { user_type }, baseurl } = useMainContext();
+  const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [wasExpandedOnce, setWasExpandedOnce] = useState(false);
+  const [marks, setMarks] = useState(null);
 
-  useEffect(() => {
-    if (expanded && !wasExpandedOnce) {
-      setWasExpandedOnce(true);
+
+  function handleExpand() {
+    if (marks) {
+      return setExpanded(prev => !prev);
     }
-  }, [expanded])
+
+    setLoading(true);
+
+    fetch(`${baseurl}/list/${id}`)
+      .then(r => r.json())
+      .then(json => {
+        console.log(json);
+        setMarks(json);
+        setLoading(false);
+        setExpanded(true);
+        setWasExpandedOnce(true);
+      })
+  }
 
 
   return (
@@ -35,7 +51,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
 
       <div className={`marks ${expanded ? 'expanded' : ''} ${viewGrid ? 'grid' : ''}`}>
 
-        {user_type == 'admin' &&
+        {marks && user_type == 'admin' &&
           <Calculations marks={marks} />
         }
 
@@ -50,12 +66,19 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
         </div>
 
         <div className="calendar">
-          <DayMark marks={marks} setShowComment={setShowComment} />
+          {marks &&
+            <DayMark marks={marks} setShowComment={setShowComment} />
+          }
         </div>
       </div>
 
-      <div className="expander" onClick={() => setExpanded(prev => !prev)}>
-        {expanded ? <ArrowUp /> : <ArrowDown />}
+      <div className="expander" onClick={handleExpand}>
+        {loading
+          ? <LoadingInner loaderSize={22} loaderColor="#b4b4b4" />
+          : expanded
+            ? <ArrowUp />
+            : <ArrowDown />
+        }
       </div>
     </div>
   );

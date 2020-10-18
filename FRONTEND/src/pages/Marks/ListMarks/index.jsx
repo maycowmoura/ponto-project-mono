@@ -1,8 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style.scss';
-import MainContext from '../../../contexts/MainContext';
-import MarksContext from '../../../contexts/MarksContext';
-import { useHistory } from 'react-router-dom';
+import { useMainContext } from '../../../contexts/MainContext';
+import { useListMarks } from '../../../contexts/MarksContext';
 import LoadingInner from '../../../components/LoadingInner';
 import Header from '../../../components/Header';
 import Search from './Search';
@@ -14,11 +13,13 @@ import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 
 export default function ListMarks() {
-  const { data, baseurl } = useContext(MainContext);
-  const { listMarks: { employers, setEmployers, periodFrom, periodTo } } = useContext(MarksContext);
-  const history = useHistory();
+  const { baseurl, data: { user_type }} = useMainContext();
+  const { employers, setEmployers, periodFrom, periodTo } = useListMarks();
+
   const [employersMirror, setEmployersMirror] = useState(employers);
+  const [loading, setLoading] = useState(false);
   const [viewGrid, setViewGrid] = useState(false);
+
   const [showSearch, setShowSearch] = useState(false);
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
@@ -26,24 +27,25 @@ export default function ListMarks() {
 
 
   useEffect(() => {
-    fetch(`${baseurl}/marks-period.json`)
+    if(employers) return;
+
+    setLoading(true);
+    fetch(`${baseurl}/employers`)
       .then(r => r.json())
       .then(json => {
-        setEmployersMirror(json);
         setEmployers(json);
-      });
-  }, [periodFrom, periodTo]);
+        setEmployersMirror(json);
+        setLoading(false);
+        setShowSearch(false);
+      })
+  }, [employers])
 
 
-  if (!employers) {
-    return <LoadingInner />;
+
+  if(loading || !employers){
+    return <LoadingInner text="Carregando funcionários..." />
   }
 
-
-  function toggleView() {
-    setViewGrid(prev => !prev);
-  }
-  
 
   return (
     <div id="list-marks">
@@ -60,9 +62,9 @@ export default function ListMarks() {
               <div className="title">Marcações</div>
               <div onClick={setShowSearch}><SearchIcon /></div>
               <div onClick={setShowPeriodMenu}><Period /></div>
-              <div onClick={toggleView}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
+              <div onClick={() => setViewGrid(v => !v)}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
 
-              {data.user_type == 'admin' &&
+              {user_type == 'admin' &&
                 <div onClick={setShowSettingsMenu}><Settings /></div>
               }
             </>
