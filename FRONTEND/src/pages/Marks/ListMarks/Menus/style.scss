@@ -21,18 +21,7 @@
     }
   }
 
-  .comments-menu {
-    > div {
-      padding: 16px;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    small {
-      font-style: italic;
-      color: #b4b4b4;
-    }
+  .comments-menu > div {
+    padding: 16px;
   }
 }
