@@ -6,11 +6,13 @@ import Calculations from './Calculations';
 import DayMark from './DayMark';
 import { FaRegArrowAltCircleDown as ArrowDown, FaRegArrowAltCircleUp as ArrowUp } from 'react-icons/fa';
 import { FaUser } from 'react-icons/fa';
+import { RiSuitcase3Fill } from 'react-icons/ri';
+import { MdLocationOn } from 'react-icons/md';
 
 
 
 export default function EmployerMark({ employer, setShowComment, viewGrid }) {
-  const { id, name, job } = employer;
+  const { id, name, job, place } = employer;
   const { data: { user_type }, baseurl } = useMainContext();
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -45,7 +47,8 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
         </div>
         <div className="text">
           <h3>{name}</h3>
-          <p>{job}</p>
+          <span><RiSuitcase3Fill /> {job}</span>
+          <span><MdLocationOn /> {place.name}</span>
         </div>
       </div>
 

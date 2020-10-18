@@ -27,14 +27,15 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
     const removeAccents = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     let value = removeAccents(e.target.value.trim().toLowerCase());
 
-    if(!value.length){
+    if (!value.length) {
       setFiltredData(originalData);
 
     } else {
       setFiltredData(originalData.filter(employer => {
-        const name = removeAccents(employer.name.toLowerCase());
-        const job = removeAccents(employer.job.toLowerCase());
-        return name.includes(value) || job.includes(value);
+        const joined = removeAccents(employer.name.toLowerCase())
+          + ' ' + removeAccents(employer.job.toLowerCase())
+          + ' ' + removeAccents(employer.place.name.toLowerCase());
+        return (joined).includes(value);
       }))
     }
   }
@@ -48,13 +49,13 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
   }
 
 
-  function closeAndCleanSearch(){
-    cleanSearch(); 
+  function closeAndCleanSearch() {
+    cleanSearch();
     closeSearch();
   }
 
 
-  
+
   return (
     <div id="search">
       <div onClick={closeAndCleanSearch}>
@@ -64,7 +65,7 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
         ref={input}
         type="text"
         onChange={handleSearch}
-        placeholder="Pesquisar nome ou função"
+        placeholder="Pesquisar nome, função ou local"
       />
       <div onClick={cleanSearch}>
         <MdClose />

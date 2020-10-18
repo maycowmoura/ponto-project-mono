@@ -23,17 +23,22 @@
   }
 
   .text {
-    * {
+    > * {
       text-transform: uppercase;
       margin: 0;
       @extend %ellipsis-sencond-line;
     }
 
-    p {
+    span {
       margin-top: 4px;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 300;
       -webkit-line-clamp: 1;
+      color: #b4b4b4;
+
+      svg {
+        margin: 0 4px;
+      }
     }
   }
 
