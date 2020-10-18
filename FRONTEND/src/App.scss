@@ -22,7 +22,12 @@ button {
   background-color: #2176AE;
   color: #FFF;
   border: none;
-  outline: none;
+  outline: none !important;
+  transition: opacity .3s;
+
+  &:active {
+    opacity: .6;
+  }
 }
 
  select {
