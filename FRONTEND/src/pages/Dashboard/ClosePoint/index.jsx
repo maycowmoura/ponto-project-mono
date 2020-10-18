@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.scss';
-import MainContext from '../../../contexts/MainContext';
+import { useMainContext } from '../../../contexts/MainContext';
 import { useHistory } from 'react-router-dom';
 import Header from '../../../components/Header';
 import SelectDate from '../../../components/SelectDate';
@@ -8,7 +8,7 @@ import { FiCheck } from 'react-icons/fi';
 
 
 export default function ClosePoint() {
-  const { baseurl } = useContext(MainContext);
+  const { baseurl } = useMainContext();
   const history = useHistory();
   const [currentCloseDate, setCurrentCloseDate] = useState('...');
 
@@ -26,7 +26,7 @@ export default function ClosePoint() {
   return (
     <div id="close-point">
 
-      <Header backButton={history.goBack}>
+      <Header backButton>
         <div className="title">Fechar data do ponto</div>
         <div>
           <FiCheck />
@@ -36,7 +36,7 @@ export default function ClosePoint() {
       <main>
         <section>
           <h4>Selecione a Data de Fechamento:</h4>
-          <SelectDate setDate={() => {}} />
+          <SelectDate onChange={() => {}} />
 
         </section>
         <small>

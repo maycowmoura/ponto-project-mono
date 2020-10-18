@@ -1,10 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import LoadingInner from '../../components/LoadingInner';
-import MainContext from '../../contexts/MainContext';
+import { useMainContext } from '../../contexts/MainContext';
 
 export default function Loading() {
-  const { baseurl, setData } = useContext(MainContext)
+  const { baseurl, setData } = useMainContext();
   const history = useHistory();
 
   useEffect(() => {
@@ -18,13 +18,13 @@ export default function Loading() {
       admin: '/dashboard'
     }
 
-    fetch(`${baseurl}/marks-day.json`)
+    fetch(`${baseurl}/init`)
       .then(r => r.json())
       .then(data => {
         setData(data);
 
         const path = redirects[data.user_type];
-        setTimeout(() => history.push(path), 1000);
+        history.push(path);
       })
   }, [])
 

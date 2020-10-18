@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './style.scss';
-import MainContext from '../../../../contexts/MainContext';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
 import { RiRepeatFill } from 'react-icons/ri';
 import { GoCheck } from 'react-icons/go';
@@ -10,9 +9,8 @@ import { FaRegTrashAlt as Trash } from 'react-icons/fa';
 
 
 export default function Commenting() {
-  const { setData } = useContext(MainContext);
-  const { setMarks: { current, setCurrent } } = useContext(MarksContext);
-  const [comment, setComment] = useState(current?.marks.comment);
+  const { current, setCurrent, setDayMarks } = useSetMarks();
+  const [comment, setComment] = useState(current?.mark.comment);
   const [counter, setCounter] = useState(comment?.length || 0);
   const [repeatForAll, setRepeatForAll] = useState(false);
   const main = useRef();
@@ -59,18 +57,15 @@ export default function Commenting() {
 
   function handleFinish() {
     if (repeatForAll) {
-      setData(prev => {
-        const data = prev.data.map(item => {
-          item.marks.comment = comment;
-          return item;
-        });
-
-        return { ...prev, data };
-      })
+      setDayMarks(prev => prev.map(item => {
+        item.mark.comment = comment;
+        return item;
+      }))
     }
 
     setCurrent(prev => {
-      prev.marks.comment = comment?.trim();
+      prev.mark.comment = comment?.trim();
+      prev.edited = true;
       return prev;
     })
 

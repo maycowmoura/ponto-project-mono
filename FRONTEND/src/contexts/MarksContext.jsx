@@ -1,31 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { MinutesToFormatedTime } from '../utils/TimeFormaters'
+import React, { useState, useContext } from 'react';
 
 const MarksContext = React.createContext({});
 
+
+
 export function MarksContextProvider({ children }) {
   // SET MARKS
+  const [dayMarks, setDayMarks] = useState(null);
   const [index, setIndex] = useState(0);
   const [current, setCurrent] = useState(null);
   const [date, setDate] = useState(new Date());
-  const [formatedTime, setFormatedTime] = useState(null);
   const [activeInput, setActiveInput] = useState(null);
   const [comment, setComment] = useState(null);
+  const [uploadingMarks, setUploadingMarks] = useState(false);
 
   // LIST MARKS
+  const [employers, setEmployers] = useState(null);
   const [periodFrom, setPeriodFrom] = useState(firstDayOfMonth());
   const [periodTo, setPeriodTo] = useState(lastDayOfMonth());
-  const [employers, setEmployers] = useState(false);
-
-
-  useEffect(() => {
-    if (!current) return;
-
-    setFormatedTime({
-      in: MinutesToFormatedTime(current.marks.time_in),
-      out: MinutesToFormatedTime(current.marks.time_out)
-    })
-  }, [current])
 
 
   function firstDayOfMonth() {
@@ -43,18 +35,20 @@ export function MarksContextProvider({ children }) {
   return (
     <MarksContext.Provider value={{
       setMarks: {
+        dayMarks, 
+        setDayMarks,
         index,
         setIndex,
         current,
         setCurrent,
         date,
         setDate,
-        formatedTime,
-        setFormatedTime,
         activeInput,
         setActiveInput,
         comment,
-        setComment
+        setComment,
+        uploadingMarks, 
+        setUploadingMarks
       },
       listMarks: {
         periodFrom,
@@ -72,4 +66,12 @@ export function MarksContextProvider({ children }) {
 
 
 
-export default MarksContext;
+export function useSetMarks(){
+  const { setMarks } = useContext(MarksContext)
+  return setMarks;
+};
+
+export function useListMarks(){
+  const { listMarks } = useContext(MarksContext)
+  return listMarks;
+};

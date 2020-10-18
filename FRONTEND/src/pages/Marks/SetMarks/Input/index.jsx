@@ -1,15 +1,13 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './style.scss';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
 import { ImEnter, ImExit } from 'react-icons/im'
 
-export default function Input({ type, invalid = false }) {
+export default function Input({ type, value, invalid = false }) {
   const history = useHistory();
-  const { setMarks: { formatedTime, activeInput, setActiveInput } } = useContext(MarksContext);
-  const active = activeInput === type ? 'active' : '';
+  const { setActiveInput } = useSetMarks();
   const invalidClass = invalid ? 'invalid' : '';
-  const value = formatedTime ? formatedTime[type] : ''; ///////////////COLOCAR HORARIO PADRÃO DO DIA
 
   function handleClick() {
     setActiveInput(type);
@@ -17,7 +15,7 @@ export default function Input({ type, invalid = false }) {
   }
 
   return (
-    <div className={`mark-input ${type} ${active} ${invalidClass}`} onClick={handleClick}>
+    <div className={`mark-input ${type} ${invalidClass}`} onClick={handleClick}>
       { type === 'in'
         ? <label><ImEnter /> ENTRADA</label>
         : <label>SAÍDA <ImExit /></label>

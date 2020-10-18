@@ -1,6 +1,6 @@
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import './style.scss';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { addZero } from '../../../../utils/TimeFormaters';
 import { months } from '../../../../utils/MonthsAndWeekdays';
 import { useHistory } from 'react-router-dom';
@@ -14,7 +14,7 @@ import {
 
 
 export default function Calendar() {
-  const { setMarks: { date, setDate, setIndex } } = useContext(MarksContext);
+  const { date, setDate, setIndex, setDayMarks } = useSetMarks();
   const [currentDate, setCurrentDate] = useState(date);
   const history = useHistory();
   currentDate.setDate(1);
@@ -46,13 +46,16 @@ export default function Calendar() {
     }
 
     setDate(newDate);
+    setDayMarks(null); // força o reload dos dias
     setIndex(0);
     history.goBack();
   }
-
-
+  
+  
   function setToday() {
     setDate(new Date);
+    setDayMarks(null); // força o reload dos dias
+    setIndex(0);
     history.goBack();
   }
 
@@ -84,7 +87,7 @@ export default function Calendar() {
 
 
 
-  
+
   return (
     <div id="calendar">
       <Header backButton>

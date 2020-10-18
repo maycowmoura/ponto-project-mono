@@ -1,46 +1,50 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './style.scss';
-import MainContext from '../../../../contexts/MainContext';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { BiBlock as Block } from 'react-icons/bi';
 import { FiArrowLeftCircle as Left, FiArrowRightCircle as Right } from 'react-icons/fi';
 import { MdSend as Send, MdBeachAccess as Beach } from 'react-icons/md';
 
 
 
-export default function Footer({ missed, handleMissed, setAnimationClass }) {
-  const { data, setData } = useContext(MainContext);
-  const { setMarks: { current, index, setIndex } } = useContext(MarksContext);
-
+export default function Footer({ missed, handleMissed, animationClass, setAnimationClass }) {
+  const { current, setCurrent, index, setIndex, dayMarks, setDayMarks, setUploadingMarks } = useSetMarks();
 
 
   function handleBack() {
-    setIndex(prev => --prev);
+    setCurrent(dayMarks[index - 1]);
+    setIndex(index - 1);
     setAnimationClass('enter-left');
   }
 
   function handleNext() {
-    const { time_in, time_out } = current.marks;
+    const { time_in, time_out } = current.mark;
     if (time_in && (parseInt(time_in) >= parseInt(time_out))) {
       alert('Ops... O horário de saída deve ser maior que o de entrada.');
       return;
     }
 
-    setData(prev => {
-      prev.data[index] = current;
+    setDayMarks(prev => {
+      prev[index] = current;
       return prev;
     });
 
-    setIndex(prev => ++prev);
+    setCurrent(dayMarks[index + 1]);
+    setIndex(index + 1);
     setAnimationClass('enter-right');
   }
 
 
+  function handleSend(){
+    setUploadingMarks(true);
+  }
+
+
   return (
-    <footer>
+    <footer className={animationClass ? 'no-touch' : ''}>
       <div
         className="progress"
-        style={{ width: ((index + 1) / data.data.length * 100) + '%' }}
+        style={{ width: ((index + 1) / dayMarks.length * 100) + '%' }}
       />
 
       <button onClick={handleBack} disabled={index <= 0}>
@@ -50,9 +54,9 @@ export default function Footer({ missed, handleMissed, setAnimationClass }) {
         <Block />Faltou
       </button>
 
-      {index < data.data.length - 1
+      {index < dayMarks.length - 1
         ? <button onClick={handleNext}><Right />Próximo</button>
-        : <button className="send"><Send />Enviar</button>
+        : <button className="send" onClick={handleSend}><Send />Enviar</button>
       }
 
     </footer>

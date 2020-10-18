@@ -1,56 +1,49 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './style.scss';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
 import Input from '../Input';
 import { FaBackspace, FaCheckCircle } from 'react-icons/fa';
-import { FormatedTimeToMinutes } from '../../../../utils/TimeFormaters';
+import { FormatedTimeToMinutes, MinutesToFormatedTime } from '../../../../utils/TimeFormaters';
 
 
 
 export default function Typing() {
-  const { setMarks: { current, setCurrent, formatedTime, setFormatedTime, activeInput } } = useContext(MarksContext);
+  const { current, setCurrent, activeInput } = useSetMarks();
+  const [value, setValue] = useState(MinutesToFormatedTime(current.mark[`time_${activeInput}`]));
+  const initialCurrent = useRef(current);
   const [inputInvalid, setInputInvalid] = useState(false);
   const history = useHistory();
-  const initialValue = useRef(formatedTime[activeInput]);
   const okClicked = useRef(false);
   const timeRegex = /([0-1]\d|2[0-3]):[0-6]\dh/;
 
 
   useEffect(() => {
     handleBackspace();
-    return () => okClicked.current || setTime(initialValue.current);
+    window.onbeforeunload = function () { return false };
+    return () => okClicked.current || setCurrent(initialCurrent.current);
   }, [])
 
 
-  function setTime(time) {
-    setFormatedTime(prev => ({
-      ...prev,
-      [activeInput]: time
-    }))
-  }
-
   function handleClick(e) {
     const key = e.target.value;
-    const value = formatedTime[activeInput];
-    const newValue = value.replace('-', key);
-    setTime(newValue);
+    setValue(prev => prev.replace('-', key));
   }
 
   function handleBackspace() {
     setInputInvalid(false);
-    setTime('--:--h');
+    setValue('--:--h');
   }
 
   function handleOk() {
     setInputInvalid(false);
-    const value = formatedTime[activeInput];
 
     if (!timeRegex.test(value)) return setInputInvalid(true);
 
     setCurrent(prev => {
-      prev.marks[`time_${activeInput}`] = FormatedTimeToMinutes(value);
-      return prev;
+      prev.mark[`time_${activeInput}`] = FormatedTimeToMinutes(value);
+      prev.edited = true;
+      return { ...prev };
     })
 
     okClicked.current = true;
@@ -63,7 +56,7 @@ export default function Typing() {
       <div className="heading">
         <h2>{current.name}</h2>
         <p>{current.job}</p>
-        <Input type={activeInput} invalid={inputInvalid} />
+        <Input type={activeInput} invalid={inputInvalid} value={value} />
       </div>
       <div id="keyboard">
         <button onClick={handleClick} value="1">1</button>

@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import './style.scss';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useListMarks } from '../../../../contexts/MarksContext';
 import FloatMenu from '../../../../components/FloatMenu';
 import SelectDate from '../../../../components/SelectDate';
 import Checkbox from '../../../../components/Checkbox';
@@ -9,23 +9,33 @@ import Checkbox from '../../../../components/Checkbox';
 
 
 export function PeriodMenu({ setShowPeriodMenu }) {
-  const { listMarks:{ periodFrom, periodTo } } = useContext(MarksContext);
+  const { setEmployers, periodFrom, setPeriodFrom, periodTo, setPeriodTo } = useListMarks();
+  const [periodFromMirror, setPeriodFromMirror] = useState(periodFrom);
+  const [periodToMirror, setPeriodToMirror] = useState(periodTo);
+
+  function handleFilterButton() {
+    setPeriodFrom(periodFromMirror);
+    setPeriodTo(periodToMirror);
+    setEmployers(null); // quando o useEffect do listMarks detectar essa mudança vai recarregar os employers
+    setShowPeriodMenu(false);
+  }
+
 
   return (
     <FloatMenu title="Escolher período:" closeMenu={() => setShowPeriodMenu(false)}>
       <div className="period-menu">
         <p>Começar em:</p>
         <SelectDate
-          initialDate={periodFrom.current}
-          setDate={date => periodFrom.current = date}
+          initialDate={periodFromMirror}
+          onChange={setPeriodFromMirror}
         />
 
         <p>Terminar em:</p>
         <SelectDate
-          initialDate={periodTo.current}
-          setDate={date => periodTo.current = date}
+          initialDate={periodToMirror}
+          onChange={setPeriodToMirror}
         />
-        <button onClick={null}>Filtrar</button>
+        <button onClick={handleFilterButton}>Filtrar</button>
       </div>
     </FloatMenu>
   )

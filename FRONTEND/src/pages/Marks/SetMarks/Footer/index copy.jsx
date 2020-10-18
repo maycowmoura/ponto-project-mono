@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import './style.scss';
-import MainContext from '../../../../contexts/MainContext';
-import MarksContext from '../../../../contexts/MarksContext';
+import { useMainContext } from '../../../../contexts/MainContext';
+import { useSetMarks } from '../../../../contexts/MarksContext';
 import { BiBlock as Block } from 'react-icons/bi';
 import { FiArrowLeftCircle as Left, FiArrowRightCircle as Right } from 'react-icons/fi';
 import { MdSend as Send, MdBeachAccess as Beach } from 'react-icons/md';
@@ -9,8 +9,8 @@ import { MdSend as Send, MdBeachAccess as Beach } from 'react-icons/md';
 
 
 export default function Footer({ missed, handleMissed, setAnimationClass }) {
-  const { data, setData } = useContext(MainContext);
-  const { setMarks: { current, index, setIndex } } = useContext(MarksContext);
+  const { data, setData } = useMainContext();
+  const { current, index, setIndex } = useSetMarks();
   const missedAndDayoff = useRef();
 
   useEffect(() => {
