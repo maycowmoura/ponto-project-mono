@@ -39,7 +39,7 @@ body.float-menu {
       margin: auto;
 
       li {
-        padding: 16px 8px;
+        padding: 20px 8px;
         transition: background-color .3s;
         cursor: pointer;
 
@@ -48,7 +48,7 @@ body.float-menu {
         }
 
         svg {
-          margin-right: 8px;
+          margin: auto 12px auto 4px;
         }
       }
     }
