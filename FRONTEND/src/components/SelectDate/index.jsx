@@ -3,14 +3,14 @@ import { addZero } from '../../utils/TimeFormaters';
 import './style.scss';
 
 
-export default function SelectDate({ initialDate, setDate }) {
+export default function SelectDate({ initialDate, onChange }) {
   const today = initialDate || new Date();
   const [day, setDay] = useState(addZero(today.getDate()));
   const [month, setMonth] = useState(addZero(today.getMonth() + 1));
   const [year, setYear] = useState(today.getFullYear());
 
   useEffect(() => {
-    setDate(new Date([year, month, day]));
+    onChange(new Date([year, month, day]));
   }, [day, month, year])
 
 
