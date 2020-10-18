@@ -43,10 +43,11 @@ export default function Places() {
 
       <main>
         {!places.length &&
-          <EmptyList title="Nada por aqui...">
-            Adicione locais clicando em <FiPlusCircle /> ali em cima.
-          </EmptyList>
-          || places.map(place =>
+          <EmptyList
+            title="Nada por aqui..."
+            text={<>Adicione locais clicando em <FiPlusCircle /> ali em cima.</>}
+          /> ||
+          places.map(place =>
             <section key={place.id}>
               <strong>{place.name}</strong>
               <div className="buttons">
