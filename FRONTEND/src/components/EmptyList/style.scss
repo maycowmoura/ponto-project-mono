@@ -1,0 +1,21 @@
+#empty-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 16px;
+  color: #4a4d54;
+  text-align: center;
+
+  i svg {
+    font-size: 56px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  > div > span {
+    font-size:16px;
+  }
+}
