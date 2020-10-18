@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './style.scss';
 import { useMainContext } from '../../contexts/MainContext';
-import { useSetMarks } from '../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
 import Header from '../../components/Header';
 import FloatMenu from '../../components/FloatMenu';
@@ -15,6 +14,7 @@ export default function Dashboard() {
   const [showMarksMenu, setShowMarksMenu] = useState(false);
   const { data, setPlaceFilter } = useMainContext();
   const history = useHistory();
+  const hasMultiplePlaces = data.places.length > 1;
 
 
   return (
@@ -30,7 +30,7 @@ export default function Dashboard() {
         <button onClick={() => history.push('/dashboard/places')}>
           <MdLocationOn /> Locais de Trabalho
         </button>
-        <button>
+        <button onClick={() => history.push('/dashboard/employers')}>
           <FaUserEdit /> Gerenciar Funcionários
         </button>
         <button>
@@ -49,19 +49,21 @@ export default function Dashboard() {
         <FloatMenu title="Gerenciar Marcações" closeMenu={() => setShowMarksMenu(false)}>
           <div className="marks-menu">
 
-            <div className="filter-by-place">
-              <label>Filtrar por local:</label>
-              <select
-                className="border"
-                multiple
-                onChange={e => setPlaceFilter(e.target.value)}
-              >
-                <option value="all" hidden selected>Todos os locais</option>
-                {data.places.map(({ id, name }) =>
-                  <option key={id} value={id}>{name}</option>
-                )}
-              </select>
-            </div>
+            {hasMultiplePlaces &&
+              <div className="filter-by-place">
+                <label>Filtrar por local:</label>
+                <select
+                  className="border"
+                  multiple
+                  onChange={e => setPlaceFilter(e.target.value)}
+                >
+                  <option value="all" hidden selected>Todos os locais</option>
+                  {data.places.map(({ id, name }) =>
+                    <option key={id} value={id}>{name}</option>
+                  )}
+                </select>
+              </div>
+            }
 
             <ul>
               <li onClick={() => history.push('/marks/set')}>
