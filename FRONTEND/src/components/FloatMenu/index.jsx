@@ -6,14 +6,14 @@ export default function FloatMenu({ title = '', closeMenu, children, className }
 
   useEffect(() => {
     window.location.hash = 'float-menu';
-    document.body.classList.add('float-menu');
+    document.body.classList.add('no-scroll');
 
     const handleHashChange = () => window.location.hash !== '#float-menu' && closeMenu();
     setTimeout(() => window.addEventListener('hashchange', handleHashChange), 10);
 
     return () => {
       window.location.hash === '#float-menu' && window.history.back();
-      document.body.classList.remove('float-menu');
+      document.body.classList.remove('no-scroll');
       window.removeEventListener('hashchange', handleHashChange);
     }
   }, [])
