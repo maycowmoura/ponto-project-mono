@@ -4,7 +4,7 @@ import LoadingInner from '../../components/LoadingInner';
 import { useMainContext } from '../../contexts/MainContext';
 
 export default function Loading() {
-  const { baseurl, setData } = useMainContext();
+  const { api, setData } = useMainContext();
   const history = useHistory();
 
   useEffect(() => {
@@ -18,14 +18,12 @@ export default function Loading() {
       admin: '/dashboard'
     }
 
-    fetch(`${baseurl}/init`)
-      .then(r => r.json())
-      .then(data => {
-        setData(data);
+    api.get('/init').then(({ data }) => {
+      setData(data);
 
-        const path = redirects[data.user_type];
-        history.push(path);
-      })
+      const path = redirects[data.user_type];
+      history.push(path);
+    })
   }, [])
 
   return <LoadingInner text="Inicializando..." />;

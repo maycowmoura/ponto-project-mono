@@ -13,7 +13,7 @@ import { MdLocationOn } from 'react-icons/md';
 
 export default function EmployerMark({ employer, setShowComment, viewGrid }) {
   const { id, name, job, place } = employer;
-  const { data: { user_type }, baseurl } = useMainContext();
+  const { api, data: { user_type } } = useMainContext();
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [wasExpandedOnce, setWasExpandedOnce] = useState(false);
@@ -27,15 +27,13 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
 
     setLoading(true);
 
-    fetch(`${baseurl}/list/${id}`)
-      .then(r => r.json())
-      .then(json => {
-        console.log(json);
-        setMarks(json);
-        setLoading(false);
-        setExpanded(true);
-        setWasExpandedOnce(true);
-      })
+    api.get(`/list/${id}`).then(({ data }) => {
+      console.log(data);
+      setMarks(data);
+      setLoading(false);
+      setExpanded(true);
+      setWasExpandedOnce(true);
+    })
   }
 
 

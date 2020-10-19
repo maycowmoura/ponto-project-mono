@@ -13,7 +13,7 @@ import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 
 export default function ListMarks() {
-  const { baseurl, data: { user_type }} = useMainContext();
+  const { api, data: { user_type } } = useMainContext();
   const { employers, setEmployers, periodFrom, periodTo } = useListMarks();
 
   const [employersMirror, setEmployersMirror] = useState(employers);
@@ -27,22 +27,20 @@ export default function ListMarks() {
 
 
   useEffect(() => {
-    if(employers) return;
+    if (employers) return;
 
     setLoading(true);
-    fetch(`${baseurl}/employers`)
-      .then(r => r.json())
-      .then(json => {
-        setEmployers(json);
-        setEmployersMirror(json);
-        setLoading(false);
-        setShowSearch(false);
-      })
+    api.get('/employers').then(({ data }) => {
+      setEmployers(data);
+      setEmployersMirror(data);
+      setLoading(false);
+      setShowSearch(false);
+    })
   }, [employers])
 
 
 
-  if(loading || !employers){
+  if (loading || !employers) {
     return <LoadingInner text="Carregando funcionários..." />
   }
 

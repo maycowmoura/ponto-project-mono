@@ -16,7 +16,7 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 
 export default function SetMarks() {
-  const { data, baseurl, placeFilter } = useMainContext();;
+  const { api, data, placeFilter } = useMainContext();;
   const { dayMarks, setDayMarks, date, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
@@ -29,13 +29,14 @@ export default function SetMarks() {
   useEffect(() => {
     if (dayMarks) return;
 
-    const stringDate = DateToString(date);
-    fetch(`${baseurl}/marks/set/${stringDate}?placeFilter=${placeFilter}`)
-      .then(r => r.json())
-      .then(json => {
-        setDayMarks(json);
-        setCurrent(json[0]);
-      })
+    api.get(`/marks/set/${DateToString(date)}`, {
+      params: {
+        placeFilter
+      }
+    }).then(({ data }) => {
+      setDayMarks(data);
+      setCurrent(data[0]);
+    })
   }, [date])
 
 
@@ -55,7 +56,7 @@ export default function SetMarks() {
     })
   }
 
-  
+
 
   function commentClick() {
     history.push('/marks/set/commenting');
@@ -68,7 +69,7 @@ export default function SetMarks() {
   }
 
 
-  if(uploadingMarks){
+  if (uploadingMarks) {
     return <Uploading />
   }
 

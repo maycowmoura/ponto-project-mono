@@ -21,12 +21,6 @@ export default function Login() {
     return setValidationPage(true);
     const email = emailInput.current.value;
 
-    fetch('', {
-      method: 'POST'
-    })
-      .then(r => r.json()).then(data => {
-
-      })
   }
 
   function sendCode() {

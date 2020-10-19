@@ -1,23 +1,22 @@
 import React, { useState, useContext } from 'react';
+import axios from 'axios';
 const MainContext = React.createContext({});
 
-export function MainContextProvider({ children }) {
-  const baseurl = process.env.NODE_ENV == 'production'
+const api = axios.create({
+  baseURL: process.env.NODE_ENV == 'production'
     ? './backend'
-    : 'http://novoponto';
-    // : 'http://ab4661efc57d.ngrok.io';
-    // : 'http://192.168.0.107:3001';
+    : 'http://novoponto'
+    // : 'http://bdec0f2585e9.ngrok.io'
+    // : 'http://192.168.0.107:3001'
+})
 
-
-
-
-
+export function MainContextProvider({ children }) {
   const [data, setData] = useState(null);
   const [placeFilter, setPlaceFilter] = useState('');
 
   return (
     <MainContext.Provider value={{
-      baseurl,
+      api,
       data,
       setData,
       placeFilter, 

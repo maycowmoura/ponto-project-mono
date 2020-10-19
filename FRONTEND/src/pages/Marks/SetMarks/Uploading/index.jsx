@@ -9,12 +9,12 @@ import LoadingInner from '../../../../components/LoadingInner';
 
 
 export default function Uploading() {
-  const { baseurl, } = useMainContext();
-  const { date, dayMarks, setDayMarks, setCurrent, setIndex, setUploadingMarks }  = useSetMarks();
+  const { api } = useMainContext();
+  const { date, dayMarks, setDayMarks, setCurrent, setIndex, setUploadingMarks } = useSetMarks();
   const [loadingText, setLoadingText] = useState(<>Enviando suas marcações.<br />Aguarde...</>);
   const history = useHistory();
   const stringDate = DateToString(date);
-  
+
 
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function Uploading() {
       .filter(item => item.edited)
       .map(({ id, mark }) => ({ id, mark }));
 
-      
+
     if (!marksToUpload.length) {
       setLoadingText(<>Nenhuma marcação foi alterada.<br />Retornando...</>)
       setIndex(0);
@@ -32,21 +32,16 @@ export default function Uploading() {
     }
 
 
-    fetch(`${baseurl}/marks/set/${stringDate}`, {
-      method: 'PUT',
-      body: JSON.stringify(marksToUpload)
-    })
-      .then(r => r.json())
-      .then(json => {
-        if (json.error) {
-          alert('deu erro');
-          return;
-        }
+    api.put(`/marks/set/${stringDate}`, marksToUpload).then(({ data }) => {
+      if (data.error) {
+        alert('deu erro');
+        return;
+      }
 
-        setDayMarks(json);
-        setCurrent(json[0]);
-        setUploadingMarks(false);
-      })
+      setDayMarks(data);
+      setCurrent(data[0]);
+      setUploadingMarks(false);
+    })
   }, [])
 
 

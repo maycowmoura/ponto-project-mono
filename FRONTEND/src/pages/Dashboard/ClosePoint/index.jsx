@@ -8,16 +8,15 @@ import { FiCheck } from 'react-icons/fi';
 
 
 export default function ClosePoint() {
-  const { baseurl } = useMainContext();
+  const { api } = useMainContext();
   const history = useHistory();
   const [currentCloseDate, setCurrentCloseDate] = useState('...');
 
 
   useEffect(() => {
-    fetch(`${baseurl}/close-point.json`)
-      .then(r => r.json())
-      .then(json => {
-        const date = json.date ? json.date.split('-').reverse().join('/') : null;
+    api.get('/close-point.json')
+      .then(({ data }) => {
+        const date = data.date ? data.date.split('-').reverse().join('/') : null;
         setCurrentCloseDate(date);
       })
   }, [])
@@ -36,14 +35,16 @@ export default function ClosePoint() {
       <main>
         <section>
           <h4>Selecione a Data de Fechamento:</h4>
-          <SelectDate onChange={() => {}} />
+          <SelectDate onChange={() => { }} />
 
         </section>
         <small>
-          {currentCloseDate
-            ? <>Atualmente está fechado em {currentCloseDate}.</>
-            : <>Atualmente a data está aberta.</>
-          }
+          <p>
+            {currentCloseDate
+              ? <>Atualmente está fechado em {currentCloseDate}.</>
+              : <>Atualmente a data está aberta.</>
+            }
+          </p>
         </small>
 
         <small>
