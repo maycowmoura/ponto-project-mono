@@ -1,19 +1,13 @@
 @import '../../../utils/variables.scss';
 
 #close-point {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 16px;
-  padding-top: $header-height + 12px;
+  @extend %page-with-header;
 
   main {
-    @extend %page-in;
-
     section {
       @extend %card;
       padding: 32px 16px;
+      margin-bottom: 16px;
 
       h4 {
         text-align: center;

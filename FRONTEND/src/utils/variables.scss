@@ -2,6 +2,23 @@ $header-height: 60px;
 $footer-height: 100px;
 
 
+%page-in {
+  animation: page-in 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both
+}
+
+%page-with-header {
+  display: flex;
+  padding: 16px;
+  padding-top: $header-height+12px;
+  padding-bottom: 0;
+  height: 100%;
+
+  > main {
+    @extend %page-in;
+    margin: auto;
+    padding-bottom: 16px;
+  }
+}
 
 %ellipsis-sencond-line {
   overflow: hidden;
@@ -18,10 +35,6 @@ $footer-height: 100px;
   box-shadow: 4px 4px 7px 0px #0000003d;
   user-select: none;
   outline: none;
-}
-
-%page-in {
-  animation: page-in 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both
 }
 
 @keyframes page-in {

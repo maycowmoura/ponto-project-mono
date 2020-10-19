@@ -1,17 +1,9 @@
 @import '../../../utils/variables.scss';
 
 #places {
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  padding: 16px;
-  padding-top: $header-height + 12px;
+  @extend %page-with-header;
 
   main {
-    @extend %page-in;
-    width: 100%;
-    margin: auto;
 
     section {
       @extend %card;
@@ -42,9 +34,11 @@
     }
   }
 
-  .new-place-menu, .rename-menu {
+  .new-place-menu,
+  .rename-menu {
     button {
       display: block;
+      margin-top: 16px;
       margin-left: auto;
     }
   }

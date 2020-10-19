@@ -1,10 +1,7 @@
 @import '../../../utils/variables.scss';
 
 #list-marks {
-  padding-top: $header-height + 12px;
-  height: 100%;
-
-  main {
-    @extend %page-in;
-  }
+  @extend %page-with-header;
+  padding-left: 0;
+  padding-right: 0;
 }
