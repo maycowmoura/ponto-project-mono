@@ -17,7 +17,7 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 export default function SetMarks() {
   const { api, data, placeFilter } = useMainContext();;
-  const { dayMarks, setDayMarks, date, current, setCurrent, index, uploadingMarks } = useSetMarks();
+  const { dayMarks, setDayMarks, date, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const headerDate = `${addZero(date.getDate())}/${months[date.getMonth()].short}/${date.getFullYear()}`;
@@ -25,6 +25,7 @@ export default function SetMarks() {
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
+
 
   useEffect(() => {
     if (dayMarks) return;
@@ -46,6 +47,16 @@ export default function SetMarks() {
   }, [index]);
 
 
+  useEffect(() => {
+    const commingFromDashboard = document.referrer.includes('/dashboard');
+    if (commingFromDashboard && dayMarks) {
+      setIndex(0);
+      setCurrent(dayMarks[0]);
+    }
+  }, [dayMarks]);
+
+
+
   function handleMissed(revertMissed = false) {
     setAnimateMissed('animated');
     setCurrent(prev => {
@@ -55,13 +66,6 @@ export default function SetMarks() {
       return { ...prev };
     })
   }
-
-
-
-  function commentClick() {
-    history.push('/marks/set/commenting');
-  }
-
 
 
   if (!dayMarks || !current) {
@@ -100,21 +104,22 @@ export default function SetMarks() {
           <h2>{current.name}</h2>
           <p>{current.job}</p>
 
-          {missed ?
+          {missed ? (
             <div id="missed" className={animateMissed} onClick={() => handleMissed(true)}>
               <Missed />
               <div>FALTOU</div>
             </div>
-            :
-            <div id="inputs" className={animateMissed}>
-              <Input type="in" value={format(current.mark.time_in)} />
-              <Input type="out" value={format(current.mark.time_out)} />
-            </div>
+          ) : (
+              <div id="inputs" className={animateMissed}>
+                <Input type="in" value={format(current.mark.time_in)} />
+                <Input type="out" value={format(current.mark.time_out)} />
+              </div>
+            )
           }
 
           <button
             className={'comment ' + (current?.mark.comment && 'has-comment')}
-            onClick={commentClick}
+            onClick={() => history.push('/marks/set/commenting')}
           >
             <Comment /> {current?.mark.comment ? 'Comentado' : 'Comentar'}
           </button>
