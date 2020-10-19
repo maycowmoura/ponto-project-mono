@@ -15,7 +15,7 @@ import {
 
 export default function Calendar() {
   const { date, setDate, setIndex, setDayMarks } = useSetMarks();
-  const [currentDate, setCurrentDate] = useState(date);
+  const [currentDate, setCurrentDate] = useState(new Date(date.getTime()));
   const history = useHistory();
   currentDate.setDate(1);
   const month = currentDate.getMonth();
