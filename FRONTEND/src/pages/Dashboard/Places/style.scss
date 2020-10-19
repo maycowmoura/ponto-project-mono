@@ -42,17 +42,7 @@
     }
   }
 
-  .new-place-menu {
-    input {
-      display: block;
-      padding: 16px;
-      margin: 16px 0;
-      width: 100%;
-      background-color: #ffffff;
-      border: none;
-      border-radius: 4px;
-    }
-
+  .new-place-menu, .rename-menu {
     button {
       display: block;
       margin-left: auto;
