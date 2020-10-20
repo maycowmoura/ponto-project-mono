@@ -7,12 +7,14 @@
   overflow: hidden;
 
   header .go-today {
+    flex-direction: column;
+    justify-content: center;
+
     svg {
       font-size: 24px;
     }
 
     span {
-      display: block;
       font-size: 12px;
       text-align: center;
     }

@@ -5,6 +5,7 @@ import { addZero } from '../../../../utils/TimeFormaters';
 import { months } from '../../../../utils/MonthsAndWeekdays';
 import { useHistory } from 'react-router-dom';
 import Header from '../../../../components/Header';
+import ToastMsg from '../../../../components/ToastMsg';
 import { MdToday as Today } from 'react-icons/md';
 import {
   IoIosArrowDropleftCircle as Left,
@@ -15,8 +16,9 @@ import {
 
 export default function Calendar() {
   const { date, setDate, setIndex, setDayMarks } = useSetMarks();
-  const [currentDate, setCurrentDate] = useState(new Date(date.getTime()));
   const history = useHistory();
+  const [toast, setToast] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date(date.getTime()));
   currentDate.setDate(1);
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
@@ -41,7 +43,8 @@ export default function Calendar() {
     const today = new Date();
 
     if (newDate.toISOString() > today.toISOString()) {
-      alert('Você não pode alterar datas futuras.');
+      setToast('Você não pode alterar datas futuras.');
+      setTimeout(setToast, 5000);
       return;
     }
 
@@ -50,8 +53,8 @@ export default function Calendar() {
     setIndex(0);
     history.goBack();
   }
-  
-  
+
+
   function setToday() {
     setDate(new Date);
     setDayMarks(null); // força o reload dos dias
@@ -90,6 +93,9 @@ export default function Calendar() {
 
   return (
     <div id="calendar">
+
+      {toast && <ToastMsg text={toast} close={setToast} />}
+
       <Header backButton>
         <div className="title">
           Selecionar data
