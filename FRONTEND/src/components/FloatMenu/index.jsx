@@ -20,7 +20,7 @@ export default function FloatMenu({ title = '', closeMenu, children, className }
 
 
   return (
-    <div id="float-menu" onClick={closeMenu}>
+    <div id="float-menu" onClick={() => closeMenu && closeMenu()}>
       <div id="float-menu-inner" className={className} onClick={e => e.stopPropagation()}>
         <h4>{title}</h4>
         {children}
