@@ -20,6 +20,12 @@ $footer-height: 100px;
   }
 }
 
+%ellipsis-one-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 %ellipsis-sencond-line {
   overflow: hidden;
   text-overflow: ellipsis;
