@@ -26,7 +26,7 @@ export default function ClosePoint() {
     <div id="close-point">
 
       <Header backButton>
-        <div className="title">Fechar data do ponto</div>
+        <div className="title">Fechar Data do Ponto</div>
         <div>
           <FiCheck />
         </div>
