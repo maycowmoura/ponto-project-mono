@@ -13,7 +13,7 @@ import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 
 export default function ListMarks() {
-  const { api, data: { user_type } } = useMainContext();
+  const { api, placeFilters, data: { user_type } } = useMainContext();
   const { employers, setEmployers, periodFrom, periodTo } = useListMarks();
 
   const [employersMirror, setEmployersMirror] = useState(employers);
@@ -27,16 +27,17 @@ export default function ListMarks() {
 
 
   useEffect(() => {
-    if (employers) return;
-
     setLoading(true);
-    api.get('/employers').then(({ data }) => {
+    
+    api.get('/employers', {
+      params: { 'place-filters': placeFilters }
+    }).then(({ data }) => {
       setEmployers(data);
       setEmployersMirror(data);
       setLoading(false);
       setShowSearch(false);
     })
-  }, [employers])
+  }, [])
 
 
 

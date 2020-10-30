@@ -3,24 +3,23 @@ import axios from 'axios';
 const MainContext = React.createContext({});
 
 const api = axios.create({
+  headers: { 'Authorization': `Bearer ${localStorage.token}`},
   baseURL: process.env.NODE_ENV == 'production'
-    ? './backend'
-    : 'http://novoponto'
-    // : 'http://bdec0f2585e9.ngrok.io'
-    // : 'http://192.168.0.107:3001'
+    ? '/novoponto/backend'
+    : 'http://192.168.0.106:3001' // ip fixo - video pra configurar > https://youtu.be/hRB1J5NxZdE
 })
 
 export function MainContextProvider({ children }) {
   const [data, setData] = useState(null);
-  const [placeFilter, setPlaceFilter] = useState('');
+  const [placeFilters, setPlaceFilters] = useState('');
 
   return (
     <MainContext.Provider value={{
       api,
       data,
       setData,
-      placeFilter, 
-      setPlaceFilter
+      placeFilters, 
+      setPlaceFilters
     }}>
       {children}
     </MainContext.Provider>

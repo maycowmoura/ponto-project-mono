@@ -20,7 +20,7 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
   }
 
   function handleNext() {
-    const { time_in, time_out } = current.mark;
+    const { time_in, time_out } = current;
     if (parseInt(time_in) >= parseInt(time_out)) {
       setToast('Ops... O horário de saída deve ser maior que o de entrada.');
       return;

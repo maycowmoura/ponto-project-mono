@@ -10,6 +10,7 @@
     "id": "1028",
     "name": "ANDERSON JOSÉ SOARES DE OLIVEIRA",
     "job": "ADMINISTRATIVO",
+    "place_id": 1234,
     "default_time_in": "570",
     "default_time_out": "950",
     "time_in": null,
@@ -43,7 +44,9 @@ try {
   v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
 
 } catch (Exception $e) {
-  die('{"error": "' . $e->getMessage() . '"}');
+  die(_json_encode([
+    'error' => $e->getMessage()
+  ]));
 }
 
 
@@ -54,6 +57,7 @@ $sql->execute(
     e.id AS id, 
     e.name AS name, 
     job,
+    place AS `place_id`,
     t.time_in AS default_time_in, 
     t.time_out AS default_time_out,
     m.time_in AS time_in, 

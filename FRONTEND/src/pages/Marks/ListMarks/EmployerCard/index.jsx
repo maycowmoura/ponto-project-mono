@@ -26,7 +26,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
 
     setLoading(true);
 
-    api.get(`/list/${id}`).then(({ data }) => {
+    api.get(`/marks/list/${id}`).then(({ data }) => {
       console.log(data);
       setMarks(data);
       setLoading(false);
@@ -45,7 +45,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
         <div className="text">
           <h3>{name}</h3>
           <span><FaSuitcase /> {job}</span>
-          <span><MdLocationOn /> {place.name}</span>
+          <span><MdLocationOn /> {place}</span>
         </div>
       </div>
 

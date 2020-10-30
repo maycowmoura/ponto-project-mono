@@ -10,7 +10,7 @@ import { FaRegTrashAlt as Trash } from 'react-icons/fa';
 
 export default function Commenting() {
   const { current, setCurrent, setDayMarks } = useSetMarks();
-  const [comment, setComment] = useState(current?.mark.comment);
+  const [comment, setComment] = useState(current?.comment);
   const [counter, setCounter] = useState(comment?.length || 0);
   const [repeatForAll, setRepeatForAll] = useState(false);
   const main = useRef();
@@ -58,13 +58,13 @@ export default function Commenting() {
   function handleFinish() {
     if (repeatForAll) {
       setDayMarks(prev => prev.map(item => {
-        item.mark.comment = comment;
+        item.comment = comment;
         return item;
       }))
     }
 
     setCurrent(prev => {
-      prev.mark.comment = comment?.trim();
+      prev.comment = comment?.trim();
       prev.edited = true;
       return prev;
     })

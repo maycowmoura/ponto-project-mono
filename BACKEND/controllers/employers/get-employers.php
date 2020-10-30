@@ -10,6 +10,7 @@
    "id": 1234,
    "name": "Employer Name",
    "job": "Employer Job",
+   "place_id": 1234
    "place": "Employer Place"
  }]
 */
@@ -18,6 +19,9 @@
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use Respect\Validation\Validator as v;
 
 
 $auth = new Auth();
@@ -27,13 +31,28 @@ $accessiblePlaces = $auth->getAccessiblePlaces();
 $accessiblePlaces = implode(',', $accessiblePlaces);
 
 
+
+$filtersList = $_GET['place-filters'] ?? null;
+$sqlFilters = $filtersList ? "AND e.place IN ($filtersList)" : '';
+
+try {
+  v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
+} catch (Exception $e) {
+  die(_json_encode([
+    'error' => $e->getMessage()
+  ]));
+}
+
+
+
+
 $sql = new SQL();
 $sql->execute(
- "SELECT e.id AS id, e.name AS name, job, p.name AS place 
+ "SELECT e.id AS id, e.name AS name, job, e.place AS place_id, p.name AS place 
   FROM `$client-employers` AS e
   JOIN `$client-places` AS p
   ON e.place = p.id
-  WHERE place IN ($accessiblePlaces)
+  WHERE place IN ($accessiblePlaces) $sqlFilters
   ORDER BY e.name"
 );
 

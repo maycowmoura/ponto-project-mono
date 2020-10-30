@@ -16,12 +16,12 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 
 export default function SetMarks() {
-  const { api, data, placeFilter } = useMainContext();;
+  const { api, data, placeFilters } = useMainContext();;
   const { dayMarks, setDayMarks, date, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const headerDate = `${addZero(date.getDate())}/${months[date.getMonth()].short}/${date.getFullYear()}`;
-  const missed = current?.mark.time_in === 'missed';
+  const missed = current?.time_in === 'missed';
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
@@ -30,10 +30,8 @@ export default function SetMarks() {
   useEffect(() => {
     if (dayMarks) return;
 
-    api.get(`/marks/set/${DateToString(date)}`, {
-      params: {
-        placeFilter
-      }
+    api.get(`/marks/${DateToString(date)}`, {
+      params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
       setDayMarks(data);
       setCurrent(data[0]);
@@ -60,8 +58,8 @@ export default function SetMarks() {
   function handleMissed(revertMissed = false) {
     setAnimateMissed('animated');
     setCurrent(prev => {
-      prev.mark.time_in = revertMissed ? current.default_time_in : 'missed';
-      prev.mark.time_out = revertMissed ? current.default_time_out : 'missed';
+      prev.time_in = revertMissed ? current.default_time_in : 'missed';
+      prev.time_out = revertMissed ? current.default_time_out : 'missed';
       prev.edited = true;
       return { ...prev };
     })
@@ -111,17 +109,23 @@ export default function SetMarks() {
             </div>
           ) : (
               <div id="inputs" className={animateMissed}>
-                <Input type="in" value={format(current.mark.time_in)} />
-                <Input type="out" value={format(current.mark.time_out)} />
+                <Input
+                  type="in"
+                  value={format(current.time_in || current.default_time_in)}
+                />
+                <Input
+                  type="out"
+                  value={format(current.time_out || current.default_time_out)}
+                />
               </div>
             )
           }
 
           <button
-            className={'comment ' + (current?.mark.comment && 'has-comment')}
+            className={'comment ' + (current?.comment && 'has-comment')}
             onClick={() => history.push('/marks/set/commenting')}
           >
-            <Comment /> {current?.mark.comment ? 'Comentado' : 'Comentar'}
+            <Comment /> {current?.comment ? 'Comentado' : 'Comentar'}
           </button>
         </div>
       </main>

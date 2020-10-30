@@ -10,7 +10,7 @@ import { FormatedTimeToMinutes, MinutesToFormatedTime } from '../../../../utils/
 
 export default function Typing() {
   const { current, setCurrent, activeInput } = useSetMarks();
-  const [value, setValue] = useState(MinutesToFormatedTime(current.mark[`time_${activeInput}`]));
+  const [value, setValue] = useState(MinutesToFormatedTime(current[`time_${activeInput}`]));
   const initialCurrent = useRef(current);
   const [inputInvalid, setInputInvalid] = useState(false);
   const history = useHistory();
@@ -41,7 +41,7 @@ export default function Typing() {
     if (!timeRegex.test(value)) return setInputInvalid(true);
 
     setCurrent(prev => {
-      prev.mark[`time_${activeInput}`] = FormatedTimeToMinutes(value);
+      prev[`time_${activeInput}`] = FormatedTimeToMinutes(value);
       prev.edited = true;
       return { ...prev };
     })

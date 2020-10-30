@@ -20,6 +20,7 @@ if ($auth->isAdmin) {
       e.id AS `id`,
       e.name AS `name`,
       e.job AS `job`,
+      e.place AS `place_id`,
       p.name AS `place`
     FROM `$client-employers` AS e
     JOIN `$client-places` AS p
