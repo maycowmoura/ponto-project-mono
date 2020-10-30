@@ -18,14 +18,19 @@ require_once __DIR__ . '/../../models/SQL.php';
 
 $auth = new Auth();
 $auth->mustBeAdmin();
+$userId = $auth->userId;
 $client = $auth->client;
 
 
 $sql = new SQL();
+$sql->beginTransaction();
 $sql->execute(
- "DELETE FROM `$client-places` 
-  WHERE id = '$placeId'"
+  "DELETE FROM `$client-users-access` WHERE place_id = '$placeId' AND user_id = '$userId'"
 );
+$sql->execute(
+  "DELETE FROM `$client-places` WHERE id = '$placeId'"
+);
+$sql->commit();
 
 
 if ($sql->getTotalAffected() == 0) {
