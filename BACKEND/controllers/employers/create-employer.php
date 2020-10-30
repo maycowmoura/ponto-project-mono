@@ -40,7 +40,9 @@ try {
     ->key('place', v::intVal()->positive())->check(POST);
 
 } catch (Exception $e) {
-  die($e->getMessage());
+  die(_json_encode([
+    'error' => $e->getMessage()
+  ]));
 }
 
 

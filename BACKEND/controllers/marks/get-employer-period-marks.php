@@ -42,7 +42,9 @@ try {
   v::stringType()->date()->greaterThan($from)->lessThan('now')->setName('`To`')->check($to);
 
 } catch (Exception $e) {
-  die('{"error": "' . $e->getMessage() . '"}');
+  die(_json_encode([
+    'error' => $e->getMessage()
+  ]));
 }
 
 if(!in_array($employerId, $accessibleEmployers)){

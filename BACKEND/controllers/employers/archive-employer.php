@@ -19,7 +19,13 @@ require_once __DIR__ . '/../../models/SQL.php';
 $auth = new Auth();
 $auth->mustBeAdmin();
 $client = $auth->client;
+$accessibleEmployers = $auth->getAccessibleEmployers();
 $time = time();
+
+
+if (!in_array($employerId, $accessibleEmployers)) {
+  die('{"error": "Você não tem acesso a esse funcionário."}');
+}
 
 
 $sql = new SQL();

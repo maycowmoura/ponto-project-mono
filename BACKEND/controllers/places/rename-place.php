@@ -33,7 +33,9 @@ $client = $auth->client;
 try {
   v::key('name', v::stringType()->length(3, 60))->check(PUT);
 } catch (Exception $e) {
-  die($e->getMessage());
+  die(_json_encode([
+    'error' => $e->getMessage()
+  ]));
 }
 
 
