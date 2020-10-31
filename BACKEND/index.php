@@ -25,10 +25,9 @@ $router->mount('/marks', function () use ($router) {
   $router->get('/list/(\d+)', function ($employerId) {
     require_once __DIR__ . '/controllers/marks/get-employer-period-marks.php';
   });
-  
+
   $router->post("/($dateRegex)", function ($date) {
   });
-  
 });
 
 
@@ -48,6 +47,11 @@ $router->mount('/employers', function () use ($router) {
 
   $router->delete('/(\d+)', function ($employerId) {
     require_once __DIR__ . '/controllers/employers/archive-employer.php';
+  });
+
+
+  $router->put('/transfer/(\d+)', function ($employerId) {
+    require_once __DIR__ . '/controllers/employers/transfer-employer.php';
   });
 });
 
