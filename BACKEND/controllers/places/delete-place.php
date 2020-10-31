@@ -22,15 +22,32 @@ $userId = $auth->userId;
 $client = $auth->client;
 
 
-$sql = new SQL();
-$sql->beginTransaction();
-$sql->execute(
-  "DELETE FROM `$client-users-access` WHERE place_id = '$placeId' AND user_id = '$userId'"
-);
-$sql->execute(
-  "DELETE FROM `$client-places` WHERE id = '$placeId'"
-);
-$sql->commit();
+
+
+try {
+  $sql = new SQL();
+  $sql->beginTransaction();
+  $sql->execute(
+   "DELETE FROM `$client-users-access` 
+    WHERE place_id = '$placeId' AND user_id = '$userId'"
+  );
+  $sql->execute(
+   "DELETE FROM `$client-places` 
+    WHERE id = '$placeId'"
+  );
+  $sql->commit();
+
+} catch (Exception $e) {
+  $message = $e->getMessage();
+  $message = strpos($message, ' 23000 ') > 0 
+    ? 'Ops... Devem existir funcionários alocados neste local. Você precisa transferir todos antes de apagá-lo.' 
+    : $message;
+
+  die(_json_encode([
+    'error' => $message
+  ]));
+}
+
 
 
 if ($sql->getTotalAffected() == 0) {
