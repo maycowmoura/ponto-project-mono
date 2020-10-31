@@ -27,6 +27,7 @@ use Respect\Validation\Validator as v;
 
 $auth = new Auth();
 $auth->mustBeAdmin();
+$userId = $auth->userId;
 $client = $auth->client;
 
 
@@ -49,7 +50,11 @@ $sql->execute(
   (`name`) VALUES ('$name')"
 );
 $sql->execute(
- "SELECT LAST_INSERT_ID() AS id"
+  "INSERT INTO `$client-users-access` 
+  (`user_id`, `place_id`) VALUES ('$userId', LAST_INSERT_ID())"
+);
+$sql->execute(
+  "SELECT LAST_INSERT_ID() AS id FROM `$client-places`"
 );
 $sql->commit();
 
