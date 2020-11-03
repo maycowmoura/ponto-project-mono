@@ -1,26 +1,92 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import './style.scss';
 import { useMainContext } from '../../../contexts/MainContext';
 import LoadingInner from '../../../components/LoadingInner';
 import Header from '../../../components/Header';
 import EmptyList from '../../../components/EmptyList';
+import ToastMsg from '../../../components/ToastMsg';
 import FloatMenu from '../../../components/FloatMenu';
 import { FiPlusCircle, FiEdit } from 'react-icons/fi';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
 
+
+function validatePlaceName(name) {
+  return name.length < 3 || name.length > 60;
+}
+
+
 export default function Places() {
   const { api, data, setData } = useMainContext();
+  const newPlaceInput = useRef();
+  const renamePlaceInput = useRef();
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [newPlaceMenu, setNewPlaceMenu] = useState(null);
   const [renameMenu, setRenameMenu] = useState(null);
   const [deleteMenu, setDeleteMenu] = useState(null);
 
 
+  function handleCreate() {
+    const name = newPlaceInput.current.value.trim();
 
-  function handleRename() {
+    if (validatePlaceName(name)) {
+      setErrorMsg('O nome do local deve ter entre 3 e 60 caracteres.');
+      return;
+    }
 
+    setLoading(true);
+
+    api.post('/places', { name })
+      .then(({ data }) => {
+        if (data.error) return setErrorMsg(data.error);
+
+        setData(prev => {
+          const places = [...prev.places, data];
+          return { ...prev, places };
+        })
+
+        setNewPlaceMenu(false);
+      })
+      .catch(setErrorMsg)
+      .finally(() => setLoading(false))
   }
+
+
+
+
+  function handleRename(id) {
+    const name = renamePlaceInput.current.value.trim();
+
+    if (validatePlaceName(name)) {
+      setErrorMsg('O nome do local deve ter entre 3 e 60 caracteres.');
+      return;
+    }
+
+    setLoading(true);
+
+    api.put(`/places/${id}`, { name })
+      .then(({ data }) => {
+        if (data.error) return setErrorMsg(data.error);
+
+        setData(prev => {
+          const places = prev.places.map(place => {
+            if(place.id === data.id){
+              place.name = data.name;
+            }
+            return place;
+          })
+          return { ...prev, places };
+        })
+
+        setRenameMenu(false);
+      })
+      .catch(setErrorMsg)
+      .finally(() => setLoading(false))
+  }
+
+
+
 
   function handleDelete(id) {
     setLoading(true);
@@ -28,19 +94,16 @@ export default function Places() {
 
     api.delete(`/places/${id}`)
       .then(({ data }) => {
-        if(data.error){
-
-          return;
+        if (data.error) {
+          return setErrorMsg(data.error);
         }
-        
+
         setData(prev => {
           const filtredPlaces = prev.places.filter(place => place.id != id);
           return { ...prev, places: filtredPlaces };
         })
       })
-      .catch(e => {
-        alert(e);
-      })
+      .catch(setErrorMsg)
       .finally(() => setLoading(false))
   }
 
@@ -48,7 +111,7 @@ export default function Places() {
 
   return (
     <div id="places">
-      
+
       {loading && <LoadingInner fixed />}
 
       <Header backButton>
@@ -81,14 +144,22 @@ export default function Places() {
           )}
       </main>
 
+      {errorMsg &&
+        <ToastMsg text={errorMsg} close={setErrorMsg} aboveAll />
+      }
 
       {newPlaceMenu &&
-        <FloatMenu title="Novo local" className="new-place-menu" closeMenu={() => setNewPlaceMenu()}>
-          <input type="text" placeholder="Digite o nome do local" />
+        <FloatMenu title="Novo local" className="new-place-menu" closeMenu={setNewPlaceMenu}>
+          <input
+            ref={newPlaceInput}
+            type="text"
+            placeholder="Digite o nome do local"
+            maxLength="60"
+          />
           <small>
             Após adicionar, você pode transferir funcionários para este local usando a aba Gerenciar Funcionários.
           </small>
-          <button>Adicionar</button>
+          <button onClick={handleCreate}>Adicionar</button>
         </FloatMenu>
       }
 
@@ -96,11 +167,14 @@ export default function Places() {
       {renameMenu &&
         <FloatMenu title="Renomear local" className="rename-menu" closeMenu={() => setRenameMenu()}>
           <input
+            ref={renamePlaceInput}
             type="text"
             placeholder={`Digite um novo nome para ${renameMenu.name}`}
             defaultValue={renameMenu.name}
           />
-          <button>Renomear</button>
+          <button onClick={() => handleRename(renameMenu.id)}>
+            Renomear
+          </button>
         </FloatMenu>
       }
 
