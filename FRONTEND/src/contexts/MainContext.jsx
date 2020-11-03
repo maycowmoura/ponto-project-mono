@@ -2,12 +2,26 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 const MainContext = React.createContext({});
 
+
 const api = axios.create({
   headers: { 'Authorization': `Bearer ${localStorage.token}`},
   baseURL: process.env.NODE_ENV == 'production'
     ? '/novoponto/backend'
-    : 'http://192.168.0.106:3001' // ip fixo - video pra configurar > https://youtu.be/hRB1J5NxZdE
+    : 'http://192.168.0.109:3001' // ip fixo - video pra configurar > https://youtu.be/hRB1J5NxZdE
 })
+
+api.interceptors.response.use(response => response, function (error) {
+  const defaults = {
+    'Network Error': 'Falha ao contatar servidor. Verifique sua internet.'
+  }
+
+  const message = defaults[error.message] ?? error.message;
+  return Promise.reject(message);
+});
+
+
+
+
 
 export function MainContextProvider({ children }) {
   const [data, setData] = useState(null);
