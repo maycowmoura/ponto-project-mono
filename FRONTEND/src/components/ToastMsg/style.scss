@@ -21,6 +21,10 @@
     background-color: #17616e;
   }
 
+  &.above-all {
+    z-index: 9999999;
+  }
+
   >svg {
     font-size: 32px;
     transform: none;
