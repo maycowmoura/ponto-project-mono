@@ -1,0 +1,59 @@
+@import '../../../utils/variables.scss';
+
+#employers-page {
+  @extend %page-with-header;
+
+  main {
+    section {
+      @extend %card;
+      padding: 32px 16px;
+      padding-bottom: 20px;
+      margin: 22px 0;
+
+      h3 {
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      span {
+        display: block;
+        font-size: 14px;
+        font-weight: 300;
+        text-transform: uppercase;
+        color: #b4b4b4;
+
+        svg {
+          margin: 0 4px;
+          color: #FBB13C;
+        }
+      }
+
+      .buttons {
+        text-align: right;
+        margin-top: 12px;
+
+        button {
+          background-color: transparent;
+          color: #FBB13C;
+          padding: 6px 10px;
+          margin-left: 16px;
+          transition: background-color .3s;
+
+          &:active {
+            background-color: #44454b;
+          }
+
+          svg {
+            font-size: 20px
+          }
+        }
+      }
+    }
+  }
+
+  .transfer-menu{
+    select {
+      margin: 16px 0 32px;
+    }
+  }
+}

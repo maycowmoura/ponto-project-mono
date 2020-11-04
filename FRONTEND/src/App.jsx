@@ -13,6 +13,8 @@ import Calendar from './pages/Marks/SetMarks/Calendar';
 import ListMarks from './pages/Marks/ListMarks';
 import Dashboard from './pages/Dashboard';
 import Places from './pages/Dashboard/Places';
+import EmployersPage from './pages/Dashboard/EmployersPage';
+import NewEmployer from './pages/Dashboard/EmployersPage/NewEmployer';
 import ClosePoint from './pages/Dashboard/ClosePoint';
 
 export default function App() {
@@ -31,13 +33,15 @@ export default function App() {
 
           <MarksContextProvider>
             <Route path="/marks/list" component={ListMarks} />
-            <Route path="/marks/set" component={SetMarks} exact />
+            <Route path="/marks/set" exact component={SetMarks} />
             <Route path="/marks/set/typing" component={Typing} />
             <Route path="/marks/set/commenting" component={Commenting} />
             <Route path="/marks/set/calendar" component={Calendar} />
 
             <Route path="/dashboard" exact component={Dashboard} />
             <Route path="/dashboard/places" component={Places} />
+            <Route path="/dashboard/employers" exact component={EmployersPage} />
+            <Route path="/dashboard/employers/new" component={NewEmployer} />
             <Route path="/dashboard/close-point" component={ClosePoint} />
           </MarksContextProvider>
         </Switch>

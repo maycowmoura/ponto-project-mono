@@ -1,0 +1,19 @@
+@import '../../../../utils/variables.scss';
+
+#new-employer {
+  @extend %page-with-header;
+
+  main {
+
+    h2 {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    button {
+      display: block;
+      margin-top: 16px;
+      margin-left: auto;
+    }
+  }
+}
