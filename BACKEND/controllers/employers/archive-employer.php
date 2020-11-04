@@ -31,14 +31,14 @@ if (!in_array($employerId, $accessibleEmployers)) {
 $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
- "INSERT INTO `$client-archived-employers`
+  "INSERT INTO `$client-archived-employers`
   SELECT *, '$time' AS archived_at 
   FROM `$client-employers` 
   WHERE id = '$employerId'"
 );
-$sql->execute(
-  "DELETE FROM `$client-s` WHERE id = '$employerId'"
-);
+$sql->execute("SET FOREIGN_KEY_CHECKS=0");
+$sql->execute("DELETE FROM `$client-employers` WHERE id = '$employerId'");
+$sql->execute("SET FOREIGN_KEY_CHECKS=1"); // isso só vale nessa query, mas reativa só por precaução
 $sql->commit();
 
 
