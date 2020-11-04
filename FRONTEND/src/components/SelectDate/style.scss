@@ -2,6 +2,11 @@
   display: flex;
   justify-content: space-around;
 
+  &.invalid {
+    animation: blink-border .5s;
+    animation-iteration-count: 4;
+  }
+
   select {
     background-color: transparent;
     border: none;
@@ -14,5 +19,20 @@
       background-color: transparent;
       color: #000;
     }
+  }
+}
+
+
+@keyframes blink-border {
+  0% {
+    box-shadow: inset 0px 0 0px 1px transparent;
+  }
+
+  70% {
+    box-shadow: inset 0px 0 0px 1px #ec5353;
+  }
+  
+  100% {
+    box-shadow: inset 0px 0 0px 1px transparent;
   }
 }
