@@ -43,9 +43,4 @@ $sql->commit();
 
 
 
-if ($sql->getTotalAffected() == 0) {
-  die('{"error": "Nenhum funcionário afetado."}');
-}
-
-
 die('{"ok": true}');
