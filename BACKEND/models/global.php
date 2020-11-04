@@ -19,9 +19,13 @@ define('PRODUCTION',
 // FUNCTIONS
 //
 
-// set_error_handler(function($n, $errstr, $f, $errline){
-//     return error($errstr, $errline);
-// });
+set_exception_handler(function($e){
+    return error($e->getMessage());
+});
+
+set_error_handler(function($n, $errstr, $f, $errline){
+    return error($errstr, $errline);
+});
 
 function error($errstr, $errline = null){
     $line = $errline ? $errline . ': ' : '';
