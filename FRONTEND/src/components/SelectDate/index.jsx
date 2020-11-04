@@ -30,7 +30,6 @@ export default function SelectDate({ initialDate, onChange }) {
   function validateMonth(value){
     const dateObj = new Date([year, value, day]);
     const newMonth = addZero(dateObj.getMonth() + 1);
-    console.log(newMonth, value);
     newMonth === value ? setMonth(value) : invalidDate();
   }
 
