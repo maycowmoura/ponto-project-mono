@@ -50,7 +50,7 @@ $sql->execute(
   (`name`) VALUES ('$name')"
 );
 $sql->execute(
-  "INSERT INTO `$client-users-access` 
+  "INSERT INTO `$client-users-accesses` 
   (`user_id`, `place_id`) VALUES ('$userId', LAST_INSERT_ID())"
 );
 $sql->execute(
