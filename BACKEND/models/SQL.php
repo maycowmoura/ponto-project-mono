@@ -9,17 +9,20 @@
 // var_dump($result);
 
 
-class SQL {
+class SQL
+{
   private $sql;
   public $result;
 
   function __construct($banco = 'ponto'){
     $this->sql = new PDO("mysql:host=localhost;charset=utf8;dbname=$banco", 'root', '');
-    $this->sql->errorCode() && $this->error('SQL Connection | '.$this->sql->errorInfo()[2]);
+    $this->sql->errorCode() == 0 || $this->error(
+      'SQL Connection | ' . $this->sql->errorCode() . ' - ' . $this->sql->errorInfo()[2]
+    );
   }
 
   private function error($message){
-    die("{\"error\": \"$message\"}");
+    throw new Exception($message);
   }
 
   function beginTransaction(){
@@ -28,18 +31,23 @@ class SQL {
 
   function execute($query){
     $this->result = $this->sql->query($query);
-    $this->sql->errorCode() == 0 || $this->error('SQL Execution | '.$this->sql->errorInfo()[2]);
+    $this->sql->errorCode() == 0 || $this->error(
+      'SQL Execution | ' . $this->sql->errorCode() . ' - ' . $this->sql->errorInfo()[2]
+    );
   }
 
-  function commit(){
+  function commit()
+  {
     $this->sql->commit();
   }
 
-  function close(){
+  function close()
+  {
     $this->sql->close();
   }
 
-  function getResultArray(){
+  function getResultArray()
+  {
     return $this->result->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -47,7 +55,8 @@ class SQL {
     return $this->result->rowCount() ?? 0;
   }
 
-  function getError(){
+  function getError()
+  {
     $number = $this->sql->errorCode();
     $message = $this->sql->errorInfo()[2];
     return "$number - $message";
