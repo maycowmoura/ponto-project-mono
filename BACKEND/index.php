@@ -49,7 +49,6 @@ $router->mount('/employers', function () use ($router) {
     require_once __DIR__ . '/controllers/employers/archive-employer.php';
   });
 
-
   $router->put('/transfer/(\d+)', function ($employerId) {
     require_once __DIR__ . '/controllers/employers/transfer-employer.php';
   });
@@ -79,12 +78,33 @@ $router->mount('/places', function () use ($router) {
 
 
 
+
+$router->mount('/users', function () use ($router) {
+
+
+  $router->post('/', function () {
+    require_once __DIR__ . '/controllers/users/create-user.php';
+  });
+
+  $router->get('/hash/{hash}', function ($hash) {
+    require_once __DIR__ . '/controllers/users/hash/get-token-from-hash.php';
+  });
+
+  $router->post('/hash', function () {
+    require_once __DIR__ . '/controllers/users/hash/create-hash.php';
+  });
+});
+
+
+
+
+
 $router->mount('/closed-dates', function () use ($router) {
 
   $router->get('/', function () {
     require_once __DIR__ . '/controllers/close-dates/get-closed-date.php';
   });
-  
+
   $router->post('/', function () {
     require_once __DIR__ . '/controllers/close-dates/set-closed-date.php';
   });
