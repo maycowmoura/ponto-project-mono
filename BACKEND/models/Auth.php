@@ -19,7 +19,11 @@ class Auth {
   private $sql;
 
 
-  function __construct(){
+  function __construct($checkToken = true){
+    if(!$checkToken){
+      return;
+    }
+    
     $this->jwtKey = 'nT6(uV0:yC4(fH6"iF5>$oD1:cY0@aJ5';
 
 
@@ -64,8 +68,8 @@ class Auth {
 
 
   public function createToken($payload){
-    if(!isset($payload['client']) || !isset($payload['exp'])){
-      throw new Exception("A payload deve conter um timestamp de expiração e o nome do cliente");
+    if(!isset($payload['client']) || !isset($payload['user']) || !isset($payload['exp'])){
+      throw new Exception("A payload deve conter um timestamp de expiração, id do usuário e o nome do cliente");
     }
 
     return JWT::encode($payload, $this->jwtKey);
@@ -94,7 +98,7 @@ class Auth {
 
     $this->sql->execute(
      "SELECT place_id
-      FROM `$this->client-users-access` 
+      FROM `$this->client-users-accesses` 
       WHERE user_id = '$this->userId'"
     );
 
