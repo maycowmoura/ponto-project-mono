@@ -1,154 +1,165 @@
 <?php
 
+/*
+
+RECEIVES
+$date variable comes from ROUTER
+[{
+  "id": 1004,
+  "mark": {
+    "comment": "this is a comment",
+    "time_in": 0,
+    "time_out": 0
+  }
+}]
+*/
+
+
+
 require_once __DIR__ . '/../../models/global.php';
+require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../models/SQL.php';
 
-// INPUT EXAMPLE
-
-// $date variable comes from ROUTER
-//
-// [{
-  //   "id": 1004,
-  //   "mark": {
-    //     "by": 21321,
-    //     "last_edition": 23784927384972,
-    //     "comment": "this is a comment",
-    //     "time_in": 0,
-    //     "time_out": 0
-    //   }
-    // }]
-    
-$date = '2020-10-21';
-$input = [
-  [
-    "id" => 1004,
-    "mark" => [
-      "by" => 1040,
-      "last_edition" => 23784927384972,
-      "comment" => "this is a comment",
-      "time_in" => 420,
-      "time_out" => 1020,
-    ],
-  ], [
-    "id" => 1006,
-    "mark" => [
-      "by" => 1040,
-      "last_edition" => 23784927384972,
-      "time_in" => 420,
-      "time_out" => 1023,
-    ],
-  ]];
+use Respect\Validation\Validator as v;
 
 
 
 
-
-
-
+$auth = new Auth();
+$auth->mustBeMarker();
+$userId = $auth->userId;
+$client = $auth->client;
+$accessibleEmployers = $auth->getAccessibleEmployers();
 $weekday = date_format(date_create_from_format('Y-m-d', $date), 'w');
 $todayTime = time();
-$selectQueries = [];
-$sql = new SQL();
 
 
-foreach($input as $employer){
-  $id = $employer['id'];
-  $selectQueries[] = (
-   "SELECT
-	    e.id AS user_id,
-		  m.id AS mark_id,
-      t.time_in AS default_time_in,
-      t.time_out AS default_time_out
-    FROM
-      `rionorte_default-times` as t
-    JOIN
-      `rionorte_employers` as e
-    ON 
-      t.id = e.default_time
-    LEFT JOIN
-      `rionorte_marks` as m
-    ON 
-      m.date = '$date' AND m.employer_id = '$id'
-    WHERE 
-      e.id = '$id'"
-  );
+
+
+try {
+  v::date()->lessThan('now')->setName('data')->check($date);
+
+  foreach (POST as $item) {
+    v::key('id', v::intVal()->positive()->in($accessibleEmployers))
+      ->key('mark', v::arrayType())
+      ->keyNested('mark.time_in', v::intVal()->positive()->lessThan(1439))
+      ->keyNested('mark.time_out', v::intVal()->positive()->lessThan(1439))
+      ->check($item);
+  }
+} catch (Exception $e) {
+  error($e->getMessage());
 }
 
 
-$selectFinalQuery = implode(' UNION ALL ', $selectQueries);
 
-$sql->execute($selectFinalQuery);
-$selectResult = $sql->getResultArray();
+$employersIds = array_map(fn ($employer) => $employer['id'], POST);
+$employersIds = implode("','", $employersIds);
 
-
-
-
-$splittedDate = explode('-', $date);
-$datePattern = "%$splittedDate[1]-$splittedDate[2]"; // cria um pattern sem ano, tipo: %12-25
-
-$isHolidayQuery = (
- "SELECT id 
-  FROM `rionorte_holidays` 
-  WHERE `date` LIKE '$datePattern'"
+$sql = new SQL();
+$sql->execute(
+  "SELECT
+    e.id AS employer_id,
+    m.id AS mark_id,
+    t.time_in AS default_time_in,
+    t.time_out AS default_time_out
+  FROM `$client-employers` as e
+  JOIN `$client-default-times` as t
+  ON t.id = e.default_time
+  LEFT JOIN `$client-marks` as m
+  ON m.date = '$date' AND m.employer_id = e.id
+  WHERE e.id IN ('$employersIds')"
 );
 
-$sql->execute($isHolidayQuery);
-$isHoliday = !empty($sql->getResultArray());
+$selectResult = $sql->getResultArray();
+
+$serializedMarks = array_reduce($selectResult, function ($all, $mark) {
+  $all[$mark['employer_id']] = $mark;
+  return $all;
+}, []);
+
+
+
+$datePattern = preg_replace('/^\d{4}-/', '%', $date); // cria um pattern sem ano, tipo: %12-25
+$sql->execute(
+  "SELECT id 
+  FROM `$client-holidays` 
+  WHERE `date` LIKE '$datePattern'"
+);
+$isHoliday = empty($sql->getResultArray()) ? 0 : 1;
 
 
 
 
-
-$queries = '';
-foreach ($selectResult as $selected) {
-  $data = array_values(array_filter($input, function($i) use($selected) { 
-    return $i['id'] == $selected['user_id']; 
-  }))[0];
-
-  $mark = $data['mark'];
-  $missed = $mark['time_in'] == 'missed';
+$sql->beginTransaction();
+foreach (POST as $employer) {
+  $id         = $employer['id'];
+  $select     = $serializedMarks[$id];
+  $mark       = $employer['mark'];
+  $missed     = $mark['time_in'] == 'missed';
+  $hasComment = isset($mark['comment']);
+  $markExists = !!$select['mark_id'];
+  $mark_id    = $select['mark_id'];
 
   $data = [
-    'employer_id' => $data['id'],
-    'date' => $date,
-    'weekday' => $weekday,
-    'holiday' => $isHoliday,
     'time_in' => $mark['time_in'],
     'time_out' => $mark['time_out'],
-    'time_before' => !$missed ? $mark['time_in'] - $selected['default_time_in'] : null,
-    'time_after' => !$missed ? $selected['default_time_out'] - $mark['time_out'] : null,
-    'created_by' => $mark['by'],
+    'time_before' => !$missed ? $select['default_time_in'] - $mark['time_in'] : null,
+    'time_after' => !$missed ? $mark['time_out'] - $select['default_time_out'] : null,
+    'created_by' => $userId,
     'created_at' => $todayTime
   ];
 
-  if(isset($mark['comment'])){
+  if ($hasComment) {
     $data = array_merge($data, [
       'comment' => $mark['comment'],
-      'commented_by' => $mark['by'],
+      'commented_by' => $userId,
       'commented_at' => $todayTime
     ]);
   }
 
-  
-  if(!$selected['mark_id']){
-    $keys = implode('`, `', array_keys($data));
-    $values = implode("', '", array_values($data));
-    $queries .= "INSERT INTO `rionorte_marks` (`$keys`) VALUES ('$values'); ";
-    
-  } else {
-    $mark_id = $selected['mark_id'];
-    $mapped = [];
-    
-    unset($data['employer_id'], $data['date'], $data['created_at'], $data['weekday'], $data['holiday']);
-    foreach($data as $key => $value){
-      $mapped[] = "`$key`='$value'";
-    }
-    $values = implode(', ', $mapped);
-    $queries .= "UPDATE `rionorte_marks` SET $values WHERE `id` = '$mark_id'; ";
-  }
-}
+  if ($markExists) {
+    $sql->execute(
+      "INSERT INTO `$client-marks-history`
+      SELECT *
+      FROM `$client-marks` 
+      WHERE id = '$mark_id';"
+    );
 
-die($queries);
-$sql->execute($queries);
+    $keys = array_keys($data);
+    $values = array_values($data);
+
+    $mapped = array_map(fn ($key, $value) => "`$key` = '$value'", $keys, $values);
+    $mapped = implode(', ', $mapped);
+    $sql->execute(
+      "UPDATE `$client-marks`
+      SET $mapped
+      WHERE id = '$mark_id';"
+    );
+    //
+    //
+  } else {
+
+    // merge data to insert
+    $data = array_merge($data, [
+      'employer_id' => $id,
+      'date' => $date,
+      'weekday' => $weekday,
+      'holiday' => $isHoliday,
+    ]);
+
+    $keys = array_keys($data);
+    $keys = implode('`, `', $keys);
+    $values = array_values($data);
+    $values = implode("', '", $values);
+
+    $sql->execute(
+      "INSERT INTO `$client-marks` 
+      (`$keys`) VALUES ('$values');"
+    );
+  }
+};
+
+$sql->commit();
+
 
 die('{"ok": true}');

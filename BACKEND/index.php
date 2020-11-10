@@ -25,8 +25,9 @@ $router->mount('/marks', function () use ($router) {
   $router->get('/list/(\d+)', function ($employerId) {
     require_once __DIR__ . '/controllers/marks/get-employer-period-marks.php';
   });
-
+  
   $router->post("/($dateRegex)", function ($date) {
+    require_once __DIR__ . '/controllers/marks/set-marks.php';
   });
 });
 
