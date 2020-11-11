@@ -19,6 +19,21 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
     setAnimationClass('enter-left');
   }
 
+  function saveMarks(){
+    // se não tiver time_in (igual a null), 
+    // significa que está usando o valor padrão (default_time_in)
+    if (!current.time_in) {
+      current.time_in = current.default_time_in;
+      current.time_out = current.default_time_out;
+      current.edited = true;
+    }
+
+    setDayMarks(prev => {
+      prev[index] = current;
+      return prev;
+    });
+  }
+
   function handleNext() {
     const { time_in, time_out } = current;
     if (parseInt(time_in) >= parseInt(time_out)) {
@@ -26,10 +41,7 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
       return;
     }
 
-    setDayMarks(prev => {
-      prev[index] = current;
-      return prev;
-    });
+    saveMarks();
 
     setCurrent(dayMarks[index + 1]);
     setIndex(index + 1);
@@ -38,6 +50,7 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
 
 
   function handleSend() {
+    saveMarks();
     setUploadingMarks(true);
   }
 

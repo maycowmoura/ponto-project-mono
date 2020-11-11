@@ -6,11 +6,9 @@ RECEIVES
 $date variable comes from ROUTER
 [{
   "id": 1004,
-  "mark": {
-    "comment": "this is a comment",
-    "time_in": 0,
-    "time_out": 0
-  }
+  "comment": "this is a comment",
+  "time_in": 0,
+  "time_out": 0
 }]
 */
 
@@ -41,10 +39,10 @@ try {
 
   foreach (POST as $item) {
     v::key('id', v::intVal()->positive()->in($accessibleEmployers))
-      ->key('mark', v::arrayType())
-      ->keyNested('mark.time_in', v::intVal()->positive()->lessThan(1439))
-      ->keyNested('mark.time_out', v::intVal()->positive()->lessThan(1439))
+      ->key('time_in', v::oneOf(v::equals('missed'), v::intVal()->positive()->lessThan(1439)))
+      ->key('time_out', v::oneOf(v::equals('missed'), v::intVal()->positive()->lessThan(1439)))
       ->check($item);
+    v::optional(v::stringType()->length(null, 200))->check($item['comment'] ?? null);
   }
 } catch (Exception $e) {
   error($e->getMessage());
@@ -92,26 +90,37 @@ $isHoliday = empty($sql->getResultArray()) ? 0 : 1;
 
 $sql->beginTransaction();
 foreach (POST as $employer) {
-  $id         = $employer['id'];
-  $select     = $serializedMarks[$id];
-  $mark       = $employer['mark'];
-  $missed     = $mark['time_in'] == 'missed';
-  $hasComment = isset($mark['comment']);
-  $markExists = !!$select['mark_id'];
-  $mark_id    = $select['mark_id'];
+  [
+    'id' => $id,
+    'time_in' => $time_in,
+    'time_out' => $time_out
+  ] = $employer;
+
+  [
+    'mark_id' => $mark_id,
+    'default_time_in' => $default_time_in,
+    'default_time_out' => $default_time_out
+  ] = $serializedMarks[$id];
+
+  $missed     = $time_in == 'missed';
+  $hasComment = isset($employer['comment']);
+  $markExists = !!$mark_id;
 
   $data = [
-    'time_in' => $mark['time_in'],
-    'time_out' => $mark['time_out'],
-    'time_before' => !$missed ? $select['default_time_in'] - $mark['time_in'] : null,
-    'time_after' => !$missed ? $mark['time_out'] - $select['default_time_out'] : null,
+    'time_in' => $time_in,
+    'time_out' => $time_out,
     'created_by' => $userId,
     'created_at' => $todayTime
   ];
 
+  if(!$missed){
+    $data['time_before'] = $default_time_in - $time_in;
+    $data['time_after'] = $time_out - $default_time_out;
+  }
+
   if ($hasComment) {
     $data = array_merge($data, [
-      'comment' => $mark['comment'],
+      'comment' => trim($employer['comment']),
       'commented_by' => $userId,
       'commented_at' => $todayTime
     ]);

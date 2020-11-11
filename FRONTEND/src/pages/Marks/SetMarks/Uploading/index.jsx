@@ -2,29 +2,27 @@ import React, { useEffect, useState } from 'react';
 import './style.scss';
 import { useMainContext } from '../../../../contexts/MainContext';
 import { useSetMarks } from '../../../../contexts/MarksContext';
-import { useHistory } from 'react-router-dom';
 import { DateToString } from '../../../../utils/TimeFormaters';
 import LoadingInner from '../../../../components/LoadingInner';
+import ToastMsg from '../../../../components/ToastMsg';
 
 
 
 export default function Uploading() {
   const { api } = useMainContext();
   const { date, dayMarks, setDayMarks, setCurrent, setIndex, setUploadingMarks } = useSetMarks();
-  const [loadingText, setLoadingText] = useState(<>Enviando suas marcações.<br />Aguarde...</>);
-  const history = useHistory();
+  const [loading, setLoading] = useState(<>Enviando suas marcações.<br />Aguarde...</>);
+  const [errorMsg, setErrorMsg] = useState(null);
   const stringDate = DateToString(date);
-
 
 
   useEffect(() => {
     const marksToUpload = dayMarks
       .filter(item => item.edited)
-      .map(({ id, mark }) => ({ id, mark }));
-
+      .map(({ id, time_in, time_out, comment }) => ({ id, time_in, time_out, comment }));
 
     if (!marksToUpload.length) {
-      setLoadingText(<>Nenhuma marcação foi alterada.<br />Retornando...</>)
+      setLoading(<>Nenhuma marcação foi alterada.<br />Retornando...</>)
       setIndex(0);
       setCurrent(dayMarks[0]);
       setTimeout(() => setUploadingMarks(false), 2000);
@@ -32,18 +30,26 @@ export default function Uploading() {
     }
 
 
-    api.put(`/marks/set/${stringDate}`, marksToUpload).then(({ data }) => {
+    api.post(`/marks/${stringDate}`, marksToUpload).then(({ data }) => {
       if (data.error) {
-        alert('deu erro');
-        return;
+        return setErrorMsg(data.error); 
       }
 
-      setDayMarks(data);
-      setCurrent(data[0]);
-      setUploadingMarks(false);
+      setDayMarks(dayMarks.map(mark => ({...mark, edited: false})))
+      setCurrent(dayMarks[0]);
+      setIndex(0);
+      setLoading(<><h3>FEITO!</h3> Voltando ao início</>);
+      setTimeout(setUploadingMarks, 3000);
     })
+      .catch(setErrorMsg)
   }, [])
+  
 
 
-  return <LoadingInner text={loadingText} />
+  return (
+    <>
+      <LoadingInner text={loading} />
+      {errorMsg && <ToastMsg text={errorMsg} close={setUploadingMarks} />}
+    </>
+  )
 }
