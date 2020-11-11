@@ -30,3 +30,15 @@ export function DateToArray(date) {
 export function DateToString(date) {
   return DateToArray(date).join('-');
 }
+
+
+export function firstDayOfMonth() {
+  const time = new Date().setDate(1);
+  return new Date(time);
+}
+
+export function lastDayOfMonth() {
+  const date = new Date();
+  const nextMonth = date.getMonth() + 1;
+  return new Date(date.getFullYear(), nextMonth, 0);
+}

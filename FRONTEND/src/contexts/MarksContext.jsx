@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
+import { firstDayOfMonth, lastDayOfMonth } from '../utils/TimeFormaters';
+
+
 
 const MarksContext = React.createContext({});
-
 
 
 export function MarksContextProvider({ children }) {
@@ -20,22 +22,10 @@ export function MarksContextProvider({ children }) {
   const [periodTo, setPeriodTo] = useState(lastDayOfMonth());
 
 
-  function firstDayOfMonth() {
-    const time = new Date().setDate(1);
-    return new Date(time);
-  }
-
-  function lastDayOfMonth() {
-    const date = new Date();
-    const nextMonth = date.getMonth() + 1;
-    return new Date(date.getFullYear(), nextMonth, 0);
-  }
-
-
   return (
     <MarksContext.Provider value={{
       setMarks: {
-        dayMarks, 
+        dayMarks,
         setDayMarks,
         index,
         setIndex,
@@ -47,7 +37,7 @@ export function MarksContextProvider({ children }) {
         setActiveInput,
         comment,
         setComment,
-        uploadingMarks, 
+        uploadingMarks,
         setUploadingMarks
       },
       listMarks: {
@@ -66,12 +56,12 @@ export function MarksContextProvider({ children }) {
 
 
 
-export function useSetMarks(){
+export function useSetMarks() {
   const { setMarks } = useContext(MarksContext)
   return setMarks;
 };
 
-export function useListMarks(){
+export function useListMarks() {
   const { listMarks } = useContext(MarksContext)
   return listMarks;
 };
