@@ -6,20 +6,17 @@
  
  RETURNS
  the employers marks and comments of especific day
- {
-  "2020-10-22": {
-    "time_in": "420",
-    "time_out": "1020",
-    "time_before": "-40",
-    "time_after": "100",
-    "holiday": "1",
-    "weekday": "3",
-    "comment": "this is a comment",
-    "commented_by": "MAYCON",
-    "commented_at": "1603933196",
-    "created_by": "MARCADOR"
-  }
-}
+ [{
+    "id": "1028",
+    "name": "ANDERSON JOSÉ SOARES DE OLIVEIRA",
+    "job": "ADMINISTRATIVO",
+    "place_id": 1234,
+    "default_time_in": "570",
+    "default_time_out": "950",
+    "time_in": null,
+    "time_out": null,
+    "comment": null
+  }]
 */
 
 
@@ -45,6 +42,7 @@ $sqlFilters = $filtersList ? "AND e.place IN ($filtersList)" : '';
 
 try {
   v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
+
 } catch (Exception $e) {
   die(_json_encode([
     'error' => $e->getMessage()
