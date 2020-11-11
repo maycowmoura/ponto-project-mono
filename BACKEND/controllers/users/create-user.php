@@ -17,7 +17,7 @@
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../models/SQL.php';
-require_once __DIR__ . '/_generate-hash.php';
+require_once __DIR__ . '/hash/_generate-hash.php';
 
 use Respect\Validation\Validator as v;
 
