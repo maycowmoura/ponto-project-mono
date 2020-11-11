@@ -2,9 +2,9 @@ import React from 'react';
 import './style.scss';
 import { useSetMarks } from '../../../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
-import { ImEnter, ImExit } from 'react-icons/im'
+import { ImEnter, ImExit, ImHistory } from 'react-icons/im'
 
-export default function Input({ type, value, invalid = false }) {
+export default function Input({ type, value, editingPreviousValue = false, invalid = false }) {
   const history = useHistory();
   const { setActiveInput } = useSetMarks();
   const invalidClass = invalid ? 'invalid' : '';
@@ -21,6 +21,7 @@ export default function Input({ type, value, invalid = false }) {
         : <label>SAÍDA <ImExit /></label>
       }
       <div className="input">
+        {editingPreviousValue && <ImHistory />}
         {value}
       </div>
 

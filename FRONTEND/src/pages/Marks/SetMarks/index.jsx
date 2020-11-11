@@ -112,10 +112,12 @@ export default function SetMarks() {
                 <Input
                   type="in"
                   value={format(current.time_in || current.default_time_in)}
-                />
+                  editingPreviousValue={!!current.time_in}
+                  />
                 <Input
                   type="out"
                   value={format(current.time_out || current.default_time_out)}
+                  editingPreviousValue={!!current.time_in}
                 />
               </div>
             )

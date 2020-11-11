@@ -12,6 +12,7 @@
   }
 
   .input {
+    position: relative;
     background-color: #FFF;
     font-size: 38px;
     padding: 8px 12px;
@@ -19,6 +20,14 @@
     max-width: 180px;
     margin: auto;
     user-select: none;
+
+    svg {
+      position: absolute;
+      top: 6px;
+      left: 4px;
+      font-size: 16px;
+      color: #5d5d5d;
+    }
   }
 
   &.in {
@@ -46,7 +55,7 @@
     color: #fff;
     animation: jello-horizontal 0.9s both;
   }
-  
+
   small {
     color: #de3646;
     animation: jello-horizontal 0.9s both;
