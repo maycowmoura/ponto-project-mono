@@ -21,7 +21,13 @@ export default function EmployersPage() {
   const [archiveMenu, setArchiveMenu] = useState(null);
   const history = useHistory();
 
+  function handleCreateEmployer() {
+    if (!places.length) {
+      return setErrorMsg('Vá até os locais e adicione ao menos um local antes de continuar.');
+    }
 
+    history.push('/dashboard/employers/new');
+  }
 
   function handleTransferSubmit(e) {
     const employer = transferMenu;
@@ -52,7 +58,7 @@ export default function EmployersPage() {
           return empl;
         })
 
-        setData(prev => ({...prev, employers: mappedEmployers}));
+        setData(prev => ({ ...prev, employers: mappedEmployers }));
       })
       .finally(() => setLoading(false))
   }
@@ -83,7 +89,7 @@ export default function EmployersPage() {
 
       <Header backButton>
         <div className="title">Funcionários</div>
-        <div onClick={() => history.push('/dashboard/employers/new')}>
+        <div onClick={handleCreateEmployer}>
           <FiPlusCircle />
         </div>
       </Header>

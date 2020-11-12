@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './style.scss';
 import { useMainContext } from '../../contexts/MainContext';
+import { useSetMarks } from '../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
 import Header from '../../components/Header';
+import ToastMsg from '../../components/ToastMsg';
 import FloatMenu from '../../components/FloatMenu';
 import { ImCalendar } from 'react-icons/im';
 import { MdSecurity, MdLocationOn, MdHelpOutline } from 'react-icons/md';
@@ -12,9 +14,36 @@ import { FiEdit } from 'react-icons/fi';
 
 export default function Dashboard() {
   const [showMarksMenu, setShowMarksMenu] = useState(false);
-  const { data, setPlaceFilter } = useMainContext();
+  const [errorMsg, setErrorMsg] = useState(null);
+  const { data, setPlaceFilters } = useMainContext();
+  const { setDayMarks, setIndex } = useSetMarks();
   const history = useHistory();
   const hasMultiplePlaces = data.places.length > 1;
+
+  // history.push('/login/abc');
+
+  useEffect(() => {
+    setDayMarks(null);
+    setIndex(0);
+    setPlaceFilters('');
+  }, [])
+
+
+  function handleManagePointClick(){
+    if(!data.places.length && !data.employers.length){
+      return setErrorMsg('Adicione ao menos um local e um funcionário antes de continuar.');
+    }
+
+    setShowMarksMenu(true);
+  }
+
+
+  function handleSelectFilterPlace(e) {
+    const value = Array.from(e.target.selectedOptions)
+      .map(option => option.value)
+      .join(',');
+    setPlaceFilters(value);
+  }
 
 
   return (
@@ -24,7 +53,7 @@ export default function Dashboard() {
       </Header>
 
       <main>
-        <button onClick={setShowMarksMenu}>
+        <button onClick={handleManagePointClick}>
           <ImCalendar /> Marcações de Ponto
         </button>
         <button onClick={() => history.push('/dashboard/places')}>
@@ -46,16 +75,17 @@ export default function Dashboard() {
 
 
       {showMarksMenu &&
-        <FloatMenu title="Gerenciar Marcações" className="marks-menu" closeMenu={() => setShowMarksMenu(false)}>
+        <FloatMenu title="Gerenciar marcações" className="marks-menu" closeMenu={() => setShowMarksMenu(false)}>
           {hasMultiplePlaces &&
             <div className="filter-by-place">
               <label>Filtrar por local:</label>
               <select
                 className="border"
                 multiple
-                onChange={e => setPlaceFilter(e.target.value)}
+                defaultValue=""
+                onChange={handleSelectFilterPlace}
               >
-                <option value="all" hidden selected>Todos os locais</option>
+                <option value="" hidden selected>Todos os locais</option>
                 {data.places.map(({ id, name }) =>
                   <option key={id} value={id}>{name}</option>
                 )}
@@ -73,6 +103,8 @@ export default function Dashboard() {
           </ul>
         </FloatMenu>
       }
+      
+      {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
     </div>
   );
 }
