@@ -79,8 +79,8 @@
 
         &.weekend,
         &.missed .missed,
-        &.extra_before .time_in,
-        &.extra_after .time_out {
+        &.time_before .time_in,
+        &.time_after .time_out {
           display: block;
           color: #2fff37;
         }

@@ -11,13 +11,13 @@ function DayMark({ marks, setShowComment }) {
   const sameMonth = keys[0].split('-')[1] == keys[keys.length - 1].split('-')[1]; 
 
   return Object.entries(marks).map(([date, mark], index) => {
-    const { time_in, time_out, comment, weekday, holiday, extra_before, extra_after } = mark;
+    const { weekday, holiday } = mark;
     const weekendDay = weekday == 0 || weekday == 6 || holiday;
     const [, month, day] = date.split('-');
-    const missed = (time_in === "missed") ? 'missed' : '';
-    const weekend = (time_in && weekendDay) ? 'weekend' : '';
-    const before = extra_before ? 'extra_before' : '';
-    const after = extra_after ? 'extra_after' : '';
+    const missed = (mark.time_in === "missed") ? 'missed' : '';
+    const weekend = (parseInt(mark.time_in) && weekendDay) ? 'weekend' : '';
+    const before = parseInt(mark.time_before) ? 'time_before' : '';
+    const after = parseInt(mark.time_after) ? 'time_after' : '';
 
 
     return (
@@ -25,7 +25,7 @@ function DayMark({ marks, setShowComment }) {
         key={date}
         className={weekendDay ? 'weekend-day' : ''}
         style={{ marginLeft: index == 0 ? `${weekday * 14.285}%` : null }}
-        onClick={() => comment && setShowComment(comment)}
+        onClick={() => mark.comment && setShowComment(mark.comment)}
       >
         <div className={`date ${sameMonth ? 'hide-month' : ''}`}>
           <strong>
@@ -38,14 +38,14 @@ function DayMark({ marks, setShowComment }) {
         <div className={`time ${missed} ${weekend} ${before} ${after}`}>
           <span className="missed">FALTA</span>
           <span className="time_in">
-            {time_in ? format(time_in) : '---'}
+            {mark.time_in ? format(mark.time_in) : '---'}
           </span>
           <span className="time_out">
-            {time_out ? format(time_out) : '---'}
+            {mark.time_out ? format(mark.time_out) : '---'}
           </span>
         </div>
 
-        {comment && <span><Comment /></span>}
+        {mark.comment && <span><Comment /></span>}
       </section>
     )
   });
