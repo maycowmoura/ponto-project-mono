@@ -15,54 +15,47 @@ function Calculations({ marks }) {
     sundays: 0
   };
 
-  const result = Object.values(marks).reduce((total, item) => {
-    const balance = item.time_in ? (item.time_out - item.time_in - item.lunch_time) : 0;
+  function sum(key, condition, value){
+    reducer[key] += condition ? parseInt(value) : 0;
+  }
 
-    total.misses +=
-      item.time_in == 'missed' ? 1 : 0;
+  Object.values(marks).forEach(item => {
+    if(!item.time_in){
+      return;
+    }
 
-    total.extraHours +=
-      item.extra_before > 0 ? item.extra_before : 0;
-
-    total.extraHours +=
-      item.extra_after > 0 ? item.extra_after : 0;
-
-    total.late +=
-      item.extra_before < 0 ? item.extra_before : 0;
-
-    total.earlyExit +=
-      item.extra_after < 0 ? item.extra_after : 0;
-
-    total.saturdays +=
-      (item.weekday == 6 && item.time_in) ? balance : 0;
-
-    total.sundays +=
-      ((item.weekday == 0 || item.holiday) && item.time_in) ? balance : 0;
-
-    return total;
-  }, reducer);
-
+    const lunch_time = 60;
+    
+    const balance = parseInt(item.time_out) - parseInt(item.time_in) - lunch_time;
+    sum('misses', item.time_in === 'missed', 1);
+    sum('extraHours', item.time_before > 0, item.time_before);
+    sum('extraHours', item.time_after > 0, item.time_after);
+    sum('late', item.time_before < 0, item.time_before);
+    sum('earlyExit', item.time_after < 0, item.time_after);
+    sum('saturdays', (item.weekday == 6 && item.time_in), balance);
+    sum('sundays', (item.weekday == 0 || !!parseInt(item.holiday)), balance);
+  });
 
 
   return (
     <div className="calculations">
       <div className="red">
-        Faltas: <span>{result.misses} dia(s)</span>
+        Faltas: <span>{reducer.misses} dia(s)</span>
       </div>
       <div className="green">
-        Horas Extras: <span>{format(result.extraHours)}</span>
+        Horas Extras: <span>{format(reducer.extraHours)}</span>
       </div>
       <div className="red">
-        Atraso: <span>{format(Math.abs(result.late))}</span>
+        Atraso: <span>{format(Math.abs(reducer.late))}</span>
       </div>
       <div className="green">
-        Sábados: <span>{format(result.saturdays)}</span>
+        Sábados: <span>{format(reducer.saturdays)}</span>
       </div>
       <div className="red">
-        Saída Cedo: <span>{format(Math.abs(result.earlyExit))}</span>
+        Saída Cedo: <span>{format(Math.abs(reducer.earlyExit))}</span>
       </div>
       <div className="green">
-        Dom. e Fer.: <span>{format(result.sundays)}</span>
+        Dom. e Fer.: <span>{format(reducer.sundays)}</span>
       </div>
     </div>
   )
