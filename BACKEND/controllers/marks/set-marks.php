@@ -77,11 +77,11 @@ $serializedMarks = array_reduce($selectResult, function ($all, $mark) {
 
 
 
-$datePattern = preg_replace('/^\d{4}-/', '%', $date); // cria um pattern sem ano, tipo: %12-25
+$dateWithoutYear = preg_replace('/^\d{4}-/', '', $date); // cria um pattern sem ano, tipo: %12-25
 $sql->execute(
   "SELECT id 
   FROM `$client-holidays` 
-  WHERE `date` LIKE '$datePattern'"
+  WHERE `date` = '$date'  OR `date` = '$dateWithoutYear'"
 );
 $isHoliday = empty($sql->getResultArray()) ? 0 : 1;
 
@@ -112,6 +112,11 @@ foreach (POST as $employer) {
     'created_by' => $userId,
     'created_at' => $todayTime
   ];
+
+
+  if ($missed && $isHoliday && !$hasComment) {
+    return; // se marcou falta no feriado e não tem comentário, pula esse cara
+  }
 
   if(!$missed){
     $data['time_before'] = $default_time_in - $time_in;
