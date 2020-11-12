@@ -5,6 +5,7 @@ import FloatMenu from '../../../../components/FloatMenu';
 import SelectDate from '../../../../components/SelectDate';
 import Checkbox from '../../../../components/Checkbox';
 import ToastMsg from '../../../../components/ToastMsg';
+import { DateToArray } from '../../../../utils/TimeFormaters';
 
 
 
@@ -22,7 +23,6 @@ export function PeriodMenu({ setShowPeriodMenu }) {
       return setErrorMsg('A data de início deve ser menor que a data de término.');
     }
 
-    console.log((toTime - fromTime), (62 * 24 * 60 * 60 * 1000))
     const tooLong = (toTime - fromTime) > (62 * 24 * 60 * 60 * 1000);
     if(tooLong){
       return setErrorMsg('Ops... Escolha um período de até 62 dias.');
@@ -70,12 +70,16 @@ export function SettingsMenu({ setShowSettingsMenu }) {
 
 
 
-export function CommentMenu({ showComment, setShowComment }) {
+export function CommentMenu({ showComment: mark, setShowComment }) {
+  const timestampInMs = mark.commented_at * 1000;
+  const date = DateToArray(new Date(timestampInMs));
+  const commented_at = date.reverse().join('/');
+
   return (
     <FloatMenu title="Comentário" className="comments-menu" closeMenu={setShowComment}>
       <div>
-        <p>"{showComment}"</p>
-        <small>Comentado por Plinio sobre XXX no dia XX/XX/XXXX</small>
+        <p>"{mark.comment}"</p>
+        <small>Comentado por {mark.commented_by} no dia {commented_at}.</small>
       </div>
     </FloatMenu>
   )

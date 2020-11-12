@@ -25,7 +25,7 @@ function DayMark({ marks, setShowComment }) {
         key={date}
         className={weekendDay ? 'weekend-day' : ''}
         style={{ marginLeft: index == 0 ? `${weekday * 14.285}%` : null }}
-        onClick={() => mark.comment && setShowComment(mark.comment)}
+        onClick={() => mark.comment && setShowComment(mark)}
       >
         <div className={`date ${sameMonth ? 'hide-month' : ''}`}>
           <strong>
