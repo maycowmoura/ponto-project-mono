@@ -35,25 +35,43 @@ $client = $auth->client;
 
 $from = $_GET['from'] ?? null;
 $to = $_GET['to'] ?? null;
+$fromWithoutYear = preg_replace('/^\d{4}-/', '', $from);
+$toWithoutYear = preg_replace('/^\d{4}-/', '', $to);
+$today = date('Y-m-d');
 
 
 try {
-  v::stringType()->date()->lessThan('now')->setName('From')->check($from);
-  v::stringType()->date()->greaterThan($from)->lessThan('now')->setName('`To`')->check($to);
+  v::stringType()->date()->lessThan($to)->setName('From')->check($from);
+  v::stringType()->date()->greaterThan($from)->setName('`To`')->check($to);
 
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
 if(!in_array($employerId, $accessibleEmployers)){
-  die('{"error": "Você não tem acesso a esse funcionário."}');
+  error('Você não tem acesso a esse funcionário.');
+}
+
+if((strtotime($to) - strtotime($from)) > (62 * 24 * 60 * 60)){
+  error('Ops... Escolha um período menor que 62 dias.');
+}
+
+if($to > $today){
+  $to = $today;
 }
 
 
-
 $sql = new SQL();
+$sql->execute(
+  "SELECT date 
+  FROM `$client-holidays`
+  WHERE `date` BETWEEN '$from' AND '$to'
+  OR `date` BETWEEN '$fromWithoutYear' AND '$toWithoutYear';"
+);
+
+$holidays = array_map(fn($item) => $item['date'], $sql->getResultArray());
+
+
 $sql->execute(
  "SELECT
     `date`,
@@ -91,7 +109,20 @@ foreach($marks as $mark){
 $currentDate = $from;
 $resultMarks = [];
 while($currentDate <= $to){
-  $resultMarks[$currentDate] = $serializedMarks[$currentDate] ?? null;
+  
+  if(isset($serializedMarks[$currentDate])){
+    $resultMarks[$currentDate] = $serializedMarks[$currentDate];
+
+  } else {
+    $currentDateWithoutYear = preg_replace('/^\d{4}-/', '', $currentDate);
+    $isHoliday = in_array($currentDate, $holidays) || in_array($currentDateWithoutYear, $holidays);
+    $weekday = date('w', strtotime($currentDate));
+    $resultMarks[$currentDate] = [
+      'weekday' => $weekday,
+      'holiday' => $isHoliday
+    ];
+  }
+
   $currentDate = date('Y-m-d', strtotime($currentDate . ' + 1 days'));
 }
 
