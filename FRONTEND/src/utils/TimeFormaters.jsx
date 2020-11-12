@@ -14,7 +14,7 @@ export function MinutesToFormatedTime(minutes){
 
 
 
-export const addZero = num => num <= 9 ? '0' + num : num;
+export const addZero = num => num <= 9 ? '0' + num : String(num);
 
 
 
