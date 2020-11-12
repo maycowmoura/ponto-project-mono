@@ -14,7 +14,7 @@ import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 export default function ListMarks() {
   const { api, placeFilters, data: { user_type } } = useMainContext();
-  const { employers, setEmployers, periodFrom, periodTo } = useListMarks();
+  const { employers, setEmployers } = useListMarks();
 
   const [employersMirror, setEmployersMirror] = useState(employers);
   const [loading, setLoading] = useState(false);
