@@ -1,68 +1,27 @@
+@import '../../utils/variables.scss';
+
 #login {
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  min-height: 100vh;
-  justify-content: center;
-  align-items: center;
+  @extend %page-with-header;
+  padding-top: 0;
   text-align: center;
-  padding: 14px;
 
-  .page:not(.active) {
-    display: none;
-  }
-
-  p {
-    font-weight: 300;
-    margin-bottom: 32px;
-    color: #b4b4b4;
-  }
-
-  input {
-    font-size: 18px;
-    padding: 12px;
-    border-radius: 4px;
+  main {
     width: 100%;
-    border: none;
-  }
-  
-  button {
-    margin-top: 16px;
-    padding: 8px 12px;
-    float: left;
-    background-color: #fe6847;
-    color: #FFF;
-    border: none;
-    
-    svg {
-      display: none;
+    margin: auto;
+
+    h1 {
+      margin-bottom: 26px;
     }
 
-    &:disabled {
-      opacity: .7;
+    p {
+      font-size: 16px;
+    }
 
+    &.error,
+    &.not-authenticated {
       svg {
-        display: initial;
-        margin-left: 12px;
-        animation: spin 1s linear;
-        animation-iteration-count: infinite;
+        font-size: 56px;
       }
     }
-  }
-
-  .no-code {
-    display: block;
-    margin-top: 48px;
-    color: #55cfff;
-  }
-}
-
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform:  rotate(360deg);
   }
 }

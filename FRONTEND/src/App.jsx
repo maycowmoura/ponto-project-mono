@@ -21,14 +21,17 @@ export default function App() {
   const homepage = '/novoponto';
   const { data } = useMainContext();
 
-  data || window.history.pushState(null, null, homepage);
+  if (!data && !window.location.pathname.includes('/login')) {
+    window.history.pushState(null, null, homepage);
+  }
 
   return (
     <MainContextProvider>
       <BrowserRouter basename={homepage}>
         <Switch>
           <Route path="/" exact component={Loading} />
-          <Route path="/login" component={Login} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/login/:temp_hash" component={Login} />
           <Route path="/help" component={Help} />
 
           <MarksContextProvider>

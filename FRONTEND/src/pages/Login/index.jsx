@@ -1,69 +1,85 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
-import { AiOutlineLoading3Quarters as LoadingIcon } from 'react-icons/ai';
+import React, { useState, useEffect } from 'react';
 import './style.scss';
-
+import { useMainContext } from '../../contexts/MainContext';
+import { useParams, useHistory } from 'react-router-dom';
+import LoadingInner from '../../components/LoadingInner';
+import ToastMsg from '../../components/ToastMsg';
+import { ImWondering } from 'react-icons/im';
+import { FaRegMeh } from 'react-icons/fa';
 
 export default function Login() {
-  const emailInput = useRef();
-  const code = useRef();
+  const { api } = useMainContext();
+  const { temp_hash } = useParams();
+  const history = useHistory();
+  const [currentScreen, setCurrentScreen] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const [redirectTo, setRedirectTo] = useState(null);
-  const [validatationPage, setValidationPage] = useState(false);
-  const [disableInputs, setDisableinputs] = useState(false);
+
 
   useEffect(() => {
-    localStorage.token && setRedirectTo('/login');
+    if(!temp_hash){
+      setCurrentScreen('notAuthenticated');
+      return;
+    }
+
+    api.get(`/users/hash/${temp_hash}`)
+      .then(({ data }) => {
+        if (data.error) return handleError(data.error);
+
+        api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+        localStorage.token = data.token;
+        history.push('/');
+      })
+      .catch(handleError)
   }, [])
 
-  function sendEmail() {
-    setDisableinputs(true);
-    return setValidationPage(true);
-    const email = emailInput.current.value;
 
+
+  function handleError(msg){
+    setErrorMsg(msg);
+    setCurrentScreen('error');
   }
 
-  function sendCode() {
-    // alert('Code sent');
-    setValidationPage(false);
+
+
+
+
+  const screens = {
+    notAuthenticated: (
+      <main className="not-authenticated">
+        <ImWondering />
+        <h1>Você não está logado...</h1>
+        <p>Solicite um acesso administrador do seu sistema.</p>
+      </main>
+    ),
+
+    stillLoading: (
+      <main>
+        <h1>Bem vindo</h1>
+        <p>Estamos carregando seu acesso...</p>
+        <div>
+          <LoadingInner />
+        </div>
+      </main>
+    ),
+
+    error: (
+      <main className="error">
+        <ImWondering />
+        <h1>Ops...</h1>
+        <p>Parece que ocorreu um erro!</p>
+      </main>
+    )
   }
 
-  function noCode(e) {
-    e.preventDefault();
-    alert('No code');
-  }
+
 
 
   return (
     <div id="login">
-      {redirectTo && <Redirect to={redirectTo} />}
+      {screens[currentScreen ?? 'stillLoading']}
 
-      <div className={'page ' + (validatationPage || 'active')}>
-        <h1>Insira seu email de acesso</h1>
-        <p>Seu email foi préviamente cadastrado pelo administrador.</p>
-
-        <fieldset disabled={disableInputs}>
-          <input ref={emailInput} type="email" name="email" placeholder="Digite seu email" />
-          <button onClick={sendEmail}>
-            <span>Continuar</span>
-            <LoadingIcon />
-          </button>
-        </fieldset>
-      </div>
-
-      <div className={'page ' + (validatationPage && 'active')}>
-        <h1>Verifique seu email</h1>
-        <p>Enviamos um código de confirmação para seu email, digite-o abaixo.</p>
-
-        <fieldset disabled={disableInputs}>
-          <input ref={code} type="tel" name="code" placeholder="Código de confirmação" />
-          <button onClick={sendCode}>
-            <span>Acessar</span>
-            <LoadingIcon />
-          </button>
-        </fieldset>
-        <a href="#" className="no-code" onClick={noCode}>Não recebi o código.</a>
-      </div>
+      {errorMsg && <ToastMsg text={errorMsg} />}
     </div>
   );
 }
