@@ -16,6 +16,16 @@
     z-index: 999;
   }
 
+  &.error {
+    * {
+      color: #ff7171;
+    }
+
+    svg {
+      animation: none;
+    }
+  }
+
   svg {
     font-size: 28px;
     animation: loading-rotate .7s linear infinite;
