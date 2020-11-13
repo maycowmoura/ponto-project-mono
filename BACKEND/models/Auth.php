@@ -20,16 +20,15 @@ class Auth {
 
 
   function __construct($checkToken = true){
+    $this->jwtKey = 'nT6(uV0:yC4(fH6"iF5>$oD1:cY0@aJ5';
+
     if(!$checkToken){
       return;
     }
     
-    $this->jwtKey = 'nT6(uV0:yC4(fH6"iF5>$oD1:cY0@aJ5';
-
-
     $headers = apache_request_headers();
     $authorization = $headers['Authorization'] ?? null;
-    if(empty($authorization)) die('{"error": "Header de autenticação não encontrado."}');
+    if(empty($authorization)) error("Header de autenticação não encontrado.");
     $token = preg_replace('/^bearer /i', '', $authorization);
 
     try{
@@ -41,9 +40,9 @@ class Auth {
 
     } catch(Exception $e){
       if($e->getMessage() == 'Expired token'){
-        die('{"error": "Chave de acesso expirada."}');
+        error("Chave de acesso expirada.");
       }
-      die('{"error": "Chave de acesso inválida."}');
+      error("Chave de acesso inválida.");
     }
 
     $this->sql = new SQL();
@@ -55,7 +54,7 @@ class Auth {
 
     $user = $this->sql->getResultArray();
 
-    if(count($user) < 1) die('{"error": "Usuário não localizado."}');
+    if(count($user) < 1) error("Usuário não localizado.");
 
     $user = $user[0];
     $this->user = $user;
@@ -78,14 +77,14 @@ class Auth {
 
   public function mustBeAdmin(){
     if(!$this->isAdmin){
-      die('{"error": "Acesso negado. Você precisa ser administrador para executar esta ação."}');
+      error("Acesso negado. Você precisa ser administrador para executar esta ação.");
     }
   }
 
 
   public function mustBeMarker(){
     if(!$this->isMarker && !$this->isAdmin){
-      die('{"error": "Acesso negado. Você precisa ser marcador ou administrador para executar esta ação."}');
+      error("Acesso negado. Você precisa ser marcador ou administrador para executar esta ação.");
     }
   }
 
@@ -104,7 +103,7 @@ class Auth {
 
     $places = $this->sql->getResultArray();
 
-    if(count($places) < 1) die('{"error": "O usuário não possui acesso a nenhum local de trabalho."}');
+    if(count($places) < 1) error("O usuário não possui acesso a nenhum local de trabalho.");
 
     $result = array_map(fn($place) => $place['place_id'], $places);
     $this->accessiblePlaces = $result;
@@ -129,7 +128,7 @@ class Auth {
     $employers = (array) $this->sql->getResultArray();
 
     if (count($employers) < 1) {
-      die('{"error": "Não existem funcionários nos locais de trabalho que você tem acesso."}');
+      error("Não existem funcionários nos locais de trabalho que você tem acesso.");
     }
 
     $result = array_map(fn($employer) => $employer['id'], $employers);
