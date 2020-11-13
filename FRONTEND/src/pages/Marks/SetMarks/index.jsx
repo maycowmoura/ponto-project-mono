@@ -28,7 +28,11 @@ export default function SetMarks() {
 
 
   useEffect(() => {
-    if (dayMarks) return;
+    if (dayMarks && sessionStorage.setMarksFilters === placeFilters){
+      return;
+    }
+    
+    sessionStorage.setMarksFilters = placeFilters;
 
     api.get(`/marks/${DateToString(date)}`, {
       params: { 'place-filters': placeFilters }

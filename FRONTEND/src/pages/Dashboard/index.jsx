@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './style.scss';
 import { useMainContext } from '../../contexts/MainContext';
 import { useSetMarks } from '../../contexts/MarksContext';
@@ -16,21 +16,18 @@ export default function Dashboard() {
   const [showMarksMenu, setShowMarksMenu] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const { data, setPlaceFilters } = useMainContext();
-  const { setDayMarks, setIndex } = useSetMarks();
+  const { setIndex } = useSetMarks();
   const history = useHistory();
   const hasMultiplePlaces = data.places.length > 1;
 
-  // history.push('/login/abc');
-
   useEffect(() => {
-    setDayMarks(null);
-    setIndex(0);
+    setIndex(0)
     setPlaceFilters('');
   }, [])
 
 
-  function handleManagePointClick(){
-    if(!data.places.length && !data.employers.length){
+  function handleManagePointClick() {
+    if (!data.places.length && !data.employers.length) {
       return setErrorMsg('Adicione ao menos um local e um funcionário antes de continuar.');
     }
 
@@ -42,6 +39,7 @@ export default function Dashboard() {
     const value = Array.from(e.target.selectedOptions)
       .map(option => option.value)
       .join(',');
+
     setPlaceFilters(value);
   }
 
@@ -103,7 +101,7 @@ export default function Dashboard() {
           </ul>
         </FloatMenu>
       }
-      
+
       {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
     </div>
   );

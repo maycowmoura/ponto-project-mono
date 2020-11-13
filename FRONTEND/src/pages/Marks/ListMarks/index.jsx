@@ -27,6 +27,12 @@ export default function ListMarks() {
 
 
   useEffect(() => {
+    if (employers && sessionStorage.listMarksFilters === placeFilters) {
+      return;
+    }
+
+    sessionStorage.listMarksFilters = placeFilters;
+
     setLoading(true);
     
     api.get('/employers', {
