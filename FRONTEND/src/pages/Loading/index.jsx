@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import LoadingInner from '../../components/LoadingInner';
 import { useMainContext } from '../../contexts/MainContext';
@@ -6,11 +6,13 @@ import { useMainContext } from '../../contexts/MainContext';
 export default function Loading() {
   const { api, setData } = useMainContext();
   const history = useHistory();
+  const [errorMsg, setErrorMsg] = useState(null);
+
+
 
   useEffect(() => {
     const token = localStorage.token;
-
-    // if(!token) return setRedirectTo('/login');
+    if (!token) return history.push('/login');
 
     const redirects = {
       marker: '/marks/set',
@@ -19,12 +21,15 @@ export default function Loading() {
     }
 
     api.get('/init').then(({ data }) => {
-      setData(data);
+      if (data.error) return history.push('/login');
 
-      const path = redirects[data.user_type];
-      history.push(path);
+      setData(data);
+      history.push(redirects[data.user_type]);
     })
+      .catch(() => history.push('/login'));
   }, [])
 
-  return <LoadingInner text="Inicializando..." />;
+  return (
+    <LoadingInner text={errorMsg || 'Inicializando...'} error={errorMsg} />
+  );
 }
