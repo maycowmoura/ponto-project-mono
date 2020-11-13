@@ -22,7 +22,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
   const [marks, setMarks] = useState(null);
 
 
-  
+
   useEffect(() => {
     setMarks(null);
     setExpanded(false);
@@ -30,16 +30,14 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
 
 
   function handleExpand() {
-    if (marks) {
-      return setExpanded(prev => !prev);
-    }
+    if (loading) return;
+    if (marks) return setExpanded(prev => !prev);
 
     setLoading(true);
 
     api.get(`/marks/list/${id}`, {
       params: { from: DateToString(periodFrom), to: DateToString(periodTo) }
     }).then(({ data }) => {
-      console.log(data);
       setMarks(data);
       setLoading(false);
       setExpanded(true);
