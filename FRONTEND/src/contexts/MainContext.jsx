@@ -4,11 +4,12 @@ const MainContext = React.createContext({});
 
 
 const api = axios.create({
-  headers: { 'Authorization': `Bearer ${localStorage.token}`},
-  baseURL: process.env.NODE_ENV == 'production'
+  baseURL: process.env.NODE_ENV === 'production'
     ? '/novoponto/backend'
     : 'http://192.168.0.109:3001' // ip fixo - video pra configurar > https://youtu.be/hRB1J5NxZdE
 })
+
+api.defaults.headers.common['Authorization'] = `Bearer ${localStorage.token}`;
 
 api.interceptors.response.use(response => response, function (error) {
   const defaults = {
