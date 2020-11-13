@@ -34,7 +34,7 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
       setFiltredData(originalData.filter(employer => {
         const joined = removeAccents(employer.name.toLowerCase())
           + ' ' + removeAccents(employer.job.toLowerCase())
-          + ' ' + removeAccents(employer.place.name.toLowerCase());
+          + ' ' + removeAccents(employer.place.toLowerCase());
         return (joined).includes(value);
       }))
     }
