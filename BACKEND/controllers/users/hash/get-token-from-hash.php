@@ -26,7 +26,11 @@ $sql->execute(
 $result = $sql->getResultArray();
 
 if(count($result) < 1){
-  die('{"error": "Hash de acesso não encontrada."}');
+  error(
+    "Hash inválida!
+    Cada link de acesso só pode ser acessado uma única vez.
+    Solicite outro link ao admin do sistema."
+  );
 }
 
 // deleta essa hash acessada e aproveita pra deletar outras hashes expiradas
@@ -42,7 +46,10 @@ $client = $result[0]['client'];
 $expires = $result[0]['expires'];
 
 if($expires < time()){
-  die('{"error": "Hash de acesso expirada."}');
+  error(
+    "Acesso expirada.
+    Cada link de acesso tem duração de 48hrs após ser gerado."
+  );
 }
 
 $sql->execute(
@@ -52,7 +59,10 @@ $sql->execute(
 );
 
 if (count($sql->getResultArray()) < 1) {
-  die('{"error": "Usuário não localizado."}');
+  error(
+    "Seu usuário não localizado.
+    Solicite a um admin para verificar."
+  );
 }
 
 $auth = new Auth(false);
