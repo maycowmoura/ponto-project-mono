@@ -3,6 +3,7 @@ import './style.scss';
 import { FiAlertTriangle, FiHelpCircle } from 'react-icons/fi';
 
 export default function ToastMsg({ text, info, close, aboveAll}) {
+  const lineBreakedText = text.split(/\n/g).map(text => <>{text} <br /></>);
 
   return (
     <div
@@ -11,7 +12,7 @@ export default function ToastMsg({ text, info, close, aboveAll}) {
       onClick={() => close && close()}
     >
       {info ? <FiHelpCircle /> : <FiAlertTriangle />}
-      <div>{text}</div>
+      <div>{lineBreakedText}</div>
     </div>
   );
 }
