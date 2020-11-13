@@ -25,7 +25,7 @@ use Respect\Validation\Validator as v;
 
 
 $auth = new Auth();
-$auth->mustBeAdmin();
+$auth->mustBeMarker();
 $client = $auth->client;
 $accessiblePlaces = $auth->getAccessiblePlaces();
 $accessiblePlaces = implode(',', $accessiblePlaces);
@@ -38,9 +38,7 @@ $sqlFilters = $filtersList ? "AND e.place IN ($filtersList)" : '';
 try {
   v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
 
