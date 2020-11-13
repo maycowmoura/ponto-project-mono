@@ -5,7 +5,7 @@ import FloatMenu from '../../../../components/FloatMenu';
 import SelectDate from '../../../../components/SelectDate';
 import Checkbox from '../../../../components/Checkbox';
 import ToastMsg from '../../../../components/ToastMsg';
-import { DateToArray } from '../../../../utils/TimeFormaters';
+import { DateToReadable } from '../../../../utils/TimeFormaters';
 
 
 
@@ -72,14 +72,13 @@ export function SettingsMenu({ setShowSettingsMenu }) {
 
 export function CommentMenu({ showComment: mark, setShowComment }) {
   const timestampInMs = mark.commented_at * 1000;
-  const date = DateToArray(new Date(timestampInMs));
-  const commented_at = date.reverse().join('/');
+  const commented_at = DateToReadable(new Date(timestampInMs));
 
   return (
     <FloatMenu title="Comentário" className="comments-menu" closeMenu={setShowComment}>
       <div>
         <p>"{mark.comment}"</p>
-        <small>Comentado por {mark.commented_by} no dia {commented_at}.</small>
+        <small>Comentado por {mark.commented_by} {commented_at}.</small>
       </div>
     </FloatMenu>
   )
