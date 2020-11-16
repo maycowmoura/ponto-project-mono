@@ -46,6 +46,7 @@ try {
 $name = mb_strtoupper(POST['name']);
 $type = POST['type'];
 $places = POST['places'];
+$refresh = randomString(10);
 
 
 
@@ -53,9 +54,9 @@ $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
   "INSERT INTO `$client-users`
-  (name, user_type, created_by, created_at)
+  (name, user_type, created_by, created_at, refresh_token)
   VALUES
-  ('$name', '$type', '$userId', '$time')"
+  ('$name', '$type', '$userId', '$time', '$refresh')"
 );
 $sql->execute(
   "SELECT LAST_INSERT_ID() AS id FROM `$client-users`"

@@ -31,44 +31,43 @@ class Auth {
     if(empty($authorization)) error("Header de autenticação não encontrado.");
     $token = preg_replace('/^bearer /i', '', $authorization);
 
+    [, $payload] = explode('.', $token);
+    $payload = json_decode(base64_decode($payload), true);
+    $refreshToken = $payload['refresh'];
+    $this->client = $payload['client'];
+    $this->userId = $payload['user'];
+    $this->userType = $payload['typ'];
+    $this->sql = new SQL();
+
     try{
-      $data = JWT::decode($token, $this->jwtKey, ['HS256']);
-
-      $this->client = $data->client;
-      $this->userId = $data->user;
-      $this->tokenExpiration = $data->exp;
-
+      JWT::decode($token, $this->jwtKey, ['HS256']);
+      
     } catch(Exception $e){
       if($e->getMessage() == 'Expired token'){
-        error("Chave de acesso expirada.");
+        $this->sql->execute(
+          "SELECT id 
+          FROM `$this->client-users` 
+          WHERE id = '$this->userId' AND refresh_token = '$refreshToken'"
+        );
+
+        if(count($this->sql->getResultArray()) > 0){
+          $payload['exp'] = time() + (60 * 60); // adds 1hr
+          $newToken = $this->createToken($payload);
+          header("refresh-token: $newToken");
+          return;
+        }
+
+        error('Chave de acesso expirada.\nSolicite um novo acesso ao administrador.');
       }
+
       error("Chave de acesso inválida.");
     }
-
-    $this->sql = new SQL();
-    $this->sql->execute(
-     "SELECT * 
-      FROM `$this->client-users` 
-      WHERE id = '$this->userId'"
-    );
-
-    $user = $this->sql->getResultArray();
-
-    if(count($user) < 1) error("Usuário não localizado.");
-
-    $user = $user[0];
-    $this->user = $user;
-    $this->userId = $user['id'];
-    $this->userName = $user['name'];
-    $this->isAdmin = $user['user_type'] == 'admin';
-    $this->isMarker = $user['user_type'] == 'marker';
   }
 
 
-
   public function createToken($payload){
-    if(!isset($payload['client']) || !isset($payload['user']) || !isset($payload['exp'])){
-      throw new Exception("A payload deve conter um timestamp de expiração, id do usuário e o nome do cliente");
+    if(!isset($payload['client']) || !isset($payload['user']) || !isset($payload['exp']) || !isset($payload['refresh']) || !isset($payload['typ'])){
+      throw new Exception("A payload deve conter um timestamp de expiração, id do usuário, tipo de usuário, refresh token e o nome do cliente");
     }
 
     return JWT::encode($payload, $this->jwtKey);
@@ -76,14 +75,14 @@ class Auth {
 
 
   public function mustBeAdmin(){
-    if(!$this->isAdmin){
+    if(!$this->userType == 'admin'){
       error("Acesso negado. Você precisa ser administrador para executar esta ação.");
     }
   }
 
 
   public function mustBeMarker(){
-    if(!$this->isMarker && !$this->isAdmin){
+    if(!$this->userType == 'admin' && !$this->userType == 'marker'){
       error("Acesso negado. Você precisa ser marcador ou administrador para executar esta ação.");
     }
   }

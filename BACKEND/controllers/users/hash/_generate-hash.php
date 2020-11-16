@@ -6,17 +6,7 @@ require_once __DIR__ . '/../../../models/SQL.php';
 
 function generateHash($user, $client) {
 
-  function randomString($length = 30) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $str = '';
-    for ($i = 0; $i < $length; $i++) {
-      $str .= $characters[rand(0, strlen($characters) - 1)];
-    }
-    return $str;
-  }
-
-
-  $twoDaysAhead = time() + (48 * 60 * 60);
+  $oneDaysAhead = time() + (24 * 60 * 60);
   $hash = randomString();
 
 
@@ -27,7 +17,10 @@ function generateHash($user, $client) {
   );
 
   if (count($sql->getResultArray()) < 1) {
-    die('{"error": "Usuário não localizado."}');
+    error(
+      "Seu usuário não localizado.
+      Solicite a um admin para verificar."
+    );
   }
 
 
@@ -35,9 +28,9 @@ function generateHash($user, $client) {
    "INSERT INTO `temp-hashes`
     (`hash`, `client`, `user_id`, `expires`)
     VALUES
-    ('$hash', '$client', '$user', '$twoDaysAhead')
+    ('$hash', '$client', '$user', '$oneDaysAhead')
     ON DUPLICATE KEY UPDATE
-    `hash`='$hash', `expires`='$twoDaysAhead'"
+    `hash`='$hash', `expires`='$oneDaysAhead'"
   );
 
 

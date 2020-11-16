@@ -11,7 +11,15 @@ const api = axios.create({
 
 api.defaults.headers.common['Authorization'] = `Bearer ${localStorage.token}`;
 
-api.interceptors.response.use(response => response, function (error) {
+api.interceptors.response.use(function (response) {
+  const refreshToken = response.headers['refresh-token'];
+  if(refreshToken){
+    api.defaults.headers.common['Authorization'] = `Bearer ${refreshToken}`;
+    localStorage.token = refreshToken;
+  }
+  return response;
+
+}, function (error) {
   const defaults = {
     'Network Error': 'Falha ao contatar servidor. Verifique sua internet.'
   }
@@ -33,7 +41,7 @@ export function MainContextProvider({ children }) {
       api,
       data,
       setData,
-      placeFilters, 
+      placeFilters,
       setPlaceFilters
     }}>
       {children}
@@ -43,6 +51,6 @@ export function MainContextProvider({ children }) {
 
 
 
-export function useMainContext(){
- return useContext(MainContext);
+export function useMainContext() {
+  return useContext(MainContext);
 };

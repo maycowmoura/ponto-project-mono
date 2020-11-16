@@ -10,11 +10,11 @@ $accessiblePlaces = $auth->getAccessiblePlaces();
 $accessiblePlaces = implode(',', $accessiblePlaces);
 $result = [
   'id' => $auth->userId,
-  'user_type' => $auth->user['user_type'],
+  'user_type' => $auth->userType,
 ];
 
 
-if ($auth->isAdmin) {
+if ($auth->userType == 'admin') {
   $employersQuery = (
     "SELECT
       e.id AS `id`,

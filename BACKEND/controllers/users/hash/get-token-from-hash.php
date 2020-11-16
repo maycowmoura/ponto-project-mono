@@ -48,30 +48,34 @@ $expires = $result[0]['expires'];
 if($expires < time()){
   error(
     "Acesso expirada.
-    Cada link de acesso tem duração de 48hrs após ser gerado."
+    Cada link de acesso tem duração de 24hrs após ser gerado."
   );
 }
 
 $sql->execute(
- "SELECT id
+ "SELECT *
   FROM `$client-users` 
   WHERE id = '$userId'"
 );
 
-if (count($sql->getResultArray()) < 1) {
+$userResult = $sql->getResultArray();
+
+if (count($userResult) < 1) {
   error(
     "Seu usuário não localizado.
     Solicite a um admin para verificar."
   );
 }
 
+
 $auth = new Auth(false);
 $token = $auth->createToken([
   'client' => $client,
   'user' => $userId,
-  'exp' => time() + (14 * 24 * 60 * 60) // cria um token que expira em 2 semanas
+  'typ' => $userResult[0]['user_type'],
+  'refresh' => $userResult[0]['refresh_token'],
+  'exp' => time() + (60 * 60) // cria um token que expira em 1h
 ]);
-
 
 
 $json = _json_encode([
