@@ -7,7 +7,7 @@ import LoadingInner from '../../../components/LoadingInner';
 import Uploading from './Uploading';
 import Header from '../../../components/Header';
 import { months, weekdays } from '../../../utils/MonthsAndWeekdays';
-import { addZero, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
+import { DateToArray, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
 import Input from './Input';
 import Footer from './Footer';
 import { MdComment as Comment, MdViewAgenda as List, MdHelp as Help } from 'react-icons/md';
@@ -20,7 +20,6 @@ export default function SetMarks() {
   const { dayMarks, setDayMarks, date, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
-  const headerDate = `${addZero(date.getDate())}/${months[date.getMonth()].short}/${date.getFullYear()}`;
   const missed = current?.time_in === 'missed';
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
@@ -37,8 +36,9 @@ export default function SetMarks() {
     api.get(`/marks/${DateToString(date)}`, {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
-      setDayMarks(data);
-      setCurrent(data[0]);
+      const mapped = data.map(item => ({...item, editingPrevious: !!item.time_in}))
+      setDayMarks(mapped);
+      setCurrent(mapped[0]);
     })
   }, [date])
 
@@ -56,6 +56,12 @@ export default function SetMarks() {
       setCurrent(dayMarks[0]);
     }
   }, [dayMarks]);
+
+
+  function headerDate(){
+    const [year, month, day] = DateToArray(date);
+    return `${day}/${months[month - 1].short}/${year}`;
+  }
 
 
 
@@ -87,7 +93,7 @@ export default function SetMarks() {
           <Calendar />
           <span>
             <p className="weekday">{weekdays[date.getDay()].long}</p>
-            <span className="bigger">{headerDate}</span>
+            <span className="bigger">{headerDate()}</span>
           </span>
         </div>
         <div onClick={() => history.push('/marks/list')}>
@@ -116,12 +122,12 @@ export default function SetMarks() {
                 <Input
                   type="in"
                   value={format(current.time_in || current.default_time_in)}
-                  editingPreviousValue={!!current.time_in}
+                  editingPreviousValue={current.editingPrevious}
                   />
                 <Input
                   type="out"
                   value={format(current.time_out || current.default_time_out)}
-                  editingPreviousValue={!!current.time_in}
+                  editingPreviousValue={current.editingPrevious}
                 />
               </div>
             )
