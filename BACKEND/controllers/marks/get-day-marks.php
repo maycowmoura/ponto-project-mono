@@ -34,7 +34,7 @@ $auth = new Auth();
 $auth->mustBeMarker();
 $accessibleEmployers = implode(',', $auth->getAccessibleEmployers());
 $client = $auth->client;
-
+$weekday = date('w', strtotime($date));
 
 
 $filtersList = $_GET['place-filters'] ?? null;
@@ -87,10 +87,10 @@ $sql->execute(
     comment
   FROM 
     `$client-employers` AS e
-  JOIN 
+  LEFT JOIN 
     `$client-default-times` AS t
   ON 
-    t.id = e.default_time
+    t.id = e.default_time AND t.weekday = '$weekday'
   LEFT JOIN 
     `$client-marks` AS m
   ON 

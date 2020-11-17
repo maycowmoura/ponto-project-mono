@@ -22,7 +22,7 @@ export default function SetMarks() {
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
-  const missed = current?.time_in === 'missed';
+  const missed = current?.time_in === 'missed' || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
@@ -37,9 +37,7 @@ export default function SetMarks() {
     api.get(`/marks/${DateToString(date)}`, {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
-      if (data.error) {
-        return setErrorMsg(data.error);
-      }
+      if (data.error) return setErrorMsg(data.error);
 
       const mapped = data.map(item => ({ ...item, editingPrevious: !!item.time_in }))
       setDayMarks(mapped);
@@ -72,7 +70,7 @@ export default function SetMarks() {
   }
 
 
-  function handleGetBack(){
+  function handleGetBack() {
     setDate(new Date);
     history.goBack();
   }
@@ -80,6 +78,10 @@ export default function SetMarks() {
 
   function handleMissed(revertMissed = false) {
     setAnimateMissed('animated');
+    if (!current.default_time_in){
+      current.default_time_in = current.default_time_out = 0;
+    }
+
     setCurrent(prev => {
       prev.time_in = revertMissed ? current.default_time_in : 'missed';
       prev.time_out = revertMissed ? current.default_time_out : 'missed';
@@ -131,12 +133,13 @@ export default function SetMarks() {
           <h2>{current.name}</h2>
           <p>{current.job}</p>
 
-          {missed ? (
-            <div id="missed" className={animateMissed} onClick={() => handleMissed(true)}>
-              <Missed />
-              <div>FALTOU</div>
-            </div>
-          ) : (
+          {missed
+            ? (
+              <div id="missed" className={animateMissed} onClick={() => handleMissed(true)}>
+                <Missed />
+                <div>FALTOU</div>
+              </div>
+            ) : (
               <div id="inputs" className={animateMissed}>
                 <Input
                   type="in"
