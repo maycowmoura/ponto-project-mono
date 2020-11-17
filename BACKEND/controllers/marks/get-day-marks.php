@@ -52,6 +52,28 @@ try {
 
 
 $sql = new SQL();
+
+$sql->execute(
+  "SELECT * FROM `closed-dates`
+  WHERE client = '$client'"
+);
+
+$closedDate = $sql->getResultArray();
+
+if(count($closedDate) > 0){
+  $closedDate = $closedDate[0]['date'];
+  $formated = implode('/', array_reverse(explode('-', $closedDate)));
+
+  if($date <= $closedDate){
+    error(
+      "Ops... O ponto foi fechado em $formated, não é permitido alterar datas antes disso.
+      Toque para voltar."
+    );
+  }
+}
+
+
+
 $sql->execute(
   "SELECT
     e.id AS id, 

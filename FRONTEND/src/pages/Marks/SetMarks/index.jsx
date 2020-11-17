@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import LoadingInner from '../../../components/LoadingInner';
 import Uploading from './Uploading';
 import Header from '../../../components/Header';
+import ToastMsg from '../../../components/ToastMsg';
 import { months, weekdays } from '../../../utils/MonthsAndWeekdays';
 import { DateToArray, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
 import Input from './Input';
@@ -17,9 +18,10 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 export default function SetMarks() {
   const { api, data, placeFilters } = useMainContext();;
-  const { dayMarks, setDayMarks, date, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
+  const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
+  const [errorMsg, setErrorMsg] = useState(null);
   const missed = current?.time_in === 'missed';
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
@@ -27,19 +29,24 @@ export default function SetMarks() {
 
 
   useEffect(() => {
-    if (dayMarks && sessionStorage.setMarksFilters === placeFilters){
+    if (dayMarks && sessionStorage.setMarksFilters === placeFilters) {
       return;
     }
-    
     sessionStorage.setMarksFilters = placeFilters;
 
     api.get(`/marks/${DateToString(date)}`, {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
-      const mapped = data.map(item => ({...item, editingPrevious: !!item.time_in}))
+      if (data.error) {
+        return setErrorMsg(data.error);
+      }
+
+      const mapped = data.map(item => ({ ...item, editingPrevious: !!item.time_in }))
       setDayMarks(mapped);
       setCurrent(mapped[0]);
     })
+      .catch(setErrorMsg)
+
   }, [date])
 
 
@@ -58,11 +65,17 @@ export default function SetMarks() {
   }, [dayMarks]);
 
 
-  function headerDate(){
+
+  function headerDate() {
     const [year, month, day] = DateToArray(date);
     return `${day}/${months[month - 1].short}/${year}`;
   }
 
+
+  function handleGetBack(){
+    setDate(new Date);
+    history.goBack();
+  }
 
 
   function handleMissed(revertMissed = false) {
@@ -77,7 +90,13 @@ export default function SetMarks() {
 
 
   if (!dayMarks || !current) {
-    return <LoadingInner text="Carregando marcações..." />;
+    return (
+      <>
+        <LoadingInner text="Carregando marcações..." />
+
+        {errorMsg && <ToastMsg text={errorMsg} close={handleGetBack} />}
+      </>
+    );
   }
 
 
@@ -123,7 +142,7 @@ export default function SetMarks() {
                   type="in"
                   value={format(current.time_in || current.default_time_in)}
                   editingPreviousValue={current.editingPrevious}
-                  />
+                />
                 <Input
                   type="out"
                   value={format(current.time_out || current.default_time_out)}
