@@ -18,7 +18,7 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 export default function SetMarks() {
   const { api, data, placeFilters } = useMainContext();;
-  const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, setIndex, uploadingMarks } = useSetMarks();
+  const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
@@ -52,15 +52,6 @@ export default function SetMarks() {
     setAnimateMissed('');
     setTimeout(() => setAnimationClass(''), 400)
   }, [index]);
-
-
-  useEffect(() => {
-    const commingFromDashboard = document.referrer.includes('/dashboard');
-    if (commingFromDashboard && dayMarks) {
-      setIndex(0);
-      setCurrent(dayMarks[0]);
-    }
-  }, [dayMarks]);
 
 
 

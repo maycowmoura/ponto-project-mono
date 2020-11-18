@@ -16,12 +16,13 @@ export default function Dashboard() {
   const [showMarksMenu, setShowMarksMenu] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const { data, setPlaceFilters } = useMainContext();
-  const { setIndex } = useSetMarks();
+  const { setIndex, dayMarks, setCurrent } = useSetMarks();
   const history = useHistory();
   const hasMultiplePlaces = data.places.length > 1;
 
   useEffect(() => {
     setIndex(0)
+    setCurrent(dayMarks && dayMarks[0]);
     setPlaceFilters('');
   }, [])
 
@@ -39,8 +40,7 @@ export default function Dashboard() {
     const value = Array.from(e.target.selectedOptions)
       .map(option => option.value)
       .join(',');
-
-    setPlaceFilters(value);
+    value ? setPlaceFilters(value) : e.target.value = '0';
   }
 
 
@@ -60,15 +60,15 @@ export default function Dashboard() {
         <button onClick={() => history.push('/dashboard/employers')}>
           <FaUserEdit /> Gerenciar Funcionários
         </button>
-        <button>
+        {/* <button>
           <MdSecurity /> Gerenciar Acessos
-        </button>
+        </button> */}
         <button onClick={() => history.push('/dashboard/close-point')}>
           <FaRegCalendarTimes /> Fechar Ponto
         </button>
-        <button onClick={() => history.push('/help')}>
+        {/* <button onClick={() => history.push('/help')}>
           <MdHelpOutline /> Me Ajuda
-        </button>
+        </button> */}
       </main>
 
 
@@ -80,10 +80,10 @@ export default function Dashboard() {
               <select
                 className="border"
                 multiple
-                defaultValue=""
+                defaultValue={[0]}
                 onChange={handleSelectFilterPlace}
               >
-                <option value="" hidden selected>Todos os locais</option>
+                <option value="0" hidden>Todos os locais</option>
                 {data.places.map(({ id, name }) =>
                   <option key={id} value={id}>{name}</option>
                 )}
