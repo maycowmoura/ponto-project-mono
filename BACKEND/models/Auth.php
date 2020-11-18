@@ -53,6 +53,7 @@ class Auth {
         if(count($this->sql->getResultArray()) > 0){
           $payload['exp'] = time() + (60 * 60); // adds 1hr
           $newToken = $this->createToken($payload);
+          header("Access-Control-Expose-Headers: Refresh-Token");
           header("refresh-token: $newToken");
           return;
         }

@@ -5,7 +5,6 @@
 
 // header('content-type: application/json; charset=utf-8');
 header("access-control-allow-origin: *");
-header("Access-Control-Expose-Headers: Refresh-Token");
 date_default_timezone_set('America/Sao_Paulo');
 
 
