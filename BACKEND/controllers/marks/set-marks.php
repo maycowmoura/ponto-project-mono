@@ -61,14 +61,16 @@ $sql->execute(
     t.time_in AS default_time_in,
     t.time_out AS default_time_out
   FROM `$client-employers` as e
-  JOIN `$client-default-times` as t
-  ON t.id = e.default_time
+  LEFT JOIN `$client-default-times` as t
+  ON t.id = e.default_time AND t.weekday = '$weekday'
   LEFT JOIN `$client-marks` as m
   ON m.date = '$date' AND m.employer_id = e.id
   WHERE e.id IN ('$employersIds')"
 );
 
+
 $selectResult = $sql->getResultArray();
+
 
 $serializedMarks = array_reduce($selectResult, function ($all, $mark) {
   $all[$mark['employer_id']] = $mark;
@@ -118,10 +120,12 @@ foreach (POST as $employer) {
     return; // se marcou falta no feriado e não tem comentário, pula esse cara
   }
 
-  if(!$missed){
+
+  if(!$missed && $default_time_in){
     $data['time_before'] = $default_time_in - $time_in;
     $data['time_after'] = $time_out - $default_time_out;
   }
+
 
   if ($hasComment) {
     $data = array_merge($data, [
