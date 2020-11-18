@@ -13,6 +13,7 @@ export default function Login() {
   const history = useHistory();
   const [currentScreen, setCurrentScreen] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [infoMsg, setInfoMsg] = useState(null);
 
 
 
@@ -24,7 +25,16 @@ export default function Login() {
 
     api.get(`/users/hash/${temp_hash}`)
       .then(({ data }) => {
-        if (data.error) return handleError(data.error);
+        if (data.error) {
+          if(localStorage.token){
+            setInfoMsg('Esse link não é mais válido, mas parece que você já logou antes.\nVamos te redirecionar!');
+            localStorage.removeItem('addToHomeScreen');
+            setTimeout(() => history.push('/'), 7000);
+            return;
+          }
+
+          return handleError(data.error);
+        }
 
         api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         localStorage.token = data.token;
@@ -80,6 +90,7 @@ export default function Login() {
       {screens[currentScreen ?? 'stillLoading']}
 
       {errorMsg && <ToastMsg text={errorMsg} />}
+      {infoMsg && <ToastMsg text={infoMsg} info />}
     </div>
   );
 }
