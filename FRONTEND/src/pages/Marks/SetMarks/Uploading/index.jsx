@@ -35,8 +35,11 @@ export default function Uploading() {
         return setErrorMsg(data.error); 
       }
 
-      setDayMarks(dayMarks.map(mark => ({...mark, edited: false})))
-      setCurrent(dayMarks[0]);
+      const mappedDayMarks = dayMarks.map(mark => (
+        { ...mark, edited: false, editingPrevious: true }
+      ))
+      setDayMarks(mappedDayMarks);
+      setCurrent(mappedDayMarks[0]);
       setIndex(0);
       setLoading(<><h3>FEITO!</h3> Voltando ao início</>);
       setTimeout(setUploadingMarks, 3000);
