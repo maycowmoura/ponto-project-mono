@@ -2,7 +2,10 @@
 
 require_once './vendor/autoload.php';
 
-header("access-control-allow-origin:  *, POST, PUT, GET, DELETE, OPTIONS");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Authorization");
+
 define($_SERVER['REQUEST_METHOD'], json_decode(file_get_contents('php://input'), true));
 
 
