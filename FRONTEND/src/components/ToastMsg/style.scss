@@ -25,6 +25,12 @@
     z-index: 9999999;
   }
 
+  >span {
+    position: absolute;
+    top: 0;
+    right: 4px;
+  }
+
   >svg {
     font-size: 32px;
     transform: none;
