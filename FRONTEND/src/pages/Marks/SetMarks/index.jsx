@@ -17,13 +17,13 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 
 export default function SetMarks() {
-  const { api, data, placeFilters } = useMainContext();;
+  const { api, data, userType, placeFilters } = useMainContext();;
   const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
-  const isAdmin = data.user_type === 'admin';
+  const isAdmin = userType === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
 

@@ -14,8 +14,8 @@ define($_SERVER['REQUEST_METHOD'], json_decode(file_get_contents('php://input'),
 
 $router = new \Bramus\Router\Router();
 
-$router->get('/init', function () {
-  require_once __DIR__ . '/controllers/init/init.php';
+$router->get('/dashboard', function () {
+  require_once __DIR__ . '/controllers/dashboard/dashboard.php';
 });
 
 

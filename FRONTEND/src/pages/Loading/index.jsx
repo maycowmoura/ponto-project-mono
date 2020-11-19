@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useMainContext } from '../../contexts/MainContext';
 import { useHistory } from 'react-router-dom';
 import LoadingInner from '../../components/LoadingInner';
-import { useMainContext } from '../../contexts/MainContext';
 
 export default function Loading() {
-  const { api, setData } = useMainContext();
+  const { setUserType } = useMainContext();;
   const history = useHistory();
-  const [errorMsg, setErrorMsg] = useState(null);
-
-
 
   useEffect(() => {
     const token = localStorage.token;
     if (!token) return history.push('/login');
+
+    const [, payload] = localStorage.token.split('.');
+    const decoded = JSON.parse(atob(payload));
+    const { typ } = decoded;
+    setUserType(typ);
 
     const redirects = {
       marker: '/marks/set',
@@ -20,16 +22,10 @@ export default function Loading() {
       admin: '/dashboard'
     }
 
-    api.get('/init').then(({ data }) => {
-      if (data.error) return history.push('/login');
-
-      setData(data);
-      history.push(redirects[data.user_type]);
-    })
-      .catch(() => history.push('/login'));
+    history.push(redirects[typ]);
   }, [])
 
   return (
-    <LoadingInner text={errorMsg || 'Inicializando...'} error={errorMsg} />
+    <LoadingInner />
   );
 }

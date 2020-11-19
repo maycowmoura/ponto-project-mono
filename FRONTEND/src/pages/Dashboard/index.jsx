@@ -3,6 +3,7 @@ import './style.scss';
 import { useMainContext } from '../../contexts/MainContext';
 import { useSetMarks } from '../../contexts/MarksContext';
 import { useHistory } from 'react-router-dom';
+import LoadingInner from '../../components/LoadingInner';
 import Header from '../../components/Header';
 import ToastMsg from '../../components/ToastMsg';
 import FloatMenu from '../../components/FloatMenu';
@@ -13,17 +14,30 @@ import { FiEdit } from 'react-icons/fi';
 
 
 export default function Dashboard() {
+  const { api, data, setData, setPlaceFilters } = useMainContext();
+  const { setIndex, dayMarks, setCurrent } = useSetMarks();
   const [showMarksMenu, setShowMarksMenu] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const { data, setPlaceFilters } = useMainContext();
-  const { setIndex, dayMarks, setCurrent } = useSetMarks();
   const history = useHistory();
-  const hasMultiplePlaces = data.places.length > 1;
+  const hasMultiplePlaces = data?.places.length > 1;
 
   useEffect(() => {
     setIndex(0)
     setCurrent(dayMarks && dayMarks[0]);
     setPlaceFilters('');
+  }, [])
+
+
+  useEffect(() => {
+    if(data) return;
+
+    api.get('/dashboard').then(({ data: response }) => {
+      if (response.error) return history.push('/login');
+
+      setData(response);
+    })
+      .catch(() => history.push('/login'));
+
   }, [])
 
 
@@ -41,6 +55,15 @@ export default function Dashboard() {
       .map(option => option.value)
       .join(',');
     value ? setPlaceFilters(value) : e.target.value = '0';
+  }
+
+
+
+
+  if(!data){
+    return (
+      <LoadingInner text="Inicializando painel..." />
+    );
   }
 
 
