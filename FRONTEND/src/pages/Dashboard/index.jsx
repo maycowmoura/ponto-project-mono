@@ -29,14 +29,14 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    if(data) return;
+    if (data) return;
 
     api.get('/dashboard').then(({ data: response }) => {
-      if (response.error) return history.push('/login');
+      if (response.error) return setErrorMsg(response.error);
 
       setData(response);
     })
-      .catch(() => history.push('/login'));
+      .catch(setErrorMsg);
 
   }, [])
 
@@ -60,9 +60,12 @@ export default function Dashboard() {
 
 
 
-  if(!data){
+  if (!data) {
     return (
-      <LoadingInner text="Inicializando painel..." />
+      <>
+        <LoadingInner text="Inicializando painel..." />
+        {errorMsg && <ToastMsg text={errorMsg} close={() => history.push('/login')} />}
+      </>
     );
   }
 

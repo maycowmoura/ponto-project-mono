@@ -11,18 +11,24 @@ export default function Loading() {
     const token = localStorage.token;
     if (!token) return history.push('/login');
 
-    const [, payload] = localStorage.token.split('.');
-    const decoded = JSON.parse(atob(payload));
-    const { typ } = decoded;
-    setUserType(typ);
+    try {
+      const [, payload] = token.split('.');
+      const decoded = JSON.parse(atob(payload));
+      const { typ } = decoded;
+      setUserType(typ);
 
-    const redirects = {
-      marker: '/marks/set',
-      viewer: '/list-marks',
-      admin: '/dashboard'
+      const redirects = {
+        marker: '/marks/set',
+        viewer: '/list-marks',
+        admin: '/dashboard'
+      }
+
+      history.push(redirects[typ]);
+
+    } catch {
+      history.push('/login')
     }
 
-    history.push(redirects[typ]);
   }, [])
 
   return (
