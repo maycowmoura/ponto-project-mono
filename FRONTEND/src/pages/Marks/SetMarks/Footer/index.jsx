@@ -19,7 +19,7 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
     setAnimationClass('enter-left');
   }
 
-  function saveMarks(){
+  function saveMarks() {
     // se não tiver time_in (igual a null), 
     // significa que está usando o valor padrão (default_time_in)
     if (!current.time_in) {
@@ -34,12 +34,18 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
     });
   }
 
-  function handleNext() {
+  function validateHours() {
     const { time_in, time_out } = current;
-    if (parseInt(time_in) >= parseInt(time_out)) {
+    if (time_in >= 0 && time_in >= time_out) {
       setToast('Ops... O horário de saída deve ser maior que o de entrada.');
-      return;
+      return false;
     }
+    return true;
+  }
+
+
+  function handleNext() {
+    if (!validateHours()) return;
 
     saveMarks();
 
@@ -50,6 +56,7 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
 
 
   function handleSend() {
+    if (!validateHours()) return;
     saveMarks();
     setUploadingMarks(true);
   }
