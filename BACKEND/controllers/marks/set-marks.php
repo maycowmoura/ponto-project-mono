@@ -39,8 +39,8 @@ try {
 
   foreach (POST as $item) {
     v::key('id', v::intVal()->positive()->in($accessibleEmployers))
-      ->key('time_in', v::oneOf(v::equals('missed'), v::intVal()->positive()->lessThan(1439)))
-      ->key('time_out', v::oneOf(v::equals('missed'), v::intVal()->positive()->lessThan(1439)))
+      ->key('time_in', v::intVal()->lessThan(1439))
+      ->key('time_out', v::intVal()->lessThan(1439))
       ->check($item);
     v::optional(v::stringType()->length(null, 200))->check($item['comment'] ?? null);
   }
@@ -104,7 +104,7 @@ foreach (POST as $employer) {
     'default_time_out' => $default_time_out
   ] = $serializedMarks[$id];
 
-  $missed     = $time_in == 'missed';
+  $missed     = $time_in < 0;
   $hasComment = isset($employer['comment']);
   $markExists = !!$mark_id;
 

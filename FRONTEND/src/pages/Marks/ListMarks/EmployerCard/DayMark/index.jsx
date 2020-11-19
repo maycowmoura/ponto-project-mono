@@ -14,7 +14,7 @@ function DayMark({ marks, setShowComment }) {
     const { weekday, holiday } = mark;
     const weekendDay = weekday == 0 || weekday == 6 || holiday;
     const [, month, day] = date.split('-');
-    const missed = (mark.time_in === "missed") ? 'missed' : '';
+    const missed = (mark.time_in < 0) ? 'missed' : '';
     const weekend = (parseInt(mark.time_in) && weekendDay) ? 'weekend' : '';
     const before = parseInt(mark.time_before) ? 'time_before' : '';
     const after = parseInt(mark.time_after) ? 'time_after' : '';

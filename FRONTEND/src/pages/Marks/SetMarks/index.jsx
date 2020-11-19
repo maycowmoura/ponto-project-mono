@@ -22,7 +22,7 @@ export default function SetMarks() {
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const [errorMsg, setErrorMsg] = useState(null);
-  const missed = current?.time_in === 'missed' || (!current?.time_in && !/\d/.test(current?.default_time_in));
+  const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = data.user_type === 'admin';
   const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
@@ -74,8 +74,8 @@ export default function SetMarks() {
     }
 
     setCurrent(prev => {
-      prev.time_in = revertMissed ? current.default_time_in : 'missed';
-      prev.time_out = revertMissed ? current.default_time_out : 'missed';
+      prev.time_in = revertMissed ? current.default_time_in : -1;
+      prev.time_out = revertMissed ? current.default_time_out : -1;
       prev.edited = true;
       return { ...prev };
     })

@@ -27,13 +27,13 @@ function Calculations({ marks }) {
     const lunch_time = 60;
     
     const balance = parseInt(item.time_out) - parseInt(item.time_in) - lunch_time;
-    sum('misses', item.time_in === 'missed', 1);
+    sum('misses', item.time_in < 0, 1);
     sum('extraHours', item.time_before > 0, item.time_before);
     sum('extraHours', item.time_after > 0, item.time_after);
     sum('late', item.time_before < 0, item.time_before);
     sum('earlyExit', item.time_after < 0, item.time_after);
     sum('saturdays', (item.weekday == 6 && item.time_in), balance);
-    sum('sundays', (item.weekday == 0 || !!parseInt(item.holiday)), balance);
+    sum('sundays', (item.weekday == 0 || !!item.holiday), balance);
   });
 
 
