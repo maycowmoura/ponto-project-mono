@@ -4,7 +4,6 @@
 //
 
 // header('content-type: application/json; charset=utf-8');
-header("access-control-allow-origin: *");
 date_default_timezone_set('America/Sao_Paulo');
 
 

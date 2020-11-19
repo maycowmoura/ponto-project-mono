@@ -2,7 +2,9 @@
 
 require_once './vendor/autoload.php';
 
-header("Access-Control-Allow-Origin: *");
+
+$url = getenv('DEV_MODE') ? '*' : 'https://maycowmoura.tk';
+header("Access-Control-Allow-Origin: $url");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Authorization");
 
