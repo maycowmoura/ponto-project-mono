@@ -18,10 +18,9 @@ export default function Login() {
 
 
   useEffect(() => {
-    localStorage.removeItem('token');
-
     if(!temp_hash){
       setCurrentScreen('notAuthenticated');
+      localStorage.removeItem('token');
       return;
     }
 
