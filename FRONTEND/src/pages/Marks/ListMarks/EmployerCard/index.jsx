@@ -14,7 +14,7 @@ import { MdLocationOn } from 'react-icons/md';
 
 export default function EmployerMark({ employer, setShowComment, viewGrid }) {
   const { id, name, job, place } = employer;
-  const { api, data: { user_type } } = useMainContext();
+  const { api, userType } = useMainContext();
   const { periodFrom, periodTo } = useListMarks();
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -65,7 +65,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
 
         <div className={`marks ${expanded ? 'expanded' : ''} ${viewGrid ? 'grid' : ''}`}>
 
-          {marks && user_type == 'admin' &&
+          {marks && userType == 'admin' &&
             <Calculations marks={marks} />
           }
 

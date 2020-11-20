@@ -13,7 +13,7 @@ import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 
 export default function ListMarks() {
-  const { api, placeFilters, data: { user_type } } = useMainContext();
+  const { api, placeFilters, userType } = useMainContext();
   const { employers, setEmployers } = useListMarks();
 
   const [employersMirror, setEmployersMirror] = useState(employers);
@@ -69,7 +69,7 @@ export default function ListMarks() {
               <div onClick={setShowPeriodMenu}><Period /></div>
               <div onClick={() => setViewGrid(v => !v)}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
 
-              {user_type == 'admin' &&
+              {userType == 'admin' &&
                 <div onClick={setShowSettingsMenu}><Settings /></div>
               }
             </>
