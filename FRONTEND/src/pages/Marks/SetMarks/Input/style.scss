@@ -2,6 +2,10 @@
   text-align: center;
   margin-bottom: 24px;
 
+  &.invalid {
+    overflow: hidden;
+  }
+
   * {
     pointer-events: none;
   }
