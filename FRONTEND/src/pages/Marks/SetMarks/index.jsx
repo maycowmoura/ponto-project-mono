@@ -21,6 +21,7 @@ export default function SetMarks() {
   const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = userType === 'admin';
@@ -33,6 +34,7 @@ export default function SetMarks() {
       return;
     }
     sessionStorage.setMarksFilters = placeFilters;
+    setLoading(true);
 
     api.get(`/marks/${DateToString(date)}`, {
       params: { 'place-filters': placeFilters }
@@ -42,6 +44,7 @@ export default function SetMarks() {
       const mapped = data.map(item => ({ ...item, editingPrevious: !!item.time_in }))
       setDayMarks(mapped);
       setCurrent(mapped[0]);
+      setLoading(false);
     })
       .catch(setErrorMsg)
 
@@ -82,7 +85,7 @@ export default function SetMarks() {
   }
 
 
-  if (!dayMarks || !current) {
+  if (!dayMarks || !current || loading) {
     return (
       <>
         <LoadingInner text="Carregando marcações..." />
