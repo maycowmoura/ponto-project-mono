@@ -121,7 +121,7 @@ foreach (POST as $employer) {
   }
 
 
-  if(!$missed && $default_time_in){
+  if(!$missed && !$isHoliday && $default_time_in){
     $data['time_before'] = $default_time_in - $time_in;
     $data['time_after'] = $time_out - $default_time_out;
   }
