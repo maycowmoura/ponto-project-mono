@@ -1,4 +1,4 @@
-.employer-mark {
+.employer-card {
 
   //
   //  LAYOUT CALENDAR
@@ -102,10 +102,6 @@
   //
 
   .marks.grid {
-    &.expanded {
-      max-height: 1600px;
-    }
-
     .weekdays {
       display: none;
     }

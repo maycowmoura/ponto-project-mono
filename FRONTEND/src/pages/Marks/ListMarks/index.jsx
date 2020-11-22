@@ -4,6 +4,7 @@ import { useMainContext } from '../../../contexts/MainContext';
 import { useListMarks } from '../../../contexts/MarksContext';
 import LoadingInner from '../../../components/LoadingInner';
 import Header from '../../../components/Header';
+import MainTag from '../../../components/MainTag';
 import Search from './Search';
 import EmployerCard from './EmployerCard';
 import { PeriodMenu, CommentMenu, SettingsMenu } from './Menus';
@@ -77,11 +78,11 @@ export default function ListMarks() {
       </Header>
 
 
-      <main>
+      <MainTag>
         {employersMirror.map((employer, key) =>
           <EmployerCard {...{ employer, setShowComment, viewGrid, key }} />
         )}
-      </main>
+      </MainTag>
 
 
       {showPeriodMenu &&

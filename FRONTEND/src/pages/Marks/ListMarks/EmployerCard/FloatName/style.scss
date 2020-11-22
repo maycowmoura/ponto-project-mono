@@ -1,0 +1,31 @@
+.employer-card h3.float-name {
+  position: fixed;
+  top: 72px;
+  background-color: #36373c;
+  left: 0;
+  right: 0;
+  width: calc(100% - 60px);
+  margin: auto;
+  border-radius: 50px;
+  border: 1px solid #55565e;
+  padding: 8px 16px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-shadow: 4px 4px 7px 3px #00000059;
+  z-index: 11;
+  animation: slide-in-fwd-top 0.4s both;
+}
+
+@keyframes slide-in-fwd-top {
+  0% {
+    transform:  translateY(-30px) scale(0.6);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './style.scss';
 import { useMainContext } from '../../../../contexts/MainContext';
 import { useListMarks } from '../../../../contexts/MarksContext';
+import FloatName from './FloatName';
 import LoadingInner from '../../../../components/LoadingInner';
 import Calculations from './Calculations';
 import DayMark from './DayMark';
@@ -12,9 +13,10 @@ import { FaUser, FaSuitcase } from 'react-icons/fa';
 import { MdLocationOn } from 'react-icons/md';
 
 
-export default function EmployerMark({ employer, setShowComment, viewGrid }) {
+export default function EmployerCard({ employer, setShowComment, viewGrid }) {
   const { id, name, job, place } = employer;
   const { api, userType } = useMainContext();
+  const card = useRef();
   const { periodFrom, periodTo } = useListMarks();
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -27,6 +29,7 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
     setMarks(null);
     setExpanded(false);
   }, [periodFrom, periodTo])
+
 
 
   function handleExpand() {
@@ -51,7 +54,13 @@ export default function EmployerMark({ employer, setShowComment, viewGrid }) {
     <>
       {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
 
-      <div className="employer-mark">
+      <div ref={card} className="employer-card">
+        <FloatName
+          cardRef={card}
+          expanded={expanded}
+          employerName={name}
+        />
+
         <div className="headings">
           <div className="icon">
             <FaUser />

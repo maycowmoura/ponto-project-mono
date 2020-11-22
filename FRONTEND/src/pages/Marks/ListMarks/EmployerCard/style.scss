@@ -1,6 +1,6 @@
 @import '../../../../utils/variables.scss';
 
-.employer-mark {
+.employer-card {
   @extend %card;
   padding-bottom: 0;
   margin: 32px 8px;
@@ -23,7 +23,7 @@
   }
 
   .text {
-    > * {
+    >* {
       text-transform: uppercase;
       margin: 0;
       @extend %ellipsis-sencond-line;
@@ -52,7 +52,7 @@
 
     &.expanded {
       opacity: 1;
-      max-height: 1350px;
+      max-height: 2600px;
       overflow-y: unset;
     }
 
@@ -100,6 +100,7 @@
   from {
     transform: rotate(180deg);
   }
+
   to {
     transform: rotate(0);
   }
