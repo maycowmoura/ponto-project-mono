@@ -1,12 +1,11 @@
 .employer-mark .calculations {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
   align-items: center;
   margin-top: 38px;
+  gap: 8px;
 
   div {
-    padding: 4px;
     font-size: 14px;
     font-style: italic;
 
@@ -19,6 +18,7 @@
     }
 
     span {
+      display: block;
       font-weight: 500;
     }
   }
