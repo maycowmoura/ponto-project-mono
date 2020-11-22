@@ -40,10 +40,10 @@ function Calculations({ marks }) {
 
     sum('workedDays', (item.time_in > -1), 1);
     sum('saturdays', (item.weekday == 6 && item.time_in > -1), 1);
-    sum('sundays', (item.weekday == 0 || !!item.holiday), 1);
+    sum('sundays', ((item.weekday == 0 || !!item.holiday) && item.time_in > -1), 1);
 
     sum('saturdaysHours', (item.weekday == 6 && item.time_in > -1), balance);
-    sum('sundaysHours', (item.weekday == 6 && item.time_in > -1), balance);
+    sum('sundaysHours', ((item.weekday == 0 || !!item.holiday) && item.time_in > -1), balance);
   });
 
   const workedDaysText = reducer.workedDays ? `${reducer.workedDays} dia${reducer.workedDays > 1 ? 's' : ''}` : 'Nenhum dia';
