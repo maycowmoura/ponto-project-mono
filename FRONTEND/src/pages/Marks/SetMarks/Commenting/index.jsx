@@ -59,6 +59,7 @@ export default function Commenting() {
     if (repeatForAll) {
       setDayMarks(prev => prev.map(item => {
         item.comment = comment;
+        item.edited = true;
         return item;
       }))
     }
