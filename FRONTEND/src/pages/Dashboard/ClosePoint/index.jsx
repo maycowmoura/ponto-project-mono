@@ -28,6 +28,13 @@ export default function ClosePoint() {
   }, [])
 
 
+  function initialDate(){
+    const date = new Date();
+    const time = date.setDate(date.getDate() - 1);
+    return new Date(time);
+  }
+
+
 
   function handleSubmit(){
     setLoading(true);
@@ -60,7 +67,7 @@ export default function ClosePoint() {
       <main>
         <section>
           <h4>Selecione a Data de Fechamento:</h4>
-          <SelectDate onChange={setDateObject} />
+          <SelectDate initialDate={initialDate()} onChange={setDateObject} />
 
         </section>
         <small>
