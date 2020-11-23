@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import './style.scss';
 
 
-export default function FloatName({ cardRef, employerName, expanded }) {
+export default function FloatName({ cardRef, employerName }) {
   const isShowing = useRef(false);
   const [show, setShow] = useState(false);
 
@@ -21,16 +21,13 @@ export default function FloatName({ cardRef, employerName, expanded }) {
       }
     }
 
-    expanded
-      ? window.addEventListener('scroll', scrollSpy)
-      : window.removeEventListener('scroll', scrollSpy)
-
+    window.addEventListener('scroll', scrollSpy)
     return () => window.removeEventListener('scroll', scrollSpy);
-  }, [expanded])
+  }, [])
 
 
 
-  return show && expanded
+  return show
     ? <h3 className="float-name"> {employerName}</h3>
     : <></>;
 }

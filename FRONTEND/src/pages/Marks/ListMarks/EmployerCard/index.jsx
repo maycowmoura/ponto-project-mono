@@ -55,11 +55,9 @@ export default function EmployerCard({ employer, setShowComment, viewGrid }) {
       {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
 
       <div ref={card} className="employer-card">
-        <FloatName
-          cardRef={card}
-          expanded={expanded}
-          employerName={name}
-        />
+        {expanded &&
+          <FloatName cardRef={card} employerName={name} />
+        }
 
         <div className="headings">
           <div className="icon">

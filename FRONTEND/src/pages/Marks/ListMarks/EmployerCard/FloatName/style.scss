@@ -1,6 +1,6 @@
 .employer-card h3.float-name {
   position: fixed;
-  top: 72px;
+  top: 68px;
   background-color: #36373c;
   left: 0;
   right: 0;
@@ -14,8 +14,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   box-shadow: 4px 4px 7px 3px #00000059;
-  z-index: 11;
-  animation: slide-in-fwd-top 0.4s both;
+  z-index: 9;
+  animation: slide-in-fwd-top 0.3s both;
 }
 
 @keyframes slide-in-fwd-top {
