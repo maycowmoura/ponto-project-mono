@@ -4,8 +4,9 @@ import { useMainContext } from '../../../contexts/MainContext';
 import { useListMarks } from '../../../contexts/MarksContext';
 import LoadingInner from '../../../components/LoadingInner';
 import Header from '../../../components/Header';
-import MainTag from '../../../components/MainTag';
 import Search from './Search';
+import MainTag from '../../../components/MainTag';
+import ToastMsg from '../../../components/ToastMsg';
 import EmployerCard from './EmployerCard';
 import { PeriodMenu, CommentMenu, SettingsMenu } from './Menus';
 import { RiHistoryLine as Period } from 'react-icons/ri'
@@ -20,6 +21,7 @@ export default function ListMarks() {
   const [employersMirror, setEmployersMirror] = useState(employers);
   const [loading, setLoading] = useState(false);
   const [viewGrid, setViewGrid] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const [showSearch, setShowSearch] = useState(false);
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
@@ -35,7 +37,7 @@ export default function ListMarks() {
     sessionStorage.listMarksFilters = placeFilters;
 
     setLoading(true);
-    
+
     api.get('/employers', {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
@@ -44,12 +46,18 @@ export default function ListMarks() {
       setLoading(false);
       setShowSearch(false);
     })
+      .catch(setErrorMsg)
   }, [])
 
 
 
   if (loading || !employers) {
-    return <LoadingInner text="Carregando funcionários..." />
+    return (
+      <>
+        <LoadingInner text="Carregando funcionários..." />
+        {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
+      </>
+    )
   }
 
 
