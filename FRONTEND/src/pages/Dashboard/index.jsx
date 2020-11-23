@@ -64,7 +64,7 @@ export default function Dashboard() {
     return (
       <>
         <LoadingInner text="Inicializando painel..." />
-        {errorMsg && <ToastMsg text={errorMsg} close={() => history.push('/login')} />}
+        {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
       </>
     );
   }
