@@ -1,15 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import './style.scss';
+import { useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 
 
 export default function Search({ closeSearch, originalData, setFiltredData }) {
   const input = useRef();
+  const history = useHistory();
 
 
   useEffect(() => {
-    window.location.hash = 'search';
+    history.push('#search');
     input.current.focus();
 
     const handleHashChange = () => window.location.hash !== '#search' && closeAndCleanSearch();

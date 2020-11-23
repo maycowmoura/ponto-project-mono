@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import './style.scss';
-
+import { useHistory } from 'react-router-dom';
 
 export default function FloatMenu({ title = '', closeMenu, children, className }) {
+  const history = useHistory();
 
   useEffect(() => {
-    window.location.hash = 'float-menu';
+    history.push('#float-menu');
     document.body.classList.add('no-scroll');
 
     const handleHashChange = () => window.location.hash !== '#float-menu' && closeMenu();
