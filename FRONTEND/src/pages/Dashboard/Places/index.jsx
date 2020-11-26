@@ -151,7 +151,7 @@ export default function Places() {
           />
         }
 
-        <div className="title">Funcionários</div>
+        <div className="title">Locais de Trabalho</div>
         {places.length > 3 && <div onClick={setShowSearch}><SearchIcon /></div>}
         <div onClick={setNewPlaceMenu}>
           <FiPlusCircle />
@@ -160,25 +160,26 @@ export default function Places() {
 
 
       <main>
-        {placesMirror.length
-          ? (
-            placesMirror.map(place =>
-              <section key={place.id}>
-                <strong>{place.name}</strong>
-                <div className="buttons">
-                  <button onClick={() => setRenameMenu(place)}>
-                    <FiEdit />
-                  </button>
-                  <button onClick={() => setDeleteMenu(place)}>
-                    <FaRegTrashAlt />
-                  </button>
-                </div>
-              </section>
-            ))
-          : places.length
-            ? <EmptyList title="Sem resultados" />
-            : <EmptyList title="Nada por aqui..." text={<>Adicione locais clicando em <FiPlusCircle /> ali em cima.</>} />
-        }
+        {placesMirror.length ? (
+          placesMirror.map(place =>
+            <section key={place.id}>
+              <strong>{place.name}</strong>
+              <div className="buttons">
+                <button onClick={() => setRenameMenu(place)}>
+                  <FiEdit />
+                </button>
+                <button onClick={() => setDeleteMenu(place)}>
+                  <FaRegTrashAlt />
+                </button>
+              </div>
+            </section>
+          )
+        ) : (
+            <EmptyList
+              title={places.length ? 'Sem resultados' : 'Nada por aqui...'}
+              text={places.length ? '' : <>Adicione locais clicando em <FiPlusCircle /> ali em cima.</>}
+            />
+        )}
       </main>
 
       {errorMsg &&
