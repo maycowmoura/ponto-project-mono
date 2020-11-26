@@ -140,6 +140,8 @@ export default function Places() {
 
       {loading && <LoadingInner fixed />}
 
+      {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} aboveAll />}
+
       <Header backButton>
         {showSearch &&
           <Search
@@ -179,12 +181,8 @@ export default function Places() {
               title={places.length ? 'Sem resultados' : 'Nada por aqui...'}
               text={places.length ? '' : <>Adicione locais clicando em <FiPlusCircle /> ali em cima.</>}
             />
-        )}
+          )}
       </main>
-
-      {errorMsg &&
-        <ToastMsg text={errorMsg} close={setErrorMsg} aboveAll />
-      }
 
 
 
@@ -196,6 +194,8 @@ export default function Places() {
             placeholder="Digite o nome do local"
             maxLength="60"
           />
+
+          {!data.users && <LoadingInner loaderSize="16" />}
 
           {data.users?.length > 1 &&
             <>
@@ -216,7 +216,7 @@ export default function Places() {
           <small>
             Após adicionar, você pode transferir funcionários para este local usando a aba Gerenciar Funcionários.
           </small>
-          <button onClick={handleCreate}>Adicionar</button>
+          <button onClick={handleCreate} disabled={!data.users}>Adicionar</button>
         </FloatMenu>
       }
 
