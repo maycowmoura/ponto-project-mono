@@ -28,8 +28,8 @@ use Respect\Validation\Validator as v;
 try {
   v::key('name', v::stringType()->length(3, 60))->check(POST);
   v::optional(
-    v::key('users-accesses', v::arrayType()->each(v::numericVal()->positive()))
-  )->check(POST);
+    v::arrayType()->each(v::numericVal()->positive())
+  )->check(POST['users-accesses'] ?? null);
   
 } catch (Exception $e) {
   error($e->getMessage());
