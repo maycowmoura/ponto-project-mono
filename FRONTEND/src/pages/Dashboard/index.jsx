@@ -74,7 +74,7 @@ export default function Dashboard() {
   return (
     <div id="dashboard">
       <Header>
-        <div className="title">Gerenciador de Ponto</div>
+        <div className="title">MarcaPonto</div>
       </Header>
 
       <main>
