@@ -5,7 +5,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 
 
-export default function Search({ closeSearch, originalData, setFiltredData }) {
+export default function Search({ closeSearch, originalData, setMirroredData, keysToFilter, placeholder }) {
   const input = useRef();
   const history = useHistory();
 
@@ -27,18 +27,23 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
 
   function handleSearch(e) {
     const removeAccents = str => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    let value = removeAccents(e.target.value.trim().toLowerCase());
+    let inputValue = removeAccents(e.target.value.trim().toLowerCase());
 
-    if (!value.length) {
-      setFiltredData(originalData);
+    if (!inputValue.length) {
+      setMirroredData(originalData);
 
     } else {
-      setFiltredData(originalData.filter(employer => {
-        const joined = removeAccents(employer.name.toLowerCase())
-          + ' ' + removeAccents(employer.job.toLowerCase())
-          + ' ' + removeAccents(employer.place.toLowerCase());
-        return (joined).includes(value);
-      }))
+      const filtredData = originalData.filter(item => (
+        Object.entries(item)
+          .map(([key, val]) => (
+            keysToFilter.includes(key) ? removeAccents(val.toLowerCase()) : null
+          ))
+          .filter(val => val) // remove nulls
+          .join(' ')
+          .includes(inputValue)
+      ))
+
+      setMirroredData(filtredData)
     }
   }
 
@@ -47,7 +52,7 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
   function cleanSearch() {
     input.current.value = '';
     input.current.focus();
-    setFiltredData(originalData);
+    setMirroredData(originalData);
   }
 
 
@@ -67,7 +72,7 @@ export default function Search({ closeSearch, originalData, setFiltredData }) {
         ref={input}
         type="text"
         onChange={handleSearch}
-        placeholder="Pesquisar nome, função ou local"
+        placeholder={placeholder || 'Buscar...'}
       />
       <div onClick={cleanSearch}>
         <MdClose />

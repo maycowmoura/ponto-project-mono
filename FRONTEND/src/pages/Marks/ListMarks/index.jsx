@@ -4,7 +4,7 @@ import { useMainContext } from '../../../contexts/MainContext';
 import { useListMarks } from '../../../contexts/MarksContext';
 import LoadingInner from '../../../components/LoadingInner';
 import Header from '../../../components/Header';
-import Search from './Search';
+import Search from '../../../components/Search';
 import MainTag from '../../../components/MainTag';
 import ToastMsg from '../../../components/ToastMsg';
 import EmployerCard from './EmployerCard';
@@ -64,25 +64,23 @@ export default function ListMarks() {
   return (
     <div id="list-marks">
       <Header backButton>
-        {showSearch
-          ? (
-            <Search
-              closeSearch={() => setShowSearch(false)}
-              originalData={employers}
-              setFiltredData={setEmployersMirror}
-            />
-          ) : (
-            <>
-              <div className="title">Marcações</div>
-              <div onClick={setShowSearch}><SearchIcon /></div>
-              <div onClick={setShowPeriodMenu}><Period /></div>
-              <div onClick={() => setViewGrid(v => !v)}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
+        {(showSearch && employers.length > 1) &&
+          <Search
+            originalData={employers}
+            setMirroredData={setEmployersMirror}
+            keysToFilter={['name', 'job', 'place']}
+            placeholder={'Pesquisar nome, função ou local'}
+            closeSearch={setShowSearch}
+          />
+        }
+        <div className="title">Marcações</div>
+        {employers.length > 3 && <div onClick={setShowSearch}><SearchIcon /></div>}
+        <div onClick={setShowPeriodMenu}><Period /></div>
+        <div onClick={() => setViewGrid(v => !v)}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
 
-              {userType == 'admin' &&
-                <div onClick={setShowSettingsMenu}><Settings /></div>
-              }
-            </>
-          )}
+        {userType == 'admin' &&
+          <div onClick={setShowSettingsMenu}><Settings /></div>
+        }
       </Header>
 
 

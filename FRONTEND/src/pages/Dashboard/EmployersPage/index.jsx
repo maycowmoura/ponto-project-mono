@@ -3,6 +3,7 @@ import './style.scss';
 import { useMainContext } from '../../../contexts/MainContext';
 import { useHistory } from 'react-router-dom';
 import Header from '../../../components/Header';
+import Search from '../../../components/Search';
 import LoadingInner from '../../../components/LoadingInner';
 import EmptyList from '../../../components/EmptyList';
 import ToastMsg from '../../../components/ToastMsg';
@@ -11,16 +12,21 @@ import { FiPlusCircle, FiEdit } from 'react-icons/fi';
 import { MdLocationOn } from 'react-icons/md';
 import { FaSuitcase } from 'react-icons/fa';
 import { BiShuffle, BiArchive } from 'react-icons/bi';
+import { HiSearch as SearchIcon } from 'react-icons/hi'
 
 
 export default function EmployersPage() {
   const { api, data: { employers, places }, setData } = useMainContext();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [employersMirror, setEmployersMirror] = useState(employers);
   const [transferMenu, setTransferMenu] = useState(null);
   const [archiveMenu, setArchiveMenu] = useState(null);
   const history = useHistory();
 
+
+  
   function handleCreateEmployer() {
     if (!places.length) {
       return setErrorMsg('Vá até os locais e adicione ao menos um local antes de continuar.');
@@ -81,6 +87,30 @@ export default function EmployersPage() {
   }
 
 
+  function renderEmployers() {
+    return employersMirror.map(employer =>
+      <section key={employer.id}>
+
+        <h3>{employer.name}</h3>
+        <span><FaSuitcase /> {employer.job}</span>
+        <span><MdLocationOn /> {employer.place}</span>
+
+        <div className="buttons">
+          <button onClick={() => setTransferMenu(employer)}>
+            <BiShuffle />
+          </button>
+          {/* <button>
+              <FiEdit />
+            </button> */}
+          <button onClick={() => setArchiveMenu(employer)}>
+            <BiArchive />
+          </button>
+        </div>
+
+      </section>
+    )
+  }
+
 
   return (
     <div id="employers-page">
@@ -88,41 +118,29 @@ export default function EmployersPage() {
       {loading && <LoadingInner fixed />}
 
       <Header backButton>
+        {showSearch &&
+          <Search
+            originalData={employers}
+            setMirroredData={setEmployersMirror}
+            keysToFilter={['name', 'job', 'place']}
+            placeholder={'Pesquisar nome, função ou local'}
+            closeSearch={setShowSearch}
+          />
+        }
+
         <div className="title">Funcionários</div>
-        <div onClick={handleCreateEmployer}>
-          <FiPlusCircle />
-        </div>
+        {employers.length > 3 && <div onClick={setShowSearch}><SearchIcon /></div>}
+        <div onClick={handleCreateEmployer}><FiPlusCircle /></div>
       </Header>
 
 
       <main>
-        {employers.length ? (
-          employers.map(employer =>
-            <section key={employer.id}>
-
-              <h3>{employer.name}</h3>
-              <span><FaSuitcase /> {employer.job}</span>
-              <span><MdLocationOn /> {employer.place}</span>
-
-              <div className="buttons">
-                <button onClick={() => setTransferMenu(employer)}>
-                  <BiShuffle />
-                </button>
-                {/* <button>
-                  <FiEdit />
-                </button> */}
-                <button onClick={() => setArchiveMenu(employer)}>
-                  <BiArchive />
-                </button>
-              </div>
-
-            </section>
-          )) : (
-            <EmptyList
-              title="Ops..."
-              text={<>Você precisa de funcionários para começar! Clique em <FiPlusCircle /> e adicione.</>}
-            />
-          )}
+        {employersMirror.length
+          ? renderEmployers()
+          : employers.length
+            ? <EmptyList title="Sem resultados" />
+            : <EmptyList title="Ops..." text={<>Você precisa de funcionários para começar! Clique em <FiPlusCircle /> e adicione.</>} />
+        }
       </main>
 
       {errorMsg &&
