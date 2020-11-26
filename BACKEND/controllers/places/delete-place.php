@@ -29,7 +29,7 @@ try {
   $sql->beginTransaction();
   $sql->execute(
    "DELETE FROM `$client-users-accesses` 
-    WHERE place_id = '$placeId' AND user_id = '$userId'"
+    WHERE place_id = '$placeId'"
   );
   $sql->execute(
    "DELETE FROM `$client-places` 
