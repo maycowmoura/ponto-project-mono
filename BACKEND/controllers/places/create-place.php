@@ -4,7 +4,8 @@
  RECEIVES
  an POST with a json
  {
-   "name": "Example of name"
+   "name": "Example of name",
+   "users-accesses": [1001, 1002]
  }
  
  RETURNS
@@ -24,21 +25,23 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use Respect\Validation\Validator as v;
 
 
+try {
+  v::key('name', v::stringType()->length(3, 60))->check(POST);
+  v::optional(
+    v::key('users-accesses', v::arrayType()->each(v::numericVal()->positive()))
+  )->check(POST);
+  
+} catch (Exception $e) {
+  error($e->getMessage());
+}
+
+
 
 $auth = new Auth();
 $auth->mustBeAdmin();
 $userId = $auth->userId;
 $client = $auth->client;
 
-
-try {
-  v::key('name', v::stringType()->length(3, 60))->check(POST);
-  
-} catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
-}
 
 
 $name = mb_strtoupper(POST['name']);
@@ -49,10 +52,19 @@ $sql->execute(
   "INSERT INTO `$client-places` 
   (`name`) VALUES ('$name')"
 );
+
+
+$usersAccesses = POST['users-accesses'];
+$usersAccesses[] = $userId;
+$usersAccessesQuery = array_map(fn($user) => "('$user', LAST_INSERT_ID())", $usersAccesses);
+$usersAccessesQuery = implode(',', $usersAccessesQuery);
+
 $sql->execute(
   "INSERT INTO `$client-users-accesses` 
-  (`user_id`, `place_id`) VALUES ('$userId', LAST_INSERT_ID())"
+  (`user_id`, `place_id`) VALUES $usersAccessesQuery"
 );
+
+
 $sql->execute(
   "SELECT LAST_INSERT_ID() AS id FROM `$client-places`"
 );

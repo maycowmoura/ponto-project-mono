@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './style.scss';
 import { useMainContext } from '../../../contexts/MainContext';
 import LoadingInner from '../../../components/LoadingInner';
@@ -6,6 +6,7 @@ import Header from '../../../components/Header';
 import EmptyList from '../../../components/EmptyList';
 import ToastMsg from '../../../components/ToastMsg';
 import FloatMenu from '../../../components/FloatMenu';
+import { FirstLetterToUpper } from '../../../utils/TextFormatters';
 import { FiPlusCircle, FiEdit } from 'react-icons/fi';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
@@ -23,8 +24,23 @@ export default function Places() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [newPlaceMenu, setNewPlaceMenu] = useState(null);
+  const [usersAccessesToNewPlace, setUsersAccessesToNewPlace] = useState([]);
   const [renameMenu, setRenameMenu] = useState(null);
   const [deleteMenu, setDeleteMenu] = useState(null);
+
+
+  useEffect(() => {
+    if (data.users) return;
+
+    api.get('/users')
+      .then(({ data }) => {
+        if (data.error) return;
+
+        setData(prev => ({ ...prev, users: data }))
+      })
+  }, [])
+
+
 
 
   function handleCreate() {
@@ -37,7 +53,7 @@ export default function Places() {
 
     setLoading(true);
 
-    api.post('/places', { name })
+    api.post('/places', { name, 'users-accesses': usersAccessesToNewPlace })
       .then(({ data }) => {
         if (data.error) return setErrorMsg(data.error);
 
@@ -50,6 +66,17 @@ export default function Places() {
       })
       .catch(setErrorMsg)
       .finally(() => setLoading(false))
+  }
+
+
+  function handleUsersAccessesToNewPlace(e) {
+    const values = Array.from(e.target.selectedOptions)
+      .filter(option => option.value != 0) //eslint-disable-line
+      .map(option => option.value)
+      
+    values.length
+      ? setUsersAccessesToNewPlace(values)
+      : e.target.value = '0';
   }
 
 
@@ -71,7 +98,7 @@ export default function Places() {
 
         setData(prev => {
           const places = prev.places.map(place => {
-            if(place.id === data.id){
+            if (place.id === data.id) {
               place.name = data.name;
             }
             return place;
@@ -156,6 +183,23 @@ export default function Places() {
             placeholder="Digite o nome do local"
             maxLength="60"
           />
+
+          {data.users?.length > 1 &&
+            <>
+              <label>Quem mais terá acesso a este local?</label>
+              <select
+                onChange={handleUsersAccessesToNewPlace}
+                defaultValue={[0]}
+                multiple
+                className="border"
+              >
+                <option value="0" hidden>Somente eu</option>
+                {data.users.map(user =>
+                  <option value={user.id}>{FirstLetterToUpper(user.name)}</option>
+                )}
+              </select>
+            </>
+          }
           <small>
             Após adicionar, você pode transferir funcionários para este local usando a aba Gerenciar Funcionários.
           </small>
