@@ -206,8 +206,8 @@ export default function Places() {
                 className="border"
               >
                 <option value="0" hidden>Somente eu</option>
-                {data.users.map(user =>
-                  <option value={user.id}>{FirstLetterToUpper(user.name)}</option>
+                {data.users.map(({ id, name }) =>
+                  <option key={id} value={id}>{FirstLetterToUpper(name)}</option>
                 )}
               </select>
             </>
