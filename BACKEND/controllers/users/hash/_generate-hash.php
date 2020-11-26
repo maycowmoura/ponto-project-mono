@@ -6,8 +6,8 @@ require_once __DIR__ . '/../../../models/SQL.php';
 
 function generateHash($user, $client) {
 
-  $oneDaysAhead = time() + (24 * 60 * 60);
-  $hash = randomString();
+  $oneDayAhead = time() + (24 * 60 * 60);
+  $hash = randomString(15);
 
 
   $sql = new SQL();
@@ -28,9 +28,9 @@ function generateHash($user, $client) {
    "INSERT INTO `temp-hashes`
     (`hash`, `client`, `user_id`, `expires`)
     VALUES
-    ('$hash', '$client', '$user', '$oneDaysAhead')
+    ('$hash', '$client', '$user', '$oneDayAhead')
     ON DUPLICATE KEY UPDATE
-    `hash`='$hash', `expires`='$oneDaysAhead'"
+    `hash`='$hash', `expires`='$oneDayAhead'"
   );
 
 
