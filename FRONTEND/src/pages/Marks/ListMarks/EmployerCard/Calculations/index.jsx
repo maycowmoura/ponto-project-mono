@@ -18,17 +18,17 @@ function Calculations({ marks }) {
     sundaysHours: 0
   };
 
-  function sum(key, condition, value){
+  function sum(key, condition, value) {
     reducer[key] += condition ? parseInt(value) : 0;
   }
 
   Object.values(marks).forEach(item => {
-    if(!item.time_in){
+    if (!item.time_in) {
       return;
     }
 
     const lunch_time = 60;
-    
+
     const balance = parseInt(item.time_out) - parseInt(item.time_in) - lunch_time;
     sum('misses', item.time_in < 0, 1);
 
@@ -39,6 +39,7 @@ function Calculations({ marks }) {
     sum('earlyExit', item.time_after < 0, item.time_after);
 
     sum('workedDays', (item.time_in > -1), 1);
+
     sum('saturdays', (item.weekday == 6 && item.time_in > -1), 1);
     sum('sundays', ((item.weekday == 0 || !!item.holiday) && item.time_in > -1), 1);
 
@@ -46,10 +47,34 @@ function Calculations({ marks }) {
     sum('sundaysHours', ((item.weekday == 0 || !!item.holiday) && item.time_in > -1), balance);
   });
 
-  const workedDaysText = reducer.workedDays ? `${reducer.workedDays} dia${reducer.workedDays > 1 ? 's' : ''}` : 'Nenhum dia';
-  const missesText = reducer.misses ? `${reducer.misses} dia${reducer.misses > 1 ? 's' : ''}` : 'Nenhum dia';
-  const saturdayText = reducer.saturdays ? `${format(reducer.saturdaysHours)} (${reducer.saturdays} dia${reducer.saturdays > 1 ? 's' : ''})` : 'Nenhum dia';
-  const sundayText = reducer.sundays ? `${format(reducer.sundaysHours)} (${reducer.sundays} dia${reducer.sundays > 1 ? 's' : ''})` : 'Nenhum dia';
+  
+  const missesText = reducer.misses
+    ? `${reducer.misses} dia${reducer.misses > 1 ? 's' : ''}`
+    : 'Nenhum dia';
+
+  const extraText = reducer.extraHours
+    ? format(reducer.extraHours)
+    : 'Sem extras';
+
+  const lateText = reducer.late
+    ? format(Math.abs(reducer.late))
+    : 'Sem atrasos';
+
+  const earlyExitText = reducer.earlyExit
+    ? format(Math.abs(reducer.earlyExit))
+    : 'Sem saídas';
+
+  const workedDaysText = reducer.workedDays
+    ? `${reducer.workedDays} dia${reducer.workedDays > 1 ? 's' : ''}`
+    : 'Nenhum dia';
+
+  const saturdayText = reducer.saturdays
+    ? `${format(reducer.saturdaysHours)} (${reducer.saturdays} dia${reducer.saturdays > 1 ? 's' : ''})`
+    : 'Nenhum dia';
+
+  const sundayText = reducer.sundays
+    ? `${format(reducer.sundaysHours)} (${reducer.sundays} dia${reducer.sundays > 1 ? 's' : ''})`
+    : 'Nenhum dia';
 
 
 
@@ -62,16 +87,16 @@ function Calculations({ marks }) {
         Faltas: <span>{missesText}</span>
       </div>
       <div className="green">
-        Horas Extras: <span>{format(reducer.extraHours)}</span>
+        Horas Extras: <span>{extraText}</span>
       </div>
       <div className="red">
-        Atraso: <span>{format(Math.abs(reducer.late))}</span>
+        Atraso: <span>{lateText}</span>
       </div>
       <div className="green">
         Sábados: <span>{saturdayText}</span>
       </div>
       <div className="red">
-        Saída Cedo: <span>{format(Math.abs(reducer.earlyExit))}</span>
+        Saída Cedo: <span>{earlyExitText}</span>
       </div>
       <div className="green">
         Dom. e Feriados: <span>{sundayText}</span>
