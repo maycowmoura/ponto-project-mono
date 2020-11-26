@@ -11,11 +11,11 @@ export default function FloatName({ cardRef, employerName }) {
     function scrollSpy() {
       const pos = cardRef.current?.getBoundingClientRect();
 
-      if (!isShowing.current && pos.top < 0 && pos.bottom > 150) {
+      if (!isShowing.current && pos.top < 0 && pos.bottom > 300) {
         setShow(true);
         isShowing.current = true;
 
-      } else if (isShowing.current && (pos.top > 0 || pos.bottom < 150)) {
+      } else if (isShowing.current && (pos.top > 0 || pos.bottom < 300)) {
         setShow(false);
         isShowing.current = false;
       }
