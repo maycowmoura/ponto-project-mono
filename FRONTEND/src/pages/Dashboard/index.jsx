@@ -52,6 +52,7 @@ export default function Dashboard() {
 
   function handleSelectFilterPlace(e) {
     const value = Array.from(e.target.selectedOptions)
+      .filter(option => option.value != 0) //eslint-disable-line
       .map(option => option.value)
       .join(',');
     value ? setPlaceFilters(value) : e.target.value = '0';
