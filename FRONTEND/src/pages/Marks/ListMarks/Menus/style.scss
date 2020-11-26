@@ -1,13 +1,6 @@
 #list-marks {
-  .period-menu {
-    p {
-      font-size: 16px;
-      margin-top: 16px;
-    }
-
-    .select-date {
-      margin-bottom: 40px;
-    }
+  .period-menu .select-date {
+    margin-bottom: 40px;
   }
 
   .settings-menu label {
@@ -21,7 +14,7 @@
     }
   }
 
-  .comments-menu > div {
+  .comments-menu>div {
     padding: 16px;
   }
 }
