@@ -35,8 +35,9 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
   }
 
   function validateHours() {
-    const { time_in, time_out } = current;
-    if (/\d/.test(time_in) && time_in >= 0 && time_in >= time_out) {
+    const time_in = current.time_in ?? current.default_time_in;
+    const time_out = current.time_out ?? current.default_time_out;
+    if (time_in >= time_out) {
       setToast('Ops... O horário de saída deve ser maior que o de entrada.');
       return false;
     }
