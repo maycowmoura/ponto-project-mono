@@ -1,13 +1,22 @@
 html,
-body,
-#root {
+body{
+  overflow: hidden; // para evitar o pull to refresh do chrome
   height: 100%;
+}
+
+#root {
+  overflow-y: auto; // para evitar o pull to refresh do chrome
+  height: 100%;
+}
+
+html, body {
 }
 
 body {
   background-color: #202124;
   color: #FFF;
   font-size: 18px;
+
 
   &.no-scroll {
     overflow: hidden !important;
