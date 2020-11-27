@@ -51,7 +51,7 @@ export default function Calendar() {
     setDate(newDate);
     setDayMarks(null); // força o reload dos dias
     setIndex(0);
-    history.goBack();
+    history.push('/marks/set');
   }
 
 

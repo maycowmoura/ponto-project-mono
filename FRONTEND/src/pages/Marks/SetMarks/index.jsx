@@ -25,7 +25,6 @@ export default function SetMarks() {
   const [errorMsg, setErrorMsg] = useState(null);
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = userType === 'admin';
-  const headerProps = isAdmin ? { backButton: true } : null;
   const history = useHistory();
 
 
@@ -103,7 +102,7 @@ export default function SetMarks() {
 
   return (
     <div id="set-marks">
-      <Header {...headerProps}>
+      <Header backButton={isAdmin && (() => history.push('/dashboard'))}>
         <div className="title" onClick={() => history.push('/marks/set/calendar')}>
           <Calendar />
           <span>
