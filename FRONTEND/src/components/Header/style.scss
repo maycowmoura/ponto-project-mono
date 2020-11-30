@@ -20,8 +20,17 @@ header {
     height: 100%;
     transition: background-color .3s;
 
-    &:not(.title):active {
+    &:not(.title):not(.logo):active {
       background-color: #4586b2;
+    }
+
+    &.logo {
+      padding-right: 4px;
+
+      img {
+        max-height: 40px;
+        margin-bottom: 2px;
+      }
     }
 
     svg {

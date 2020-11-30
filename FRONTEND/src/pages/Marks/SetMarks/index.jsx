@@ -71,7 +71,7 @@ export default function SetMarks() {
 
   function handleMissed(revertMissed = false) {
     setAnimateMissed('animated');
-    if (!current.default_time_in){
+    if (!current.default_time_in) {
       current.default_time_in = current.default_time_out = 0;
     }
 
@@ -102,7 +102,10 @@ export default function SetMarks() {
 
   return (
     <div id="set-marks">
-      <Header backButton={isAdmin && (() => history.push('/dashboard'))}>
+      <Header
+        backButton={isAdmin && (() => history.push('/dashboard'))}
+        logo={!isAdmin}
+      >
         <div className="title" onClick={() => history.push('/marks/set/calendar')}>
           <Calendar />
           <span>
@@ -113,12 +116,6 @@ export default function SetMarks() {
         <div onClick={() => history.push('/marks/list')}>
           <List />
         </div>
-
-        {isAdmin ||
-          <div onClick={() => history.push('/help')}>
-            <Help />
-          </div>
-        }
       </Header>
 
       <main>

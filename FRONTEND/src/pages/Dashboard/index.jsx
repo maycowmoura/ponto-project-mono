@@ -73,7 +73,7 @@ export default function Dashboard() {
 
   return (
     <div id="dashboard">
-      <Header>
+      <Header logo>
         <div className="title">MarcaPonto</div>
       </Header>
 
