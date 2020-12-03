@@ -17,6 +17,14 @@ import EmployersPage from './pages/Dashboard/EmployersPage';
 import NewEmployer from './pages/Dashboard/EmployersPage/NewEmployer';
 import ClosePoint from './pages/Dashboard/ClosePoint';
 
+
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) {
+    e.preventDefault();
+  }
+}, {passive: false})
+
+
 export default function App() {
   const homepage = '/novoponto';
   const { data } = useMainContext();
@@ -24,6 +32,7 @@ export default function App() {
   if (!data && !window.location.pathname.includes('/login')) {
     window.history.pushState(null, null, homepage);
   }
+
 
   return (
     <MainContextProvider>
