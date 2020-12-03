@@ -15,7 +15,8 @@ export default function Typing() {
   const [inputInvalid, setInputInvalid] = useState(false);
   const history = useHistory();
   const okClicked = useRef(false);
-  const timeRegex = /([0-1]\d|2[0-3]):[0-6]\dh/;
+  const inputTimeRegex = /([0-1][\d-]|2[0-3-]):[0-6-][\d-]h/;
+  const finalTimeRegex = /([0-1]\d|2[0-3]):[0-6]\dh/;
 
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Typing() {
   function handleOk() {
     setInputInvalid(false);
 
-    if (!timeRegex.test(value)) return setInputInvalid(true);
+    if (!finalTimeRegex.test(value)) return setInputInvalid(true);
 
     setCurrent(prev => {
       prev[`time_${activeInput}`] = FormatedTimeToMinutes(value);
