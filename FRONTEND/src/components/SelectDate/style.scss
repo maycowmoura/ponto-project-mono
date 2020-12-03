@@ -3,8 +3,8 @@
   justify-content: space-around;
 
   &.invalid {
-    animation: blink-border .5s;
-    animation-iteration-count: 4;
+    animation: blink-border .4s;
+    animation-iteration-count: 2;
   }
 
   select {
