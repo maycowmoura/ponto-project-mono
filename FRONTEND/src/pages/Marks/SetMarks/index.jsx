@@ -7,6 +7,7 @@ import LoadingInner from '../../../components/LoadingInner';
 import Uploading from './Uploading';
 import Header from '../../../components/Header';
 import ToastMsg from '../../../components/ToastMsg';
+import VideoModal from '../../../components/VideoModal';
 import { months, weekdays } from '../../../utils/MonthsAndWeekdays';
 import { DateToArray, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
 import Input from './Input';
@@ -117,6 +118,8 @@ export default function SetMarks() {
           <List />
         </div>
       </Header>
+
+      <VideoModal />
 
       <main>
         <div className={animationClass}>

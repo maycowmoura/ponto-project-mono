@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import LoadingInner from '../../components/LoadingInner';
 import Header from '../../components/Header';
 import ToastMsg from '../../components/ToastMsg';
+import VideoModal from '../../components/VideoModal';
 import FloatMenu from '../../components/FloatMenu';
 import { ImCalendar } from 'react-icons/im';
 import { MdSecurity, MdLocationOn, MdHelpOutline } from 'react-icons/md';
@@ -60,7 +61,6 @@ export default function Dashboard() {
 
 
 
-
   if (!data) {
     return (
       <>
@@ -76,6 +76,8 @@ export default function Dashboard() {
       <Header logo>
         <div className="title">MarcaPonto</div>
       </Header>
+
+      <VideoModal />
 
       <main>
         <button onClick={handleManagePointClick}>
