@@ -14,7 +14,7 @@ export default function Modal({ children, close = ()=>{} }) {
     setTimeout(() => window.addEventListener('hashchange', handleHashChange), 10);
 
     return () => {
-      window.location.hash === 'modal' && window.history.back();
+      window.location.hash === '#modal' && window.history.back();
       document.body.classList.remove('no-scroll');
       window.removeEventListener('hashchange', handleHashChange);
     }
