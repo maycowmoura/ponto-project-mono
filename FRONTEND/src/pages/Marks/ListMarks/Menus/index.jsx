@@ -57,19 +57,6 @@ export function PeriodMenu({ setShowPeriodMenu }) {
 }
 
 
-export function SettingsMenu({ setShowSettingsMenu }) {
-  return (
-    <FloatMenu title="O que deseja ver?" className="settings-menu" closeMenu={setShowSettingsMenu}>
-      <Checkbox label="Mostrar horas extras" checked />
-      <Checkbox label="Mostrar faltas" checked />
-      <Checkbox label="Mostrar fins de semana e feriados trabalhados" checked />
-      <button>Continuar</button>
-    </FloatMenu>
-  )
-}
-
-
-
 export function CommentMenu({ showComment: mark, setShowComment }) {
   const timestampInMs = mark.commented_at * 1000;
   const commented_at = DateToReadable(new Date(timestampInMs));

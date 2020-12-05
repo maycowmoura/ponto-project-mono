@@ -8,14 +8,14 @@ import Search from '../../../components/Search';
 import MainTag from '../../../components/MainTag';
 import ToastMsg from '../../../components/ToastMsg';
 import EmployerCard from './EmployerCard';
-import { PeriodMenu, CommentMenu, SettingsMenu } from './Menus';
+import { PeriodMenu, CommentMenu } from './Menus';
 import { RiHistoryLine as Period } from 'react-icons/ri'
 import { HiViewGrid as ViewGrid, HiSearch as SearchIcon, HiAdjustments as Settings } from 'react-icons/hi'
 import { FaRegCalendarAlt as ViewCalendar } from 'react-icons/fa';
 
 
 export default function ListMarks() {
-  const { api, placeFilters, userType } = useMainContext();
+  const { api, placeFilters } = useMainContext();
   const { employers, setEmployers } = useListMarks();
 
   const [employersMirror, setEmployersMirror] = useState(employers);
@@ -25,7 +25,6 @@ export default function ListMarks() {
 
   const [showSearch, setShowSearch] = useState(false);
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
-  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [showComment, setShowComment] = useState(false);
 
 
@@ -77,10 +76,6 @@ export default function ListMarks() {
         {employers.length > 3 && <div onClick={setShowSearch}><SearchIcon /></div>}
         <div onClick={setShowPeriodMenu}><Period /></div>
         <div onClick={() => setViewGrid(v => !v)}>{viewGrid ? <ViewCalendar /> : <ViewGrid />}</div>
-
-        {userType == 'admin' &&
-          <div onClick={setShowSettingsMenu}><Settings /></div>
-        }
       </Header>
 
 
@@ -94,12 +89,7 @@ export default function ListMarks() {
       {showPeriodMenu &&
         <PeriodMenu {...{ setShowPeriodMenu }} />
       }
-
-
-      {showSettingsMenu &&
-        <SettingsMenu {...{ setShowSettingsMenu }} />
-      }
-
+      
 
       {showComment &&
         <CommentMenu {...{ showComment, setShowComment }} />
