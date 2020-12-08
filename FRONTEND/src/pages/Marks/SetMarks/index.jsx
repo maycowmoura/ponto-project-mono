@@ -40,6 +40,7 @@ export default function SetMarks() {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
       if (data.error) return setErrorMsg(data.error);
+      if (!data.length) return setErrorMsg('Parece que não há funcionários nesse local.\nTransfira usando o menu Gerenciar Funcionários.');
 
       const mapped = data.map(item => ({ ...item, editingPrevious: !!item.time_in }))
       setDayMarks(mapped);
