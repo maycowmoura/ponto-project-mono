@@ -9,9 +9,6 @@ body{
   height: 100%;
 }
 
-html, body {
-}
-
 body {
   background-color: #202124;
   color: #FFF;
@@ -30,6 +27,10 @@ body {
   textarea,
   button {
     font-size: 18px;
+  }
+
+  a, a:visited, a:hover {
+    color: #38c3ff;
   }
 }
 
