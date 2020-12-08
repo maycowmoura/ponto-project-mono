@@ -3,7 +3,7 @@ import './style.scss';
 import { useHistory } from 'react-router-dom';
 
 
-export default function Modal({ children, close = ()=>{} }) {
+export default function Modal({ children, close = () => { }, noButton, buttonText }) {
   const history = useHistory();
 
   useEffect(() => {
@@ -22,9 +22,17 @@ export default function Modal({ children, close = ()=>{} }) {
 
 
   return (
-    <div id="modal" onClick={() => close && close()}>
+    <div id="modal" onClick={() => close()}>
       <div id="modal-inner" onClick={e => e.stopPropagation()}>
-        {children}
+        <div>
+          {children}
+        </div>
+
+        {noButton ||
+          <button className="modal-close" onClick={() => close()} >
+            {buttonText || 'Entendi'}
+          </button>
+        }
       </div>
     </div>
   )

@@ -40,7 +40,7 @@ export default function VideoModal({ close }) {
       }
 
       {!isLoading && showModal &&
-        <Modal close={close || handleHideModal}>
+        <Modal close={close || handleHideModal} buttonText="Mais tarde">
 
           {/* 
              had to use dangerouslySetInnerHTML because of "muted" issue, not autoplaying in safari

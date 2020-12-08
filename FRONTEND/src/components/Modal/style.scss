@@ -12,15 +12,28 @@
   z-index: 20;
 
   #modal-inner {
+    display: flex;
+    flex-direction: column;
     background-color: #36373c;
     width: calc(100% - 20px);
     margin: 0 auto;
     max-height: 90%;
     padding: 16px;
     color: #FFF;
-    overflow-y: auto;
     box-shadow: 4px 4px 7px 0px #0000003d;
     animation: zoom-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+    >div {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    button.modal-close {
+      background-color: transparent;
+      color: #38f0ff;
+      margin: 12px 8px -18px auto;
+      padding: 0;
+    }
   }
 }
 
