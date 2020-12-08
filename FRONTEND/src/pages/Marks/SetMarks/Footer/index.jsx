@@ -20,12 +20,18 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
   }
 
   function saveMarks() {
-    // se não tiver time_in (igual a null), 
-    // significa que está usando o valor padrão (default_time_in)
-    if (!current.time_in && !current.time_out) {
+    const useDefaultTime = !current.time_in && !current.time_out; // se time_in é null, usa o default time
+    const ignore = useDefaultTime && !current.default_time_in && !current.default_time_out; // se é pra usar o default e não tem default, ignora
+    const commentedOnly = current.edited && ignore; // se n tem marcações mas esta editado, significa q colocou apenas comentário
+
+    if (useDefaultTime && !ignore) {
       current.time_in = current.default_time_in;
       current.time_out = current.default_time_out;
       current.edited = true;
+    }
+
+    if (commentedOnly) {
+      current.time_in = current.time_out = -1;
     }
 
     setDayMarks(prev => {
