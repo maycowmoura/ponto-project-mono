@@ -40,6 +40,9 @@ export default function ListMarks() {
     api.get('/employers', {
       params: { 'place-filters': placeFilters }
     }).then(({ data }) => {
+      if (data.error) return setErrorMsg(data.error);
+      if (!data.length) return setErrorMsg('Parece que não há funcionários nesse local.\nTransfira usando o menu Gerenciar Funcionários.');
+
       setEmployers(data);
       setEmployersMirror(data);
       setLoading(false);
