@@ -20,7 +20,7 @@ class Auth {
 
 
   function __construct($checkToken = true){
-    $this->jwtKey = 'nT6(uV0:yC4(fH6"iF5>$oD1:cY0@aJ5';
+    $this->jwtKey = CONFIG['token-key'];
 
     if(!$checkToken){
       return;

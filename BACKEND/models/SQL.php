@@ -14,8 +14,8 @@ class SQL
   private $sql;
   public $result;
 
-  function __construct($banco = 'ponto'){
-    $this->sql = new PDO("mysql:host=localhost;charset=utf8;dbname=$banco", 'root', '');
+  function __construct($banco = CONFIG['db-name']){
+    $this->sql = new PDO("mysql:host=localhost;charset=utf8;dbname=$banco", CONFIG['db-user'], CONFIG['db-password']);
     $this->sql->errorCode() == 0 || $this->error(
       'SQL Connection | ' . $this->sql->errorCode() . ' - ' . $this->sql->errorInfo()[2]
     );
@@ -41,10 +41,10 @@ class SQL
     $this->sql->commit();
   }
 
-  function close()
-  {
-    $this->sql->close();
-  }
+  // function close()
+  // {
+  //   $this->sql->close();
+  // }
 
   function getResultArray()
   {
