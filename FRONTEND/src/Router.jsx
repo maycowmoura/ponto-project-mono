@@ -15,6 +15,7 @@ import Places from './pages/Dashboard/Places';
 import EmployersPage from './pages/Dashboard/EmployersPage';
 import NewEmployer from './pages/Dashboard/EmployersPage/NewEmployer';
 import ClosePoint from './pages/Dashboard/ClosePoint';
+import PointMirror from './pages/Dashboard/PointMirror';
 
 
 export default function Router({ homepage }) {
@@ -39,6 +40,7 @@ export default function Router({ homepage }) {
             <Route path="/dashboard/employers" exact component={EmployersPage} />
             <Route path="/dashboard/employers/new" component={NewEmployer} />
             <Route path="/dashboard/close-point" component={ClosePoint} />
+            <Route path="/dashboard/point-mirror" component={PointMirror} />
           </MarksContextProvider>
         </Switch>
       </BrowserRouter>

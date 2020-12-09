@@ -11,7 +11,8 @@ import FloatMenu from '../../components/FloatMenu';
 import { ImCalendar } from 'react-icons/im';
 import { MdSecurity, MdLocationOn, MdHelpOutline } from 'react-icons/md';
 import { FaUserEdit, FaRegCalendarTimes, FaList } from 'react-icons/fa';
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit, FiFileText } from 'react-icons/fi';
+
 
 
 export default function Dashboard() {
@@ -94,6 +95,9 @@ export default function Dashboard() {
         </button> */}
         <button onClick={() => history.push('/dashboard/close-point')}>
           <FaRegCalendarTimes /> Fechar Ponto
+        </button>
+        <button onClick={() => history.push('/dashboard/point-mirror')}>
+          <FiFileText /> Gerar Espelho de Ponto
         </button>
         {/* <button onClick={() => history.push('/help')}>
           <MdHelpOutline /> Me Ajuda
