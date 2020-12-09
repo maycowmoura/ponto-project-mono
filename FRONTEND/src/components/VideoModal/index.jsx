@@ -1,19 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { memo, useState } from 'react';
 import './style.scss';
 import Modal from '../Modal';
 
 
 export default function VideoModal({ close }) {
-  const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(true);
   const hasShortcut = window.matchMedia('(display-mode: standalone)').matches;
   const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
   const videoFile = isSafari ? 'safari.mp4' : 'chrome.mp4';
 
-
-
   if (localStorage.noVideoModal || hasShortcut) {
     return <></>;
+  }
+
+
+  function handleShowModal(){
+    setTimeout(() => setShowModal(true), 3000);
   }
 
   function handleHideModal() {
@@ -25,21 +27,19 @@ export default function VideoModal({ close }) {
 
   return (
     <>
-      {isLoading &&
-        <video
-          className="video-modal-loader"
-          defaultmuted="true"
-          muted
-          playsInline // needed for safari
-          autoPlay
-          onCanPlayThrough={() => setIsLoading(false)}
-          src={`/novoponto/static/assets/videos/${videoFile}`}
-          type="video/mp4"
-        >
-        </video>
-      }
+      <video
+        className="video-modal-loader"
+        defaultmuted="true"
+        muted
+        playsInline // needed for safari
+        autoPlay
+        onCanPlayThrough={handleShowModal}
+        src={`/novoponto/static/assets/videos/${videoFile}`}
+        type="video/mp4"
+      >
+      </video>
 
-      {!isLoading && showModal &&
+      {showModal &&
         <Modal close={close || handleHideModal} buttonText="Mais tarde">
 
           {/* 
