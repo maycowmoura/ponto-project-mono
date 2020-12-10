@@ -14,15 +14,16 @@ export default function FloatName({ cardRef, employerName }) {
       if (!isShowing.current && pos.top < 0 && pos.bottom > 300) {
         setShow(true);
         isShowing.current = true;
-
+        
       } else if (isShowing.current && (pos.top > 0 || pos.bottom < 300)) {
         setShow(false);
         isShowing.current = false;
       }
     }
 
-    window.addEventListener('scroll', scrollSpy)
-    return () => window.removeEventListener('scroll', scrollSpy);
+    const root = document.querySelector('#root');
+    root.addEventListener('scroll', scrollSpy)
+    return () => root.removeEventListener('scroll', scrollSpy);
   }, [])
 
 
