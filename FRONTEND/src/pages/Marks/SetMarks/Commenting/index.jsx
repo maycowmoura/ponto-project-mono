@@ -32,8 +32,9 @@ export default function Commenting() {
     'Trouxe atestado médico',
     'Passou mal',
     'Dia de Folga',
+    'Falta injustificada',
     'Feriado',
-    'Transferido'
+    'Transferido',
   ]
 
 
@@ -81,7 +82,7 @@ export default function Commenting() {
         rows="5"
         placeholder="Escreva um comentário explicando esta marcação"
         maxLength="200"
-        value={comment}
+        value={comment || ''}
         onChange={handleKeypress}
         onFocus={cursorAtTheEndOfText}
       ></textarea>
