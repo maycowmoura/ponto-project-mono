@@ -18,7 +18,7 @@ import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
 
 
 export default function SetMarks() {
-  const { api, data, userType, placeFilters } = useMainContext();;
+  const { api, userType, placeFilters } = useMainContext();;
   const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
@@ -27,6 +27,8 @@ export default function SetMarks() {
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = userType === 'admin';
   const history = useHistory();
+  const formatedTimeIn = format(/\d+/.test(current?.time_in) ? current?.time_in : current?.default_time_in);
+  const formatedTimeOut = format(/\d+/.test(current?.time_out) ? current?.time_out : current?.default_time_out);
 
 
   useEffect(() => {
@@ -137,12 +139,12 @@ export default function SetMarks() {
               <div id="inputs" className={animateMissed}>
                 <Input
                   type="in"
-                  value={format(current.time_in || current.default_time_in)}
+                  value={formatedTimeIn}
                   editingPreviousValue={current.editingPrevious}
                 />
                 <Input
                   type="out"
-                  value={format(current.time_out || current.default_time_out)}
+                  value={formatedTimeOut}
                   editingPreviousValue={current.editingPrevious}
                 />
               </div>
