@@ -37,13 +37,13 @@ export function PeriodMenu({ setShowPeriodMenu }) {
   return (
     <>
     <FloatMenu title="Escolher período:" className="period-menu" closeMenu={setShowPeriodMenu}>
-      <p>Começar em:</p>
+      <label>Começar em:</label>
       <SelectDate
         initialDate={periodFromMirror}
         onChange={setPeriodFromMirror}
       />
 
-      <p>Terminar em:</p>
+      <label>Terminar em:</label>
       <SelectDate
         initialDate={periodToMirror}
         onChange={setPeriodToMirror}
