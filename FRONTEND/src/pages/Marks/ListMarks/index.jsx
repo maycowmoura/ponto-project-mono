@@ -83,8 +83,8 @@ export default function ListMarks() {
 
 
       <MainTag>
-        {employersMirror.map((employer, key) =>
-          <EmployerCard {...{ employer, setShowComment, viewGrid, key }} />
+        {employersMirror.map(employer =>
+          <EmployerCard key={employer.id} {...{ employer, setShowComment, viewGrid }} />
         )}
       </MainTag>
 
@@ -92,7 +92,7 @@ export default function ListMarks() {
       {showPeriodMenu &&
         <PeriodMenu {...{ setShowPeriodMenu }} />
       }
-      
+
 
       {showComment &&
         <CommentMenu {...{ showComment, setShowComment }} />
