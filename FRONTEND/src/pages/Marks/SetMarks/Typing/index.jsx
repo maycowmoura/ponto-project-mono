@@ -43,7 +43,7 @@ export default function Typing() {
 
     setCurrent(prev => {
       prev[`time_${activeInput}`] = FormatedTimeToMinutes(value);
-      prev.edited = true;
+      prev.timeEdited = true;
       return { ...prev };
     })
 

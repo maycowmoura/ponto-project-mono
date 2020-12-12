@@ -18,7 +18,7 @@ export default function Uploading() {
 
   useEffect(() => {
     const marksToUpload = dayMarks
-      .filter(item => item.edited)
+      .filter(item => (item.commentEdited || item.timeEdited))
       .map(({ id, time_in, time_out, comment }) => ({ id, time_in, time_out, comment }));
 
     if (!marksToUpload.length) {
@@ -36,7 +36,7 @@ export default function Uploading() {
       }
 
       const mappedDayMarks = dayMarks.map(mark => (
-        { ...mark, edited: false, editingPrevious: true }
+        { ...mark, commentEdited: false, timeEdited: false, editingPrevious: true }
       ))
       setDayMarks(mappedDayMarks);
       setCurrent(mappedDayMarks[0]);

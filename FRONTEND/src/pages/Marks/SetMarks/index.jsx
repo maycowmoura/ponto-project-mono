@@ -82,7 +82,7 @@ export default function SetMarks() {
     setCurrent(prev => {
       prev.time_in = revertMissed ? current.default_time_in : -1;
       prev.time_out = revertMissed ? current.default_time_out : -1;
-      prev.edited = true;
+      prev.timeEdited = true;
       return { ...prev };
     })
   }

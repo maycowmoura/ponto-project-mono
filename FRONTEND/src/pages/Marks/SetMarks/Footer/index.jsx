@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './style.scss';
 import { useSetMarks } from '../../../../contexts/MarksContext';
+import { isNumber } from '../../../../utils/OtherUtils';
 import ToastMsg from '../../../../components/ToastMsg';
 import { BiBlock as Block } from 'react-icons/bi';
 import { FiArrowLeftCircle as Left, FiArrowRightCircle as Right } from 'react-icons/fi';
@@ -19,26 +20,37 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
     setAnimationClass('enter-left');
   }
 
+
   function saveMarks() {
-    const useDefaultTime = !current.time_in && !current.time_out; // se time_in é null, usa o default time
-    const ignore = useDefaultTime && !current.default_time_in && !current.default_time_out; // se é pra usar o default e não tem default, ignora
-    const commentedOnly = current.edited && ignore; // se n tem marcações mas esta editado, significa q colocou apenas comentário
+    let { time_in, time_out } = current;
 
-    if (useDefaultTime && !ignore) {
-      current.time_in = current.default_time_in;
-      current.time_out = current.default_time_out;
-      current.edited = true;
-    }
+    const useDefaultIn = !isNumber(time_in) && isNumber(current.default_time_in);
+    const useMissIn = !isNumber(time_in) && current.commentEdited;
+    const useDefaultOut = !isNumber(time_out) && isNumber(current.default_time_out);
+    const useMissOut = !isNumber(time_out) && current.commentEdited;
 
-    if (commentedOnly) {
-      current.time_in = current.time_out = -1;
+
+    if(useDefaultIn) time_in = current.default_time_in;
+    else if(useMissIn) time_in = -1;
+
+    if(useDefaultOut) time_out = current.default_time_out;
+    else if(useMissOut) time_out = -1;
+
+
+    current.timeEdited = current.timeEdited || useDefaultIn || useMissIn || useDefaultOut || useMissOut;
+
+
+    if (!current.timeEdited) {
+      return;
     }
 
     setDayMarks(prev => {
-      prev[index] = current;
+      prev[index] = { ...current, time_in, time_out };
       return prev;
     });
   }
+
+
 
   function validateHours() {
     const time_in = current.time_in ?? current.default_time_in;

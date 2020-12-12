@@ -60,14 +60,14 @@ export default function Commenting() {
     if (repeatForAll) {
       setDayMarks(prev => prev.map(item => {
         item.comment = comment;
-        item.edited = true;
+        item.commentEdited = true;
         return item;
       }))
     }
 
     setCurrent(prev => {
       prev.comment = comment?.trim();
-      prev.edited = true;
+      prev.commentEdited = true;
       return prev;
     })
 
