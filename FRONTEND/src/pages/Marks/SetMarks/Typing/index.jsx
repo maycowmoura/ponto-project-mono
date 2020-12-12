@@ -10,18 +10,17 @@ import { FormatedTimeToMinutes, MinutesToFormatedTime } from '../../../../utils/
 
 export default function Typing() {
   const { current, setCurrent, activeInput } = useSetMarks();
-  const [value, setValue] = useState(MinutesToFormatedTime(current[`time_${activeInput}`]));
   const initialCurrent = useRef(current);
+  const okClicked = useRef(false);
+  const [value, setValue] = useState(MinutesToFormatedTime(current[`time_${activeInput}`]));
   const [inputInvalid, setInputInvalid] = useState(false);
   const history = useHistory();
-  const okClicked = useRef(false);
   const inputTimeRegex = /([0-1][\d-]|2[0-3-]):[0-6-][\d-]h/;
   const finalTimeRegex = /([0-1]\d|2[0-3]):[0-6]\dh/;
 
 
   useEffect(() => {
-    handleBackspace();
-    window.onbeforeunload = function () { return false };
+    setValue('--:--h');
     return () => okClicked.current || setCurrent(initialCurrent.current);
   }, [])
 
@@ -33,7 +32,7 @@ export default function Typing() {
 
   function handleBackspace() {
     setInputInvalid(false);
-    setValue('--:--h');
+    setValue(prev => prev.replace(/\d(?!.*\d)/, '-')); // replace the last number
   }
 
   function handleOk() {
