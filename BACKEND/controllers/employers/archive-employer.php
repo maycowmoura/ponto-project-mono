@@ -19,6 +19,7 @@ require_once __DIR__ . '/../../models/SQL.php';
 $auth = new Auth();
 $auth->mustBeAdmin();
 $client = $auth->client;
+$userId = $auth->userId;
 $accessibleEmployers = $auth->getAccessibleEmployers();
 $time = time();
 
@@ -29,18 +30,11 @@ if (!in_array($employerId, $accessibleEmployers)) {
 
 
 $sql = new SQL();
-$sql->beginTransaction();
 $sql->execute(
-  "INSERT INTO `$client-archived-employers`
-  SELECT *, '$time' AS archived_at 
-  FROM `$client-employers` 
+  "UPDATE `$client-employers`
+  SET disabled_at = '$time', disabled_by = '$userId'
   WHERE id = '$employerId'"
 );
-$sql->execute("SET FOREIGN_KEY_CHECKS=0");
-$sql->execute("DELETE FROM `$client-employers` WHERE id = '$employerId'");
-$sql->execute("SET FOREIGN_KEY_CHECKS=1"); // isso só vale nessa query, mas reativa só por precaução
-$sql->commit();
-
 
 
 die('{"ok": true}');

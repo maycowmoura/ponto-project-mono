@@ -30,6 +30,7 @@ $sql->execute(
  "SELECT id, name 
   FROM `$client-places` 
   WHERE id IN ($accessiblePlaces)
+  AND disabled_at IS NULL
   ORDER BY name"
 );
 

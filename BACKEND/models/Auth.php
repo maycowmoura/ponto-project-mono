@@ -47,7 +47,9 @@ class Auth {
         $this->sql->execute(
           "SELECT id 
           FROM `$this->client-users` 
-          WHERE id = '$this->userId' AND refresh_token = '$refreshToken'"
+          WHERE id = '$this->userId' 
+          AND refresh_token = '$refreshToken'
+          AND disabled_at IS NULL"
         );
 
         if(count($this->sql->getResultArray()) > 0){
@@ -61,7 +63,7 @@ class Auth {
         error('Chave de acesso expirada.\nSolicite um novo acesso ao administrador.');
       }
 
-      error("Chave de acesso inválida.");
+      error("Chave de acesso inválida. Solicite um novo acesso a um administrador.");
     }
   }
 
@@ -97,13 +99,15 @@ class Auth {
 
     $this->sql->execute(
      "SELECT place_id
-      FROM `$this->client-users-accesses` 
-      WHERE user_id = '$this->userId'"
+      FROM `$this->client-users-accesses` AS a
+      JOIN `$this->client-users` AS u
+      ON u.id = '$this->userId' AND u.disabled_at IS NULL
+      WHERE a.user_id = '$this->userId'"
     );
 
     $places = $this->sql->getResultArray();
 
-    if(count($places) < 1) error("O usuário não possui acesso a nenhum local de trabalho.");
+    if(count($places) < 1) error("Você não possui acesso a nenhum local de trabalho. Contate um administrador.");
 
     $result = array_map(fn($place) => $place['place_id'], $places);
     $this->accessiblePlaces = $result;
@@ -122,7 +126,8 @@ class Auth {
     $this->sql->execute(
      "SELECT id
       FROM `$this->client-employers`
-      WHERE place IN ($places)"
+      WHERE place IN ($places)
+      AND disabled_at IS NULL"
     );
 
     $employers = (array) $this->sql->getResultArray();

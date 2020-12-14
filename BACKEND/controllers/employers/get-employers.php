@@ -50,7 +50,9 @@ $sql->execute(
   FROM `$client-employers` AS e
   JOIN `$client-places` AS p
   ON e.place = p.id
-  WHERE place IN ($accessiblePlaces) $sqlFilters
+  WHERE place IN ($accessiblePlaces) 
+    AND e.disabled_at IS NULL 
+    $sqlFilters
   ORDER BY e.name"
 );
 

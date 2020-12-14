@@ -23,15 +23,18 @@ $employersQuery = (
   JOIN `$client-places` AS p
   ON p.id = e.place
   WHERE e.place IN ($accessiblePlaces)
+    AND e.disabled_at IS NULL 
   ORDER BY e.name"
 );
 
 $placesQuery = (
   "SELECT `id`, `name`
-  FROM `$client-places`
+  FROM `$client-places` AS p
   WHERE id IN ($accessiblePlaces)
+    AND p.disabled_at IS NULL 
   ORDER BY name"
 );
+
 
 $sql = new SQL();
 $sql->execute($employersQuery);

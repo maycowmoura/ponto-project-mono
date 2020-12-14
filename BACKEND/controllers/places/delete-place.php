@@ -20,32 +20,35 @@ $auth = new Auth();
 $auth->mustBeAdmin();
 $userId = $auth->userId;
 $client = $auth->client;
+$time = time();
 
 
 
 
 try {
   $sql = new SQL();
-  $sql->beginTransaction();
   $sql->execute(
-   "DELETE FROM `$client-users-accesses` 
-    WHERE place_id = '$placeId'"
+   "SELECT id 
+    FROM `$client-employers` 
+    WHERE place = '$placeId'
+    AND disabled_at IS NULL"
   );
+
+  $total = count($sql->getResultArray());
+  if($total > 0){
+    error("Ops... $total funcionários ainda estão neste local. Você precisa transferir todos antes de apagá-lo.");
+  }
+
+
   $sql->execute(
-   "DELETE FROM `$client-places` 
-    WHERE id = '$placeId'"
+   "UPDATE `$client-places` 
+    SET disabled_at = '$time', disabled_by = '$userId'
+    WHERE id = '$placeId'
+    AND disabled_at IS NULL"
   );
-  $sql->commit();
 
 } catch (Exception $e) {
-  $message = $e->getMessage();
-  $message = strpos($message, ' 23000 ') > 0 
-    ? 'Ops... Devem existir funcionários alocados neste local. Você precisa transferir todos antes de apagá-lo.' 
-    : $message;
-
-  die(_json_encode([
-    'error' => $message
-  ]));
+  error($e->getMessage());
 }
 
 

@@ -96,7 +96,9 @@ $sql->execute(
   ON 
     e.id = m.employer_id AND m.date = '$date'
   WHERE 
-    e.id IN ($accessibleEmployers) $sqlFilters
+    e.id IN ($accessibleEmployers) 
+    AND e.disabled_at IS NULL
+    $sqlFilters
   ORDER BY 
     e.name ASC"
 );
