@@ -59,6 +59,8 @@ export default function Footer({ missed, handleMissed, animationClass, setAnimat
       setToast('Ops... O horário de saída deve ser maior que o de entrada.');
       return false;
     }
+
+    setToast(false);
     return true;
   }
 
