@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useMainContext } from '../../contexts/MainContext';
 import { useHistory } from 'react-router-dom';
+import { loadDynamicManifestOnSafari } from '../../utils/OtherUtils';
 import LoadingInner from '../../components/LoadingInner';
 
 export default function Loading() {
@@ -16,14 +17,15 @@ export default function Loading() {
       const decoded = JSON.parse(atob(payload));
       const { typ } = decoded;
       setUserType(typ);
-
+      
       const redirects = {
         marker: '/marks/set',
         viewer: '/list-marks',
         admin: '/dashboard'
       }
-
+      
       history.push(redirects[typ]);
+      loadDynamicManifestOnSafari();
 
     } catch {
       history.push('/login')
