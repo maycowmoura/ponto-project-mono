@@ -9,17 +9,16 @@ export default function FloatName({ cardRef, employerName }) {
 
   useEffect(() => {
     function scrollSpy() {
-      if (cardRef.current.offsetHeight > 700) { // só mostra o float name se o card tiver grandinho
-        const pos = cardRef.current.getBoundingClientRect();
+      const isBigEnough = cardRef.current.offsetHeight > 700; // só mostra o float name se o card tiver grandinho
+      const pos = cardRef.current.getBoundingClientRect();
 
-        if (!isShowing.current && pos.top < 0 && pos.bottom > 300) {
-          setShow(true);
-          isShowing.current = true;
+      if (isBigEnough && !isShowing.current && pos.top < 0 && pos.bottom > 300) {
+        setShow(true);
+        isShowing.current = true;
 
-        } else if (isShowing.current && (pos.top > 0 || pos.bottom < 300)) {
-          setShow(false);
-          isShowing.current = false;
-        }
+      } else if (isShowing.current && (pos.top > 0 || pos.bottom < 300)) {
+        setShow(false);
+        isShowing.current = false;
       }
     }
 
