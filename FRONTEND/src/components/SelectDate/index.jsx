@@ -13,7 +13,7 @@ export default function SelectDate({ initialDate, onChange }) {
 
 
   useEffect(() => {
-    const date = DateToString(new Date([year, month, day]))
+    const date = DateToString(new Date(year, month-1, day))
     const isValid = [year, month, day].join('-') === date;
     const newDay = parseInt(isValid ? day : 0);
     const newMonth = parseInt(isValid ? month - 1 : month);
