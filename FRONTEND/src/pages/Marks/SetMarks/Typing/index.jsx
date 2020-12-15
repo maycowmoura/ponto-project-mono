@@ -15,7 +15,7 @@ export default function Typing() {
   const [value, setValue] = useState(MinutesToFormatedTime(current[`time_${activeInput}`]));
   const [inputInvalid, setInputInvalid] = useState(false);
   const history = useHistory();
-  const inputTimeRegex = /([0-1][\d-]|2[0-3-]):[0-6-][\d-]h/;
+  const inputTimeRegex = /([0-1][\d-]|2[0-3-]):[0-5-][\d-]h/;
   const finalTimeRegex = /([0-1]\d|2[0-3]):[0-6]\dh/;
 
 
@@ -27,7 +27,10 @@ export default function Typing() {
 
   function handleClick(e) {
     const key = e.target.value;
-    setValue(prev => prev.replace('-', key));
+    setValue(prev => {
+      const newValue = prev.replace('-', key);
+      return inputTimeRegex.test(newValue) ? newValue : prev;
+    });
   }
 
   function handleBackspace() {
