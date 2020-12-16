@@ -17,6 +17,8 @@ $date variable comes from ROUTER
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 
 use Respect\Validation\Validator as v;
 
@@ -178,6 +180,11 @@ foreach (POST as $employer) {
 };
 
 $sql->commit();
+
+
+if($client == 'rionorte'){
+  require_once __DIR__ . '/_backup-rionorte-on-old-ponto.php';
+}
 
 
 die('{"ok": true}');
