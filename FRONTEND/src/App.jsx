@@ -5,7 +5,7 @@ import { loadTokenFromHashOnSafari, disablePitchZoom } from './utils/OtherUtils'
 import Router from './Router';
 
 export default function App() {
-  const homepage = '/novoponto';
+  const homepage = '/ponto';
   const { data } = useMainContext();
 
   loadTokenFromHashOnSafari();

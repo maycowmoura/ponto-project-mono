@@ -3,8 +3,9 @@ import axios from 'axios';
 const api = axios.create({
   timeout: 10000,
   baseURL: process.env.NODE_ENV === 'production'
-    ? '/novoponto/backend'
+    ? '/ponto/backend'
     : 'http://192.168.0.109:3001' // ip fixo - video pra configurar > https://youtu.be/hRB1J5NxZdE
+    // : 'https://maycowmoura.tk/ponto/backend' // PARA TESTES COM NGROK
 })
 
 
@@ -35,7 +36,8 @@ function errorInterceptor(error) {
   
   const defaults = {
     'Offline': 'Hum... Parece que você está sem internet.',
-    'Network Error': 'Falha ao contatar servidor. Tente novamente em alguns instantes.'
+    'Network Error': 'Falha ao contatar servidor. Tente novamente em alguns instantes.',
+    'timeout of 10000ms exceeded': 'Hum... Isso está demorando demais. Tente novamente daqui a pouco.'
   }
     
   const message = defaults[error.message] ?? error.message;

@@ -34,7 +34,7 @@ export default function VideoModal({ close }) {
         playsInline // needed for safari
         autoPlay
         onCanPlayThrough={handleShowModal}
-        src={`/novoponto/static/assets/videos/${videoFile}`}
+        src={`/ponto/static/assets/videos/${videoFile}`}
         type="video/mp4"
       >
       </video>
@@ -56,7 +56,7 @@ export default function VideoModal({ close }) {
                   autoplay
                   playsinline
                   loop
-                  src="/novoponto/static/assets/videos/${videoFile}"
+                  src="/ponto/static/assets/videos/${videoFile}"
                   type="video/mp4"
                 />`
           }}>
