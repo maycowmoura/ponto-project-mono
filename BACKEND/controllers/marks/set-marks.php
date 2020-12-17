@@ -87,7 +87,7 @@ $sql->execute(
   FROM `$client-holidays` 
   WHERE `date` = '$date'  OR `date` = '$dateWithoutYear'"
 );
-$isHoliday = empty($sql->getResultArray()) ? 0 : 1;
+$isHoliday = empty($sql->getResultArray()) ? 'NULL' : 1;
 
 
 
@@ -122,12 +122,13 @@ foreach (POST as $employer) {
     return; // se marcou falta no feriado e não tem comentário, pula esse cara
   }
 
+  if (!$missed && $isHoliday != 1 && $default_time_in) {
+    $time_before = $default_time_in - $time_in;
+    $time_after = $time_out - $default_time_out;
 
-  if(!$missed && !$isHoliday && $default_time_in){
-    $data['time_before'] = $default_time_in - $time_in;
-    $data['time_after'] = $time_out - $default_time_out;
+    $data['time_before'] = $time_before ? $time_before : 'NULL';
+    $data['time_after'] = $time_after ? $time_after : 'NULL';
   }
-
 
   if ($hasComment) {
     $data = array_merge($data, [
@@ -150,6 +151,8 @@ foreach (POST as $employer) {
 
     $mapped = array_map(fn ($key, $value) => "`$key` = '$value'", $keys, $values);
     $mapped = implode(', ', $mapped);
+    $mapped = str_replace("'NULL'", 'NULL', $mapped); // remove as aspas do null
+
     $sql->execute(
       "UPDATE `$client-marks`
       SET $mapped
@@ -170,11 +173,12 @@ foreach (POST as $employer) {
     $keys = array_keys($data);
     $keys = implode('`, `', $keys);
     $values = array_values($data);
-    $values = implode("', '", $values);
+    $values = "'" . implode("', '", $values) . "'";
+    $values = str_replace("'NULL'", 'NULL', $values); // remove as aspas do null
 
     $sql->execute(
       "INSERT INTO `$client-marks` 
-      (`$keys`) VALUES ('$values');"
+      (`$keys`) VALUES ($values);"
     );
   }
 };
@@ -182,7 +186,7 @@ foreach (POST as $employer) {
 $sql->commit();
 
 
-if($client == 'rionorte'){
+if ($client == 'rionorte') {
   require_once __DIR__ . '/_backup-rionorte-on-old-ponto.php';
 }
 
