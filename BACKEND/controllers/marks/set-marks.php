@@ -118,17 +118,30 @@ foreach (POST as $employer) {
   ];
 
 
-  if ($missed && $isHoliday && !$hasComment) {
+  if ($missed && $isHoliday == 1 && !$hasComment) {
+    if($markExists){
+      $sql->execute(
+        "DELETE FROM `$client-marks`
+        WHERE `employer_id` = '$id' AND `date` = $date;"
+      );
+    }
+        
     return; // se marcou falta no feriado e não tem comentário, pula esse cara
   }
 
-  if (!$missed && $isHoliday != 1 && $default_time_in) {
+
+
+  if ($missed && $isHoliday == 1) {
+    $data['time_before'] = $data['time_after'] = 'NULL';
+    //
+  } else if ($default_time_in) {
     $time_before = $default_time_in - $time_in;
     $time_after = $time_out - $default_time_out;
 
     $data['time_before'] = $time_before ? $time_before : 'NULL';
     $data['time_after'] = $time_after ? $time_after : 'NULL';
   }
+
 
   if ($hasComment) {
     $data = array_merge($data, [
@@ -137,6 +150,8 @@ foreach (POST as $employer) {
       'commented_at' => $todayTime
     ]);
   }
+
+
 
   if ($markExists) {
     $sql->execute(
