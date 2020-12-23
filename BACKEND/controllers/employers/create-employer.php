@@ -53,15 +53,15 @@ $place = POST['place'];
 $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
-  "INSERT INTO `$client-employers`
+  "INSERT INTO `{$client}_employers`
   (name, job, place, default_time)
   VALUES
   ('$name', '$job', '$place', 1001)"
 );
 $sql->execute(
  "SELECT e.id AS id, e.name AS name, p.name AS place, job
-  FROM `$client-employers` AS e
-  JOIN `$client-places` AS p
+  FROM `{$client}_employers` AS e
+  JOIN `{$client}_places` AS p
   ON e.place = p.id
   WHERE e.id = LAST_INSERT_ID()"
 );

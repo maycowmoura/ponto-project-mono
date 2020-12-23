@@ -28,7 +28,7 @@ $accessiblePlaces = implode(',', $accessiblePlaces);
 $sql = new SQL();
 $sql->execute(
  "SELECT id, name 
-  FROM `$client-places` 
+  FROM `{$client}_places` 
   WHERE id IN ($accessiblePlaces)
   AND disabled_at IS NULL
   ORDER BY name"

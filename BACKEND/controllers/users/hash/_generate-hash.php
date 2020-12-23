@@ -12,7 +12,7 @@ function generateHash($user, $client) {
 
   $sql = new SQL();
   $sql->execute(
-   "SELECT id FROM `$client-users`
+   "SELECT id FROM `{$client}_users`
     WHERE id = '$user'"
   );
 

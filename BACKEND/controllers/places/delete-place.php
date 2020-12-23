@@ -29,7 +29,7 @@ try {
   $sql = new SQL();
   $sql->execute(
    "SELECT id 
-    FROM `$client-employers` 
+    FROM `{$client}_employers` 
     WHERE place = '$placeId'
     AND disabled_at IS NULL"
   );
@@ -41,7 +41,7 @@ try {
 
 
   $sql->execute(
-   "UPDATE `$client-places` 
+   "UPDATE `{$client}_places` 
     SET disabled_at = '$time', disabled_by = '$userId'
     WHERE id = '$placeId'
     AND disabled_at IS NULL"

@@ -31,7 +31,7 @@ if (!in_array($employerId, $accessibleEmployers)) {
 
 $sql = new SQL();
 $sql->execute(
-  "UPDATE `$client-employers`
+  "UPDATE `{$client}_employers`
   SET disabled_at = '$time', disabled_by = '$userId'
   WHERE id = '$employerId'"
 );

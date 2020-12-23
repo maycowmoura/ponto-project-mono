@@ -43,7 +43,7 @@ $name = mb_strtoupper(PUT['name']);
 
 $sql = new SQL();
 $sql->execute(
- "UPDATE `$client-places` 
+ "UPDATE `{$client}_places` 
   SET `name`='$name' 
   WHERE id = '$placeId'"
 );

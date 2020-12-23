@@ -62,10 +62,10 @@ $sql->execute(
     m.id AS mark_id,
     t.time_in AS default_time_in,
     t.time_out AS default_time_out
-  FROM `$client-employers` as e
-  LEFT JOIN `$client-default-times` as t
+  FROM `{$client}_employers` as e
+  LEFT JOIN `{$client}_default_times` as t
   ON t.id = e.default_time AND t.weekday = '$weekday'
-  LEFT JOIN `$client-marks` as m
+  LEFT JOIN `{$client}_marks` as m
   ON m.date = '$date' AND m.employer_id = e.id
   WHERE e.id IN ('$employersIds')"
 );
@@ -84,7 +84,7 @@ $serializedMarks = array_reduce($selectResult, function ($all, $mark) {
 $dateWithoutYear = preg_replace('/^\d{4}-/', '', $date); // cria um pattern sem ano, tipo: %12-25
 $sql->execute(
   "SELECT id 
-  FROM `$client-holidays` 
+  FROM `{$client}_holidays` 
   WHERE `date` = '$date'  OR `date` = '$dateWithoutYear'"
 );
 $isHoliday = empty($sql->getResultArray()) ? 'NULL' : 1;
@@ -121,7 +121,7 @@ foreach (POST as $employer) {
   if ($missed && $isHoliday == 1 && !$hasComment) {
     if($markExists){
       $sql->execute(
-        "DELETE FROM `$client-marks`
+        "DELETE FROM `{$client}_marks`
         WHERE `employer_id` = '$id' AND `date` = $date;"
       );
     }
@@ -131,7 +131,7 @@ foreach (POST as $employer) {
 
 
 
-  if ($missed && $isHoliday == 1) {
+  if ($missed || $isHoliday == 1) {
     $data['time_before'] = $data['time_after'] = 'NULL';
     //
   } else if ($default_time_in) {
@@ -155,9 +155,9 @@ foreach (POST as $employer) {
 
   if ($markExists) {
     $sql->execute(
-      "INSERT INTO `$client-marks-history`
+      "INSERT INTO `{$client}_marks_history`
       SELECT *
-      FROM `$client-marks` 
+      FROM `{$client}_marks` 
       WHERE id = '$mark_id';"
     );
 
@@ -169,7 +169,7 @@ foreach (POST as $employer) {
     $mapped = str_replace("'NULL'", 'NULL', $mapped); // remove as aspas do null
 
     $sql->execute(
-      "UPDATE `$client-marks`
+      "UPDATE `{$client}_marks`
       SET $mapped
       WHERE id = '$mark_id';"
     );
@@ -192,7 +192,7 @@ foreach (POST as $employer) {
     $values = str_replace("'NULL'", 'NULL', $values); // remove as aspas do null
 
     $sql->execute(
-      "INSERT INTO `$client-marks` 
+      "INSERT INTO `{$client}_marks` 
       (`$keys`) VALUES ($values);"
     );
   }
@@ -201,7 +201,7 @@ foreach (POST as $employer) {
 $sql->commit();
 
 
-if ($client == 'rionorte') {
+if ($client == 'rionorte' && !getenv('DEV_MODE')) {
   require_once __DIR__ . '/_backup-rionorte-on-old-ponto.php';
 }
 

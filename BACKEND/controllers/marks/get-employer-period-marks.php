@@ -64,7 +64,7 @@ if($to > $today){
 $sql = new SQL();
 $sql->execute(
   "SELECT date 
-  FROM `$client-holidays`
+  FROM `{$client}_holidays`
   WHERE `date` BETWEEN '$from' AND '$to'
   OR `date` BETWEEN '$fromWithoutYear' AND '$toWithoutYear';"
 );
@@ -86,10 +86,10 @@ $sql->execute(
     `commented_at`,
     u.name AS `commented_by`,
     u2.name AS `created_by`
-  FROM `$client-marks` AS m
-  LEFT JOIN `$client-users` AS u
+  FROM `{$client}_marks` AS m
+  LEFT JOIN `{$client}_users` AS u
   ON m.commented_by = u.id
-  LEFT JOIN `$client-users` AS u2
+  LEFT JOIN `{$client}_users` AS u2
   ON m.created_by = u2.id
   WHERE
       employer_id = '$employerId' AND(`date` BETWEEN '$from' AND '$to')

@@ -19,8 +19,8 @@ $employersQuery = (
     e.job AS `job`,
     e.place AS `place_id`,
     p.name AS `place`
-  FROM `$client-employers` AS e
-  JOIN `$client-places` AS p
+  FROM `{$client}_employers` AS e
+  JOIN `{$client}_places` AS p
   ON p.id = e.place
   WHERE e.place IN ($accessiblePlaces)
     AND e.disabled_at IS NULL 
@@ -29,7 +29,7 @@ $employersQuery = (
 
 $placesQuery = (
   "SELECT `id`, `name`
-  FROM `$client-places` AS p
+  FROM `{$client}_places` AS p
   WHERE id IN ($accessiblePlaces)
     AND p.disabled_at IS NULL 
   ORDER BY name"

@@ -49,7 +49,7 @@ $name = mb_strtoupper(POST['name']);
 $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
-  "INSERT INTO `$client-places` 
+  "INSERT INTO `{$client}_places` 
   (`name`) VALUES ('$name')"
 );
 
@@ -60,13 +60,13 @@ $usersAccessesQuery = array_map(fn($user) => "('$user', LAST_INSERT_ID())", $use
 $usersAccessesQuery = implode(',', $usersAccessesQuery);
 
 $sql->execute(
-  "INSERT INTO `$client-users-accesses` 
+  "INSERT INTO `{$client}_users_accesses` 
   (`user_id`, `place_id`) VALUES $usersAccessesQuery"
 );
 
 
 $sql->execute(
-  "SELECT LAST_INSERT_ID() AS id FROM `$client-places`"
+  "SELECT LAST_INSERT_ID() AS id FROM `{$client}_places`"
 );
 $sql->commit();
 

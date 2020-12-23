@@ -47,8 +47,8 @@ try {
 $sql = new SQL();
 $sql->execute(
  "SELECT e.id AS id, e.name AS name, job, e.place AS place_id, p.name AS place 
-  FROM `$client-employers` AS e
-  JOIN `$client-places` AS p
+  FROM `{$client}_employers` AS e
+  JOIN `{$client}_places` AS p
   ON e.place = p.id
   WHERE place IN ($accessiblePlaces) 
     AND e.disabled_at IS NULL 

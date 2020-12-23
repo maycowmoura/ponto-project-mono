@@ -86,13 +86,13 @@ $sql->execute(
     m.time_out AS time_out, 
     comment
   FROM 
-    `$client-employers` AS e
+    `{$client}_employers` AS e
   LEFT JOIN 
-    `$client-default-times` AS t
+    `{$client}_default_times` AS t
   ON 
     t.id = e.default_time AND t.weekday = '$weekday'
   LEFT JOIN 
-    `$client-marks` AS m
+    `{$client}_marks` AS m
   ON 
     e.id = m.employer_id AND m.date = '$date'
   WHERE 

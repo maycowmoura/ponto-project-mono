@@ -52,15 +52,15 @@ try {
   $sql = new SQL();
   $sql->beginTransaction();
   $sql->execute(
-    "SELECT @from_place := place FROM `$client-employers` WHERE id = '$employerId'"
+    "SELECT @from_place := place FROM `{$client}_employers` WHERE id = '$employerId'"
   );
   $sql->execute(
-    "INSERT INTO `$client-employers-transfers` 
+    "INSERT INTO `{$client}_employers_transfers` 
     (date, employer_id, from_place, to_place, transfered_by, transfered_at) 
     VALUES ('$date', '$employerId', @from_place, '$to_place', '$userId', '$time')"
   );
   $sql->execute(
-    "UPDATE `$client-employers`
+    "UPDATE `{$client}_employers`
     SET place = '$to_place'
     WHERE id = '$employerId'"
   );

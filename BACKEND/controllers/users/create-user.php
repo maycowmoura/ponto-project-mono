@@ -53,13 +53,13 @@ $refresh = randomString(10);
 $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
-  "INSERT INTO `$client-users`
+  "INSERT INTO `{$client}_users`
   (name, user_type, created_by, created_at, refresh_token)
   VALUES
   ('$name', '$type', '$userId', '$time', '$refresh')"
 );
 $sql->execute(
-  "SELECT LAST_INSERT_ID() AS id FROM `$client-users`"
+  "SELECT LAST_INSERT_ID() AS id FROM `{$client}_users`"
 );
 
 $newUserId = $sql->getResultArray()[0]['id'];
@@ -67,7 +67,7 @@ $placesValues = array_map(fn ($place) => "('$newUserId', '$place')", $places);
 $placesValues = implode(',', $placesValues);
 
 $sql->execute(
-  "INSERT INTO `$client-users-accesses`
+  "INSERT INTO `{$client}_users_accesses`
   (user_id, place_id)
   VALUES $placesValues"
 );

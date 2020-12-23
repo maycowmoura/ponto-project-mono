@@ -28,7 +28,7 @@ $sql = new SQL();
 $sql->beginTransaction();
 $sql->execute(
   "SELECT id, name 
-  FROM `$client-users` as u
+  FROM `{$client}_users` as u
   WHERE id <> '$userId'
   AND u.disabled_at IS NULL"
 );

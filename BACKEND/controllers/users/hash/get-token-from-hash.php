@@ -54,7 +54,7 @@ if($expires < time()){
 
 $sql->execute(
  "SELECT *
-  FROM `$client-users` 
+  FROM `{$client}_users` 
   WHERE id = '$userId'"
 );
 
