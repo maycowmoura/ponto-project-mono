@@ -9,6 +9,7 @@ export function MainContextProvider({ children }) {
   const [data, setData] = useState(null);
   const [userType, setUserType] = useState(null);
   const [placeFilters, setPlaceFilters] = useState('');
+  const [closedDate, setClosedDate] = useState(null);
 
   return (
     <MainContext.Provider value={{
@@ -18,7 +19,9 @@ export function MainContextProvider({ children }) {
       userType, 
       setUserType,
       placeFilters,
-      setPlaceFilters
+      setPlaceFilters,
+      closedDate,
+      setClosedDate
     }}>
       {children}
     </MainContext.Provider>

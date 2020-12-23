@@ -11,19 +11,22 @@ import { FiCheck } from 'react-icons/fi';
 
 
 export default function ClosePoint() {
-  const { api } = useMainContext();
+  const { api, closedDate, setClosedDate } = useMainContext();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [currentCloseDate, setCurrentCloseDate] = useState('...');
+  const [closedDateMirror, setClosedDateMirror] = useState(closedDate || '...');
   const [dateObject, setDateObject] = useState('');
 
 
   useEffect(() => {
+    if(closedDate) return;
+
     api.get('/closed-dates')
       .then(({ data }) => {
         const date = data.date ? data.date.split('-').reverse().join('/') : null;
-        setCurrentCloseDate(date);
+        setClosedDateMirror(date);
+        setClosedDate(date);
       })
   }, [])
 
@@ -44,6 +47,7 @@ export default function ClosePoint() {
       .then(({ data }) => {
         if (data.error) return setErrorMsg(data.error);
         
+        setClosedDate(date.split('-').reverse().join('/'));
         history.goBack();
       })
       .catch(setErrorMsg)
@@ -72,8 +76,8 @@ export default function ClosePoint() {
         </section>
         <small>
           <p>
-            {currentCloseDate
-              ? <>Atualmente está fechado em <strong>{currentCloseDate}</strong>.</>
+            {closedDateMirror
+              ? <>Atualmente está fechado em <strong>{closedDateMirror}</strong>.</>
               : <>Atualmente a data está aberta.</>
             }
           </p>
