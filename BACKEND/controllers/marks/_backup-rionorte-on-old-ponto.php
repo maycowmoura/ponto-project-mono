@@ -34,9 +34,9 @@ function MinutesToFormatedTime($minutes) {
 
 $serializedMarksForOldPonto = array_reduce(POST, function ($all, $mark) {
   $all[$mark['id']] = [
-    'in' => MinutesToFormatedTime($mark['time_in']),
-    'out' => MinutesToFormatedTime($mark['time_out']),
-    'comment' => $marks['comment'] ?? ''
+    'in' => ($mark['time_in'] < 0) ? 'XXXX' : MinutesToFormatedTime($mark['time_in']),
+    'out' => ($mark['time_out'] < 0) ? 'XXXX' : MinutesToFormatedTime($mark['time_out']),
+    'comment' => $mark['comment'] ?? ''
   ];
 
   return $all;
