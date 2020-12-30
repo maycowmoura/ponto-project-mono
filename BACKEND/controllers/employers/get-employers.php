@@ -18,7 +18,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
@@ -28,15 +28,14 @@ $auth = new Auth();
 $auth->mustBeMarker();
 $client = $auth->client;
 $accessiblePlaces = $auth->getAccessiblePlaces();
-$accessiblePlaces = implode(',', $accessiblePlaces);
+$placeFilters = !empty($_GET['place-filters']) ? explode(',', $_GET['place-filters']) : null;
 
-
-
-$filtersList = $_GET['place-filters'] ?? null;
-$sqlFilters = $filtersList ? "AND e.place IN ($filtersList)" : '';
 
 try {
-  v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
+  v::optional(
+    v::each(v::intVal()->in($accessiblePlaces))
+  )->setName('Place-filters')->check($placeFilters);
+  //
 } catch (Exception $e) {
   error($e->getMessage());
 }
@@ -44,19 +43,31 @@ try {
 
 
 
-$sql = new SQL();
-$sql->execute(
- "SELECT e.id AS id, e.name AS name, job, e.place AS place_id, p.name AS place 
-  FROM `{$client}_employers` AS e
-  JOIN `{$client}_places` AS p
-  ON e.place = p.id
-  WHERE place IN ($accessiblePlaces) 
-    AND e.disabled_at IS NULL 
-    $sqlFilters
-  ORDER BY e.name"
-);
 
-$result = $sql->getResultArray();
+$db = new DB();
+
+$result = $db
+  ->from(["{$client}_employers" => 'e'])
+  ->where('e.disabled_at')->isNull()
+  ->andWhere(function ($group) use ($accessiblePlaces, $placeFilters) {
+    $group->where('place')->in($accessiblePlaces);
+    $placeFilters && $group->andWhere('place')->in($placeFilters);
+  })
+  ->join(["{$client}_places" => 'p'], fn ($join) => ( //
+    $join->on('e.place', 'p.id') //
+  ))
+  ->orderBy('e.name')
+  ->select([
+    'e.id' => 'id',
+    'e.name' => 'name',
+    'job',
+    'e.place' => 'place_id',
+    'p.name' => 'place'
+  ])
+  ->all();
+
+
+
 $json = _json_encode($result);
 
 die($json);

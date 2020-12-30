@@ -13,7 +13,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 
 
 $auth = new Auth();
@@ -21,7 +21,6 @@ $auth->mustBeAdmin();
 $client = $auth->client;
 $userId = $auth->userId;
 $accessibleEmployers = $auth->getAccessibleEmployers();
-$time = time();
 
 
 if (!in_array($employerId, $accessibleEmployers)) {
@@ -29,12 +28,19 @@ if (!in_array($employerId, $accessibleEmployers)) {
 }
 
 
-$sql = new SQL();
-$sql->execute(
-  "UPDATE `{$client}_employers`
-  SET disabled_at = '$time', disabled_by = '$userId'
-  WHERE id = '$employerId'"
-);
 
+
+$db = new DB();
+
+$updated = $db
+  ->update("{$client}_employers")
+  ->where('id')->is($employerId)
+  ->set([
+    'disabled_at' => time(),
+    'disabled_by' => $userId
+  ]);
+
+
+$updated || error('Erro inesperado ao arquivar o funcionário.');
 
 die('{"ok": true}');

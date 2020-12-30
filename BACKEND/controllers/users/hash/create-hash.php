@@ -17,7 +17,8 @@ CREATES A HASH FOR A EXISTING USER
 
 require_once __DIR__ . '/../../../models/global.php';
 require_once __DIR__ . '/../../../models/Auth.php';
-require_once __DIR__ . '/_generate-hash.php';
+require_once __DIR__ . '/../../../models/Users.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
 
@@ -25,15 +26,16 @@ use Respect\Validation\Validator as v;
 
 $auth = new Auth();
 $auth->mustBeAdmin();
-$client = $auth->client;
 
 
 try {
   v::key('user', v::intVal()->positive())->check(POST);
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
-generateHash(POST['user'], $client);
+$users = new Users($auth);
+$hash = $users->generateHash(POST['user']);
+
+$json = _json_encode(['hash' => $hash]);
+die($json);

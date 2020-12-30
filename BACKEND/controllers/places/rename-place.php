@@ -18,40 +18,42 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
 
 
 
-$auth = new Auth();
-$auth->mustBeAdmin();
-$client = $auth->client;
 
 
 try {
   v::key('name', v::stringType()->length(3, 60))->check(PUT);
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
 
+
+
+$auth = new Auth();
+$auth->mustBeAdmin();
+$client = $auth->client;
 $name = mb_strtoupper(PUT['name']);
 
-$sql = new SQL();
-$sql->execute(
- "UPDATE `{$client}_places` 
-  SET `name`='$name' 
-  WHERE id = '$placeId'"
-);
 
 
-if ($sql->getTotalAffected() == 0) {
-  die('{"error": "Nenhum local afetado."}');
-}
+
+$db = new DB();
+
+$updated = $db
+  ->update("{$client}_places")
+  ->where('id')->is($placeId)
+  ->set(['name' => $name]);
+
+
+
+$updated || error('Nenhum local afetado.');
 
 
 $json = _json_encode([

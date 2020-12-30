@@ -16,7 +16,8 @@ $date variable comes from ROUTER
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
+require_once __DIR__ . '/../../models/Marks.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 
@@ -31,8 +32,6 @@ $userId = $auth->userId;
 $client = $auth->client;
 $accessibleEmployers = $auth->getAccessibleEmployers();
 $weekday = date_format(date_create_from_format('Y-m-d', $date), 'w');
-$todayTime = time();
-
 
 
 
@@ -50,160 +49,59 @@ try {
   error($e->getMessage());
 }
 
+$canAccessEmployers = array_reduce(POST, fn ($all, $employer) => ($all && in_array($employer['id'], $accessibleEmployers)), true);
+
+$canAccessEmployers || error('Você não tem acesso a todos os funcionários que está tentando marcar.');
 
 
-$employersIds = array_map(fn ($employer) => $employer['id'], POST);
-$employersIds = implode("','", $employersIds);
-
-$sql = new SQL();
-$sql->execute(
-  "SELECT
-    e.id AS employer_id,
-    m.id AS mark_id,
-    t.time_in AS default_time_in,
-    t.time_out AS default_time_out
-  FROM `{$client}_employers` as e
-  LEFT JOIN `{$client}_default_times` as t
-  ON t.id = e.default_time AND t.weekday = '$weekday'
-  LEFT JOIN `{$client}_marks` as m
-  ON m.date = '$date' AND m.employer_id = e.id
-  WHERE e.id IN ('$employersIds')"
-);
 
 
-$selectResult = $sql->getResultArray();
+$db = new DB;
+
+$employers = $db
+  ->from(["{$client}_employers" => 'e'])
+  ->where('e.id')->in(array_map(fn ($employer) => $employer['id'], POST))
+  ->andWhere('e.disabled_at')->isNull()
+  ->join(["{$client}_default_times" => 't'], fn ($join) => ( //
+    $join->on('t.id', 'e.default_time')
+    ->andOn('t.weekday', fn ($expr) => $expr->value($weekday)) //
+  )) 
+  ->select([
+    'e.id' => 'employer_id',
+    't.time_in' => 'default_time_in',
+    't.time_out' => 'default_time_out'
+  ])
+  ->fetchAssoc() // para retornar um array que será reduzido abaixo, em vez de objeto
+  ->all();
 
 
-$serializedMarks = array_reduce($selectResult, function ($all, $mark) {
+  
+$serializedMarks = array_reduce($employers, function ($all, $mark) {
   $all[$mark['employer_id']] = $mark;
   return $all;
 }, []);
 
 
 
-$dateWithoutYear = preg_replace('/^\d{4}-/', '', $date); // cria um pattern sem ano, tipo: %12-25
-$sql->execute(
-  "SELECT id 
-  FROM `{$client}_holidays` 
-  WHERE `date` = '$date'  OR `date` = '$dateWithoutYear'"
-);
-$isHoliday = empty($sql->getResultArray()) ? 'NULL' : 1;
 
+$Marks = new Marks($client, $date, $userId);
 
-
-
-$sql->beginTransaction();
 foreach (POST as $employer) {
-  [
-    'id' => $id,
-    'time_in' => $time_in,
-    'time_out' => $time_out
-  ] = $employer;
+  $id = $employer['id'];
+  $time_in = $employer['time_in'];
+  $time_out = $employer['time_out'];
+  $default_time_in = $serializedMarks[$id]['default_time_in'];
+  $default_time_out = $serializedMarks[$id]['default_time_out'];
 
-  [
-    'mark_id' => $mark_id,
-    'default_time_in' => $default_time_in,
-    'default_time_out' => $default_time_out
-  ] = $serializedMarks[$id];
-
-  $missed     = $time_in < 0;
-  $hasComment = isset($employer['comment']);
-  $markExists = !!$mark_id;
-
-  $data = [
-    'time_in' => $time_in,
-    'time_out' => $time_out,
-    'created_by' => $userId,
-    'created_at' => $todayTime
-  ];
-
-
-  if ($missed && $isHoliday == 1 && !$hasComment) {
-    if($markExists){
-      $sql->execute(
-        "DELETE FROM `{$client}_marks`
-        WHERE `employer_id` = '$id' AND `date` = $date;"
-      );
-    }
-        
-    return; // se marcou falta no feriado e não tem comentário, pula esse cara
-  }
-
-
-
-  if ($missed || $isHoliday == 1) {
-    $data['time_before'] = $data['time_after'] = 'NULL';
-    //
-  } else if ($default_time_in) {
-    $time_before = $default_time_in - $time_in;
-    $time_after = $time_out - $default_time_out;
-
-    $data['time_before'] = $time_before ? $time_before : 'NULL';
-    $data['time_after'] = $time_after ? $time_after : 'NULL';
-  }
-
-
-  if ($hasComment) {
-    $data = array_merge($data, [
-      'comment' => trim($employer['comment']),
-      'commented_by' => $userId,
-      'commented_at' => $todayTime
-    ]);
-  }
-
-
-
-  if ($markExists) {
-    $sql->execute(
-      "INSERT INTO `{$client}_marks_history`
-      SELECT *
-      FROM `{$client}_marks` 
-      WHERE id = '$mark_id';"
-    );
-
-    $keys = array_keys($data);
-    $values = array_values($data);
-
-    $mapped = array_map(fn ($key, $value) => "`$key` = '$value'", $keys, $values);
-    $mapped = implode(', ', $mapped);
-    $mapped = str_replace("'NULL'", 'NULL', $mapped); // remove as aspas do null
-
-    $sql->execute(
-      "UPDATE `{$client}_marks`
-      SET $mapped
-      WHERE id = '$mark_id';"
-    );
-    //
-    //
-  } else {
-
-    // merge data to insert
-    $data = array_merge($data, [
-      'employer_id' => $id,
-      'date' => $date,
-      'weekday' => $weekday,
-      'holiday' => $isHoliday,
-    ]);
-
-    $keys = array_keys($data);
-    $keys = implode('`, `', $keys);
-    $values = array_values($data);
-    $values = "'" . implode("', '", $values) . "'";
-    $values = str_replace("'NULL'", 'NULL', $values); // remove as aspas do null
-
-    $sql->execute(
-      "INSERT INTO `{$client}_marks` 
-      (`$keys`) VALUES ($values);"
-    );
-  }
-};
-
-$sql->commit();
-
-
-if ($client == 'rionorte' && !getenv('DEV_MODE')) {
-  require_once __DIR__ . '/_backup-rionorte-on-old-ponto.php';
+  $Marks->setEmployer($id);
+  $Marks->setTimes($time_in, $time_out);
+  $Marks->setDefaultTimes($default_time_in, $default_time_out);
+  $Marks->setComment($employer['comment'] ?? null);
+  $Marks->next();
 }
+
+$Marks->saveAll();
+
 
 
 die('{"ok": true}');

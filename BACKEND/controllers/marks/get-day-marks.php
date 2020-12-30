@@ -22,49 +22,54 @@
 
 
 require_once __DIR__ . '/../../models/global.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
 
 
-
-$auth = new Auth();
-$auth->mustBeMarker();
-$accessibleEmployers = implode(',', $auth->getAccessibleEmployers());
-$client = $auth->client;
-$weekday = date('w', strtotime($date));
-
-
-$filtersList = $_GET['place-filters'] ?? null;
-$sqlFilters = $filtersList ? "AND e.place IN ($filtersList)" : '';
+$placeFilters = !empty($_GET['place-filters']) ? explode(',', $_GET['place-filters']) : null;
 
 try {
-  v::optional(v::stringType()->regex('/^(\d+,?)+$/'))->check($filtersList);
-
+  v::optional(
+    v::each(v::intVal()->positive())
+  )->setName('Place-filters')->check($placeFilters);
+  //
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
 
 
-$sql = new SQL();
 
-$sql->execute(
-  "SELECT * FROM `closed-dates`
-  WHERE client = '$client'"
-);
 
-$closedDate = $sql->getResultArray();
 
-if(count($closedDate) > 0){
-  $closedDate = $closedDate[0]['date'];
-  $formated = implode('/', array_reverse(explode('-', $closedDate)));
+$auth = new Auth();
+$auth->mustBeMarker();
+$accessibleEmployers = $auth->getAccessibleEmployers();
+$client = $auth->client;
+$weekday = date('w', strtotime($date));
 
-  if($date <= $closedDate){
+
+
+
+
+
+
+$db = new DB();
+
+$closedDate = $db
+  ->from("closed_dates")
+  ->where('client')->is($client)
+  ->select()
+  ->first();
+
+
+if ($closedDate) {
+  $formated = implode('/', array_reverse(explode('-', $closedDate->date)));
+
+  if ($date <= $closedDate->date) {
     error(
       "Ops... O ponto foi fechado em $formated, não é permitido alterar datas antes disso.
       Toque para voltar."
@@ -74,38 +79,38 @@ if(count($closedDate) > 0){
 
 
 
-$sql->execute(
-  "SELECT
-    e.id AS id, 
-    e.name AS name, 
-    job,
-    place AS `place_id`,
-    t.time_in AS default_time_in, 
-    t.time_out AS default_time_out,
-    m.time_in AS time_in, 
-    m.time_out AS time_out, 
-    comment
-  FROM 
-    `{$client}_employers` AS e
-  LEFT JOIN 
-    `{$client}_default_times` AS t
-  ON 
-    t.id = e.default_time AND t.weekday = '$weekday'
-  LEFT JOIN 
-    `{$client}_marks` AS m
-  ON 
-    e.id = m.employer_id AND m.date = '$date'
-  WHERE 
-    e.id IN ($accessibleEmployers) 
-    AND e.disabled_at IS NULL
-    $sqlFilters
-  ORDER BY 
-    e.name ASC"
-);
+
+$result = $db
+  ->from(["{$client}_employers" => 'e'])
+  ->where(function ($group) use ($accessibleEmployers, $placeFilters) {
+    $group->where('e.id')->in($accessibleEmployers)
+      ->andWhere('e.disabled_at')->isNull();
+    $placeFilters && $group->andWhere('e.place')->in($placeFilters);
+  })
+  ->leftJoin(["{$client}_default_times" => 't'], fn ($join) => ( //
+    $join->on('t.id', 'e.default_time')
+    ->andOn('t.weekday', fn ($expr) => $expr->value($weekday)) //
+  ))
+  ->leftJoin(["{$client}_marks" => 'm'], fn ($join) => ( //
+    $join->on('e.id', 'm.employer_id')
+    ->andOn('m.date', fn ($expr) => $expr->value($date)) //
+  ))
+  ->orderBy('e.name')
+  ->select([
+    'e.id' => 'id',
+    'e.name' => 'name',
+    'e.place' => 'place_id',
+    'job',
+    'comment',
+    't.time_in' => 'default_time_in',
+    't.time_out' => 'default_time_out',
+    'm.time_in' => 'time_in',
+    'm.time_out' => 'time_out',
+  ])
+  ->all();
 
 
-$result = $sql->getResultArray();
+
+
 $json = _json_encode($result);
-
-
 die($json);

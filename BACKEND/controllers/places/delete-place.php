@@ -13,49 +13,51 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
+
 
 
 $auth = new Auth();
 $auth->mustBeAdmin();
 $userId = $auth->userId;
 $client = $auth->client;
-$time = time();
 
 
 
 
-try {
-  $sql = new SQL();
-  $sql->execute(
-   "SELECT id 
-    FROM `{$client}_employers` 
-    WHERE place = '$placeId'
-    AND disabled_at IS NULL"
-  );
-
-  $total = count($sql->getResultArray());
-  if($total > 0){
-    error("Ops... $total funcionários ainda estão neste local. Você precisa transferir todos antes de apagá-lo.");
-  }
+$db = new DB();
+$employersInPlace = $db
+  ->from("{$client}_employers")
+  ->where('place')->is($placeId)
+  ->andWhere('disabled_at')->isNull()
+  ->select('id')
+  ->all();
 
 
-  $sql->execute(
-   "UPDATE `{$client}_places` 
-    SET disabled_at = '$time', disabled_by = '$userId'
-    WHERE id = '$placeId'
-    AND disabled_at IS NULL"
-  );
-
-} catch (Exception $e) {
-  error($e->getMessage());
+$total = count($employersInPlace);
+if($total > 0){
+  error("Ops... $total funcionários ainda estão neste local. Você precisa transferir todos antes de apagá-lo.");
 }
 
 
 
-if ($sql->getTotalAffected() == 0) {
-  die('{"error": "Nenhum local deletado."}');
-}
 
+$result = $db->transaction(function ($db) use ($client, $placeId, $userId) {
+  $db->from("{$client}_users_accesses")
+  ->where('place_id')->is($placeId)
+  ->delete();
+
+  return $db
+  ->update("{$client}_places")
+  ->where('id')->is($placeId)
+  ->andWhere('disabled_at')->isNull()
+  ->set([
+    'disabled_at' => time(),
+    'disabled_by' => $userId
+  ]);
+});
+
+
+$result || error('Nenhum local deletado.');
 
 die('{"ok": true}');

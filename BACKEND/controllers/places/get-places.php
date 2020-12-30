@@ -15,26 +15,31 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
+
+
+
 
 
 $auth = new Auth();
 $auth->mustBeAdmin();
 $client = $auth->client;
 $accessiblePlaces = $auth->getAccessiblePlaces();
-$accessiblePlaces = implode(',', $accessiblePlaces);
 
 
-$sql = new SQL();
-$sql->execute(
- "SELECT id, name 
-  FROM `{$client}_places` 
-  WHERE id IN ($accessiblePlaces)
-  AND disabled_at IS NULL
-  ORDER BY name"
-);
 
-$result = $sql->getResultArray();
+
+$db = new DB;
+
+$result = $db
+ ->from("{$client}_places")
+ ->where('id')->in($accessiblePlaces)
+ ->andWhere('disabled_at')->isNull()
+ ->orderBy('name')
+ ->select(['id', 'name'])
+ ->all();
+ 
+
 $json = _json_encode($result);
 
 die($json);

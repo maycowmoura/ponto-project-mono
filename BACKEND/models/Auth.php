@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/SQL.php';
+require_once __DIR__ . '/DB/DB.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use \Firebase\JWT\JWT;
@@ -9,67 +9,87 @@ class Auth {
   public $client;
   public $tokenExpiration;
   private $jwtKey;
+  private $token;
+  private $payload;
+  private $db;
 
   public $user;
   public $userId;
   public $isAdmin;
   public $userName;
+  private $refreshToken;
   private $accessiblePlaces;
   private $accessibleEmployers;
-  private $sql;
 
 
-  function __construct($checkToken = true){
+  function __construct($checkToken = true) {
     $this->jwtKey = CONFIG['token-key'];
 
-    if(!$checkToken){
-      return;
-    }
+    if (!$checkToken) return;
     
+    $this->db = new DB;
+    $this->decodeToken();
+    $this->validateToken();
+  }
+
+
+  private function decodeToken() {
     $headers = apache_request_headers();
     $authorization = $headers['Authorization'] ?? null;
-    if(empty($authorization)) error("Header de autenticação não encontrado.");
-    $token = preg_replace('/^bearer /i', '', $authorization);
 
-    [, $payload] = explode('.', $token);
-    $payload = json_decode(base64_decode($payload), true);
-    $refreshToken = $payload['refresh'];
-    $this->client = $payload['client'];
-    $this->userId = $payload['user'];
-    $this->userType = $payload['typ'];
-    $this->sql = new SQL();
+    if (empty($authorization))
+      error("Header de autenticação não encontrado.");
 
-    try{
-      JWT::decode($token, $this->jwtKey, ['HS256']);
-      
-    } catch(Exception $e){
-      if($e->getMessage() == 'Expired token'){
-        $this->sql->execute(
-          "SELECT id 
-          FROM `$this->client-users` 
-          WHERE id = '$this->userId' 
-          AND refresh_token = '$refreshToken'
-          AND disabled_at IS NULL"
-        );
+    $this->token = preg_replace('/^bearer /i', '', $authorization);
 
-        if(count($this->sql->getResultArray()) > 0){
-          $payload['exp'] = time() + (60 * 60); // adds 1hr
-          $newToken = $this->createToken($payload);
+    [, $payload] = explode('.', $this->token);
+    $this->payload = json_decode(base64_decode($payload), true);
+
+    $this->refreshToken = $this->payload['refresh'];
+    $this->client = $this->payload['client'];
+    $this->userId = $this->payload['user'];
+    $this->userType = $this->payload['typ'];
+  }
+
+
+
+
+  private function validateToken() {
+    try {
+      JWT::decode($this->token, $this->jwtKey, ['HS256']);
+      //
+    } catch (Exception $e) {
+      if ($e->getMessage() == 'Expired token') {
+
+        $isUserActive = $this->db
+          ->from("{$this->client}_users")
+          ->where('id')->is($this->userId)
+          ->andWhere('refresh_token')->is($this->refreshToken)
+          ->andWhere('disabled_at')->isNull()
+          ->select('id')
+          ->first();
+
+        if ($isUserActive) {
+          $this->payload['exp'] = time() + (60 * 60); // adds 1hr
+          $newToken = $this->createToken($this->payload);
+
           header("Access-Control-Expose-Headers: Refresh-Token");
           header("refresh-token: $newToken");
           return;
+          //
+        } else {
+          $this->isUserDisabled();
         }
-
         error('Chave de acesso expirada.\nSolicite um novo acesso ao administrador.');
       }
-
       error("Chave de acesso inválida. Solicite um novo acesso a um administrador.");
     }
   }
 
 
-  public function createToken($payload){
-    if(!isset($payload['client']) || !isset($payload['user']) || !isset($payload['exp']) || !isset($payload['refresh']) || !isset($payload['typ'])){
+
+  public function createToken($payload) {
+    if (!isset($payload['client']) || !isset($payload['user']) || !isset($payload['exp']) || !isset($payload['refresh']) || !isset($payload['typ'])) {
       throw new Exception("A payload deve conter um timestamp de expiração, id do usuário, tipo de usuário, refresh token e o nome do cliente");
     }
 
@@ -77,17 +97,35 @@ class Auth {
   }
 
 
-  public function mustBeAdmin(){
-    if(!$this->userType == 'admin'){
+
+  public function mustBeAdmin() {
+    if (!$this->userType == 'admin') {
       error("Acesso negado. Você precisa ser administrador para executar esta ação.");
     }
   }
 
 
-  public function mustBeMarker(){
-    if(!$this->userType == 'admin' && !$this->userType == 'marker'){
+
+  public function mustBeMarker() {
+    if (!$this->userType == 'admin' && !$this->userType == 'marker') {
       error("Acesso negado. Você precisa ser marcador ou administrador para executar esta ação.");
     }
+  }
+
+
+
+  public function isUserDisabled() {
+    $isUserDisabled = !!$this->db
+      ->from("{$this->client}_users")
+      ->where('id')->is($this->userId)
+      ->andWhere(fn ($group) => ( //
+        $group->where('refresh_token')->isNot($this->refreshToken)
+        ->orWhere('disabled_at')->notNull()))
+      ->select()
+      ->first();
+
+    if ($isUserDisabled)
+      error('Seu usuário foi desabilitado. Contate um administrador.');
   }
 
 
@@ -97,47 +135,46 @@ class Auth {
       return $this->accessiblePlaces;
     }
 
-    $this->sql->execute(
-     "SELECT place_id
-      FROM `$this->client-users-accesses` AS a
-      JOIN `$this->client-users` AS u
-      ON u.id = '$this->userId' AND u.disabled_at IS NULL
-      WHERE a.user_id = '$this->userId'"
-    );
+    $result = $this->db
+      ->from(["{$this->client}_users_accesses" => 'a'])
+      ->join(["{$this->client}_users" => 'u'], fn ($join) => ( //
+        $join->on('u.id', 'a.user_id') //
+      ))
+      ->where('a.user_id')->is($this->userId)
+      ->where('u.disabled_at')->isNull()
+      ->select('place_id')
+      ->all();
 
-    $places = $this->sql->getResultArray();
+    if (count($result) < 1) {
+      $this->isUserDisabled();
+      error("Você não possui acesso a nenhum local de trabalho. Contate um administrador.");
+    }
 
-    if(count($places) < 1) error("Você não possui acesso a nenhum local de trabalho. Contate um administrador.");
-
-    $result = array_map(fn($place) => $place['place_id'], $places);
-    $this->accessiblePlaces = $result;
-    return $result;
+    $places = array_map(fn ($place) => $place->place_id, $result);
+    $this->accessiblePlaces = $places;
+    return $places;
   }
 
 
   public function getAccessibleEmployers(): array {
-    if($this->accessibleEmployers){
+    if ($this->accessibleEmployers) {
       return $this->accessibleEmployers;
-    }
+    };
 
-    $this->getAccessiblePlaces();
-    $places = implode(',', $this->accessiblePlaces);
 
-    $this->sql->execute(
-     "SELECT id
-      FROM `$this->client-employers`
-      WHERE place IN ($places)
-      AND disabled_at IS NULL"
-    );
+    $result = $this->db
+      ->from("{$this->client}_employers")
+      ->where('place')->in($this->getAccessiblePlaces())
+      ->andWhere('disabled_at')->isNull()
+      ->select('id')
+      ->all();
 
-    $employers = (array) $this->sql->getResultArray();
-
-    if (count($employers) < 1) {
+    if (count($result) < 1) {
       error("Não existem funcionários nos locais de trabalho que você tem acesso.");
     }
 
-    $result = array_map(fn($employer) => $employer['id'], $employers);
-    $this->accessibleEmployers = $result;
-    return $result;
+    $employers = array_map(fn ($employer) => $employer->id, $result);
+    $this->accessibleEmployers = $employers;
+    return $employers;
   }
 }

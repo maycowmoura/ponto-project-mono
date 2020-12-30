@@ -1,19 +1,19 @@
 <?php
 
-/*
- RECEIVES
- nothing, $client will be received by token
- 
- RETURNS
- {
-   "date": "2020-11-03"
- }
-*/
+/**
+ *  RECEIVES
+ *  nothing, $client will be received by token
+ *
+ *  RETURNS
+ *  {
+ *     "date": "2020-11-03"
+ *  }
+ */
 
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 
 
 
@@ -22,26 +22,20 @@ $auth->mustBeAdmin();
 $client = $auth->client;
 
 
+$db = new DB();
+
+$result = $db
+  ->from('closed_dates')
+  ->where('client')->is($client)
+  ->select('date')
+  ->first();
 
 
-$sql = new SQL();
-$sql->execute(
- "SELECT `date` 
-  FROM `closed-dates` 
-  WHERE client = '$client'"
-);
-
-
-$result = $sql->getResultArray();
-
-if(count($result) < 1){
+if (!$result) {
   die('{"date": null}');
 }
 
 
-$json = _json_encode($result[0]);
+$json = _json_encode($result);
 
 die($json);
-
-
-

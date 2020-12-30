@@ -12,70 +12,73 @@
 
 require_once __DIR__ . '/../../../models/global.php';
 require_once __DIR__ . '/../../../models/Auth.php';
-require_once __DIR__ . '/../../../models/SQL.php';
+require_once __DIR__ . '/../../../models/DB/DB.php';
+require_once __DIR__ . '/../../../models/Users.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 
+use Respect\Validation\Validator as v;
 
-$sql = new SQL();
-$sql->execute(
- "SELECT client, user_id, expires
-  FROM `temp-hashes` 
-  WHERE `hash` = '$hash'"
-);
 
-$result = $sql->getResultArray();
-
-if(count($result) < 1){
-  error(
-    "Hash inválida!
-    Cada link de acesso só pode ser acessado uma única vez.
-    Solicite outro link ao admin do sistema."
-  );
+try {
+  v::stringVal()->regex('/[a-z0-9]{15}/i')->setName('hash')->check($hash);
+} catch (Exception $e) {
+  error($e->getMessage());
 }
 
-// deleta essa hash acessada e aproveita pra deletar outras hashes expiradas
-$time = time();
-$sql->execute(
- "DELETE FROM `temp-hashes` 
-  WHERE `hash` = '$hash' OR `expires` < '$time'"
+
+
+
+
+$db = new DB;
+
+$hashData = $db
+  ->from('temp_hashes')
+  ->where('hash')->is($hash)
+  ->select(['client', 'user_id', 'expires'])
+  ->first();
+
+$hashData || error(
+  "Hash inválida!
+  Cada link de acesso só pode ser acessado uma única vez.
+  Solicite outro link ao admin do sistema."
 );
 
 
-$userId = $result[0]['user_id'];
-$client = $result[0]['client'];
-$expires = $result[0]['expires'];
 
-if($expires < time()){
-  error(
-    "Acesso expirada.
-    Cada link de acesso tem duração de 24hrs após ser gerado."
-  );
-}
+$wasDeleted = $db
+  ->from('temp_hashes')
+  ->where('hash')->is($hash)
+  ->orWhere('expires')->lessThan(time())
+  ->delete();
 
-$sql->execute(
- "SELECT *
-  FROM `{$client}_users` 
-  WHERE id = '$userId'"
+$wasDeleted || error('Erro inesperado ao deletar o código do banco.');
+
+
+
+($hashData->expires < time()) && error(
+  "Acesso expirada.
+  Cada link de acesso tem duração de 24hrs após ser gerado."
 );
 
-$userResult = $sql->getResultArray();
 
-if (count($userResult) < 1) {
-  error(
-    "Seu usuário não localizado.
-    Solicite a um admin para verificar."
-  );
-}
+
+$users = new Users();
+$users->client = $hashData->client;
+$user = $users->getSingleUser($hashData->user_id);
+
 
 
 $auth = new Auth(false);
+
 $token = $auth->createToken([
-  'client' => $client,
-  'user' => $userId,
-  'typ' => $userResult[0]['user_type'],
-  'refresh' => $userResult[0]['refresh_token'],
+  'client' => $hashData->client,
+  'user' => $user->id,
+  'typ' => $user->user_type,
+  'refresh' => $user->refresh_token,
   'exp' => time() + (60 * 60) // cria um token que expira em 1h
 ]);
+
 
 
 $json = _json_encode([

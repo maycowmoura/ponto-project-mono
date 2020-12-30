@@ -3,6 +3,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "bramus/router": "^1.4",
         "firebase/php-jwt": "^5.2",
-        "respect/validation": "^2.1"
+        "respect/validation": "^2.1",
+        "opis/database": "^4.2"
     }
 }

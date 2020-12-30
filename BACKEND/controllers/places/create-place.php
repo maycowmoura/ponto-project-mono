@@ -19,7 +19,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
@@ -30,7 +30,6 @@ try {
   v::optional(
     v::arrayType()->each(v::numericVal()->positive())
   )->check(POST['users-accesses'] ?? null);
-  
 } catch (Exception $e) {
   error($e->getMessage());
 }
@@ -41,41 +40,36 @@ $auth = new Auth();
 $auth->mustBeAdmin();
 $userId = $auth->userId;
 $client = $auth->client;
-
-
-
 $name = mb_strtoupper(POST['name']);
 
-$sql = new SQL();
-$sql->beginTransaction();
-$sql->execute(
-  "INSERT INTO `{$client}_places` 
-  (`name`) VALUES ('$name')"
-);
-
-
-$usersAccesses = POST['users-accesses'];
-$usersAccesses[] = $userId;
-$usersAccessesQuery = array_map(fn($user) => "('$user', LAST_INSERT_ID())", $usersAccesses);
-$usersAccessesQuery = implode(',', $usersAccessesQuery);
-
-$sql->execute(
-  "INSERT INTO `{$client}_users_accesses` 
-  (`user_id`, `place_id`) VALUES $usersAccessesQuery"
-);
-
-
-$sql->execute(
-  "SELECT LAST_INSERT_ID() AS id FROM `{$client}_places`"
-);
-$sql->commit();
 
 
 
-$id = $sql->getResultArray()[0]['id'];
+$db = new DB();
+
+$resultPlaceId = $db->transaction(function ($db) use ($client, $name, $userId) {
+  $db->insert(['name' => $name])
+    ->into("{$client}_places");
+
+  $placeId = $db->getConnection()->getPDO()->lastInsertId();
+
+  $userAccesses = [...POST['users-accesses'], $userId];
+
+  foreach($userAccesses as $user){
+    $db->insert([
+      'user_id' => $user,
+      'place_id' => $placeId
+    ])->into("{$client}_users_accesses");
+  }
+
+  return $placeId;
+});
+
+
+
 
 $json = _json_encode([
-  'id' => $id,
+  'id' => $resultPlaceId,
   'name' => $name
 ]);
 

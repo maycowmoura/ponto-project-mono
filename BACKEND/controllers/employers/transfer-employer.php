@@ -17,7 +17,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 
 use Respect\Validation\Validator as v;
 
@@ -33,43 +33,47 @@ $auth = new Auth();
 $auth->mustBeAdmin();
 $userId = $auth->userId;
 $client = $auth->client;
-$accessiblePlaces = $auth->getAccessiblePlaces();
-$accessibleEmployers = $auth->getAccessibleEmployers();
 $to_place = PUT['place'];
-$date = date('Y-m-d');
-$time = time();
 
 
-if (!in_array($to_place, $accessiblePlaces)) {
+if (!in_array($to_place, $auth->getAccessiblePlaces())) {
   error("Você não tem acesso a esse local.");
 }
 
-if (!in_array($employerId, $accessibleEmployers)) {
+if (!in_array($employerId, $auth->getAccessibleEmployers())) {
   error("Você não tem acesso a esse funcionário.");
 }
 
-try {
-  $sql = new SQL();
-  $sql->beginTransaction();
-  $sql->execute(
-    "SELECT @from_place := place FROM `{$client}_employers` WHERE id = '$employerId'"
-  );
-  $sql->execute(
-    "INSERT INTO `{$client}_employers_transfers` 
-    (date, employer_id, from_place, to_place, transfered_by, transfered_at) 
-    VALUES ('$date', '$employerId', @from_place, '$to_place', '$userId', '$time')"
-  );
-  $sql->execute(
-    "UPDATE `{$client}_employers`
-    SET place = '$to_place'
-    WHERE id = '$employerId'"
-  );
-  $sql->commit();
-
-} catch (Exception $e) {
-  error($e->getMessage());
-}
 
 
+
+
+$db = new DB();
+
+$result = $db->transaction(function ($db) use ($employerId, $client, $to_place, $userId) {
+  $from = $db
+    ->from("{$client}_employers")
+    ->where('id')->is($employerId)
+    ->select('place')
+    ->first()
+    ->place;
+
+  $db->insert([
+    'employer_id' => $employerId,
+    'from_place' => $from,
+    'to_place' => $to_place,
+    'transfered_by' => $userId,
+    'transfered_at' => time()
+  ])->into("{$client}_employers_transfers");
+
+  return $db
+    ->update("{$client}_employers")
+    ->where('id')->is($employerId)
+    ->set(['place' => $to_place]);
+});
+
+
+
+$result || error('Erro inesperado ao inserir a data.');
 
 die('{"ok": true}');

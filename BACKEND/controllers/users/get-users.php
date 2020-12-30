@@ -13,7 +13,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/Users.php';
 
 
 
@@ -23,18 +23,8 @@ $userId = $auth->userId;
 $client = $auth->client;
 
 
+$users = new Users($client);
+$allUsers = $users->getAllExceptMyself($userId);
 
-$sql = new SQL();
-$sql->beginTransaction();
-$sql->execute(
-  "SELECT id, name 
-  FROM `{$client}_users` as u
-  WHERE id <> '$userId'
-  AND u.disabled_at IS NULL"
-);
-
-$result = $sql->getResultArray();
-
-$json = _json_encode($result);
-
+$json = _json_encode($allUsers);
 die($json);

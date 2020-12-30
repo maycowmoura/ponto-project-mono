@@ -22,7 +22,7 @@
 
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
-require_once __DIR__ . '/../../models/SQL.php';
+require_once __DIR__ . '/../../models/DB/DB.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Respect\Validation\Validator as v;
@@ -38,11 +38,8 @@ try {
   v::key('name', v::stringType()->alpha(' ')->length(3, 60))
     ->key('job', v::stringType()->length(3, 60))
     ->key('place', v::intVal()->positive())->check(POST);
-
 } catch (Exception $e) {
-  die(_json_encode([
-    'error' => $e->getMessage()
-  ]));
+  error($e->getMessage());
 }
 
 
@@ -50,25 +47,39 @@ $name  = mb_strtoupper(POST['name']);
 $job   = mb_strtoupper(POST['job']);
 $place = POST['place'];
 
-$sql = new SQL();
-$sql->beginTransaction();
-$sql->execute(
-  "INSERT INTO `{$client}_employers`
-  (name, job, place, default_time)
-  VALUES
-  ('$name', '$job', '$place', 1001)"
-);
-$sql->execute(
- "SELECT e.id AS id, e.name AS name, p.name AS place, job
-  FROM `{$client}_employers` AS e
-  JOIN `{$client}_places` AS p
-  ON e.place = p.id
-  WHERE e.id = LAST_INSERT_ID()"
-);
-$sql->commit();
 
 
-$result = $sql->getResultArray();
-$json = _json_encode($result[0]);
+
+$db = new DB();
+
+$result = $db->transaction(function ($db) use ($name, $job, $place, $client) {
+  $db->insert([
+    'name' => $name,
+    'job' => $job,
+    'place' => $place,
+    'default_time' => 1001,
+  ])
+    ->into("{$client}_employers");
+
+  return $db
+    ->from(["{$client}_employers" => 'e'])
+    ->where('e.id')->is(fn ($expr) => ( //
+      $expr->{'LAST_INSERT_ID()'} //
+    ))
+    ->join(["{$client}_places" => 'p'], fn ($join) => ( //
+      $join->on('e.place', 'p.id') // 
+    ))
+    ->select([
+      'e.id' => 'id',
+      'e.name' => 'name',
+      'p.name' => 'place',
+      'job'
+    ])
+    ->first();
+});
+
+
+
+$json = _json_encode($result);
 
 die($json);
