@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import { MainContextProvider } from './contexts/MainContext';
 import { MarksContextProvider } from './contexts/MarksContext';
+import { StatsContextProvider } from './contexts/StatsContext';
 import Loading from './pages/Loading';
 import Login from './pages/Login';
 import Help from './pages/Help';
@@ -16,6 +17,7 @@ import EmployersPage from './pages/Dashboard/EmployersPage';
 import NewEmployer from './pages/Dashboard/EmployersPage/NewEmployer';
 import ClosePoint from './pages/Dashboard/ClosePoint';
 import PointMirror from './pages/Dashboard/PointMirror';
+import Stats from './pages/Dashboard/Stats';
 
 
 export default function Router({ homepage }) {
@@ -41,6 +43,9 @@ export default function Router({ homepage }) {
             <Route path="/dashboard/employers/new" component={NewEmployer} />
             <Route path="/dashboard/close-point" component={ClosePoint} />
             <Route path="/dashboard/point-mirror" component={PointMirror} />
+            <StatsContextProvider>
+              <Route path="/dashboard/stats" component={Stats} />
+            </StatsContextProvider>
           </MarksContextProvider>
         </Switch>
       </BrowserRouter>

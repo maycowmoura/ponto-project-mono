@@ -1,0 +1,27 @@
+@import '../../../utils/variables.scss';
+
+#stats {
+  @extend %page-with-header;
+
+  main {
+    .title {
+      text-align: center;
+      margin: 64px 0;
+
+      h2 {
+        font-size: 24px;
+      }
+    }
+  }
+
+  #float-menu {
+    button {
+      float: right;
+      margin-top: 32px;
+    }
+  }
+
+  .filter-by-place select {
+    margin-bottom: 32px;
+  }
+}

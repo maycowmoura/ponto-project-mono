@@ -12,6 +12,7 @@ import { ImCalendar } from 'react-icons/im';
 import { MdSecurity, MdLocationOn, MdHelpOutline } from 'react-icons/md';
 import { FaUserEdit, FaRegCalendarTimes, FaList } from 'react-icons/fa';
 import { FiEdit, FiFileText } from 'react-icons/fi';
+import { ImStatsBars } from 'react-icons/im';
 
 
 
@@ -98,6 +99,9 @@ export default function Dashboard() {
         </button>
         <button onClick={() => history.push('/dashboard/point-mirror')}>
           <FiFileText /> Gerar Espelho de Ponto
+        </button>
+        <button onClick={() => history.push('/dashboard/stats')}>
+          <ImStatsBars /> Estatísticas
         </button>
         {/* <button onClick={() => history.push('/help')}>
           <MdHelpOutline /> Me Ajuda

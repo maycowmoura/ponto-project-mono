@@ -1,0 +1,93 @@
+@import '../../../../utils/variables.scss';
+
+
+section.stats-card {
+  @extend %card;
+  position: relative;
+  text-align: center;
+  margin: 18px 0;
+
+  &.loading {
+    padding: 88px 0;
+  }
+
+  &:last-of-type {
+    margin-bottom: 72px;
+  }
+
+  svg.help {
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    color: #38f0ff;
+    cursor: pointer;
+  }
+
+  .heading {
+    font-size: 20px;
+    font-weight: 600;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #5e6068;
+  }
+
+  .data-wrapper {
+    display: flex;
+    align-items: center;
+    margin: 32px 0 18px;
+
+    .quantity-wrapper {
+      display: flex;
+      align-items: center;
+      width: 40%;
+
+      svg {
+        font-size: 36px;
+        transform: none;
+      }
+
+      .quantity {
+        font-size: 42px;
+        font-weight: 200;
+        margin-top: -8px;
+      }
+
+      .diff {
+        font-size: 13px;
+        margin-top: -8px;
+        color: #50cc55;
+
+        &.red {
+          color: #ff6767;
+        }
+
+        &.orange {
+          color: #FBB13C;
+        }
+      }
+    }
+
+    .progress-wrapper {
+      flex: 1;
+      text-align: left;
+      margin-left: 8px;
+
+      label {
+        font-size: 13px;
+        margin: 0;
+      }
+
+      .progress {
+        height: 8px;
+        border-radius: 16px;
+        background-color: #1a1b1e;
+        margin-bottom: 8px;
+
+        .progress-bar {
+          height: 100%;
+          border-radius: 16px;
+          background-color: #03a9f4;
+        }
+      }
+    }
+  }
+}
