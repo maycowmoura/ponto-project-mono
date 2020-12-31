@@ -21,6 +21,7 @@ require_once __DIR__ . '/routes/employers.php';
 require_once __DIR__ . '/routes/places.php';
 require_once __DIR__ . '/routes/users.php';
 require_once __DIR__ . '/routes/closed-dates.php';
+require_once __DIR__ . '/routes/stats.php';
 
 
 
