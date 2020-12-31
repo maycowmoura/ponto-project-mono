@@ -3,7 +3,7 @@
 /**
  * RECEIVES
  *
- * $_GET['filters'] = 'filter1, filter2, ...'
+ * $_GET['type'] = 'type1, type2, ...' // one of the $possibleTypes of stats
  * $_GET['periodFrom'] = '2020-10-20'
  * $_GET['periodTo'] = '2020-12-30'
  *
@@ -56,7 +56,7 @@ $possibleTypes = [
  * caso esteja no modo desenvolvedor, ele retorna todos os tipos possiveis
  * pra não precisar ficar passando os filtros na url
  */
-if (getenv('DEV_MODE')) {
+if (getenv('DEV_MODE') && !$statType) {
   $statType = $possibleTypes;
 }
 
@@ -77,6 +77,12 @@ try {
   if ((strtotime($to) - strtotime($from)) > (31 * 24 * 60 * 60)) {
     error('Ops... Escolha um período de até 31 dias.');
   }
+
+  $today = date('Y-m-d');
+  if ($to > $today) {
+    $to = $today;
+  }
+  
 } catch (Exception $e) {
   error($e->getMessage());
 }
@@ -113,10 +119,10 @@ $db = new DB();
  */
 $filtredEmployers = $db
   ->from("{$client}_employers")
-  ->where('place')->in($accessiblePlaces)
-  ->where(fn ($where) => ( //
-    $placeFilters && $where->andWhere('place')->in($placeFilters) //
-  ))
+  ->where(function ($group) use ($accessiblePlaces, $placeFilters) {
+    $group->where('place')->in($accessiblePlaces);
+    $placeFilters && $group->andWhere('place')->in($placeFilters);
+  })
   ->select('id')
   ->all();
 
