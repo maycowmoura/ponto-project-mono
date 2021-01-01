@@ -14,7 +14,7 @@
     }
 
     .spacer {
-      height: 200px;
+      height: 215px;
     }
   }
 
@@ -27,5 +27,9 @@
 
   .filter-by-place select {
     margin-bottom: 32px;
+  }
+
+  #modal {
+    font-size: 16px;
   }
 }

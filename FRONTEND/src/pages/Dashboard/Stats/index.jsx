@@ -22,28 +22,36 @@ export default function Stats() {
   const otherCardsLength = useRef(0);
   const avaliableCards = [{
     title: 'Cafés da manhã:',
-    statType: 'breakfasts'
+    statType: 'breakfasts',
+    help: 'Esta estatística conta como 1 café da manhã o funcionário que chegou no trabalho no horário, ou com até 40min de atraso.'
   }, {
     title: 'Total de almoços:',
-    statType: 'lunches'
+    statType: 'lunches',
+    help: 'O total de almoços considera como 1 almoço o funcionário que chegou antes de 11:30h e saiu depois de 12:00h.'
   }, {
     title: 'Total de horas extras feitas:',
-    statType: 'extras-total'
+    statType: 'extras-total',
+    help: 'Esta é a soma de horas extras de todos os funcionários. Ou seja, todas as horas extras que foram ou serão pagas no período.'
   }, {
     title: 'Total de dias em que houveram horas extras:',
-    statType: 'extras-worked'
+    statType: 'extras-worked',
+    help: 'Estes são em quantos dias, pelo menos um funcionário fez hora extra, seja chegando antes ou saindo após o horário.'
   }, {
     title: 'Sábados com expediente:',
-    statType: 'saturdays-worked'
+    statType: 'saturdays-worked',
+    help: 'Este é o total de sábados em que ao menos um funcionário trabalhou.'
   }, {
     title: 'Total de sábados pagos:',
-    statType: 'saturdays-total'
+    statType: 'saturdays-total',
+    help: 'Esta é a soma de todos os sábados trabalhados por todos os funcionários. Ou seja, é o total de sábados que foram ou serão pagos.'
   }, {
     title: 'Domingos com expediente:',
-    statType: 'sundays-worked'
+    statType: 'sundays-worked',
+    help: 'Este é o total de domingos em que ao menos um funcionário trabalhou.'
   }, {
     title: 'Total de domingos pagos:',
-    statType: 'sundays-total'
+    statType: 'sundays-total',
+    help: 'Esta é a soma de todos os domingos trabalhados por todos os funcionários. Ou seja, é o total de domingos que foram ou serão pagos.'
   }]
   const isAllLoaded = otherCardsLength.current === avaliableCards.length;
 
@@ -116,11 +124,14 @@ export default function Stats() {
         <StatsCard
           title="Total de dias trabalhados:"
           statType="worked-days"
+          help="Esta é a soma de todos os dias trabalhados por todos os funcionários. 
+          Ou seja, no fim das contas, é o total de dias que foram ou serão pagos."
         />
 
         <StatsCard
           title="Faltas do período:"
           statType="misses"
+          help="Esta é a soma de todas as faltas de todos os funcionários no período, de acordo com seus filtros de locais, claro."
         />
 
         {otherCards}

@@ -3,6 +3,7 @@ import './style.scss';
 import { useStatsContext } from '../../../../contexts/StatsContext';
 import api from '../../../../api';
 import LoadingInner from '../../../../components/LoadingInner';
+import Modal from '../../../../components/Modal';
 import {
   BsArrowUp as Up,
   BsArrowDown as Down,
@@ -14,12 +15,13 @@ import { RiHistoryFill as History } from 'react-icons/ri';
 
 
 
-function StatsCard({ title, statType }) {
+function StatsCard({ title, statType, help }) {
   const { periodFromString, periodToString, placeFilters, loadedData, setLoadedData } = useStatsContext();
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [thisData, setThisData] = useState(loadedData[statType]?.thisData);
   const [prevData, setPrevData] = useState(loadedData[statType]?.prevData);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
@@ -57,12 +59,19 @@ function StatsCard({ title, statType }) {
 
   const calc = (function () {
     const diff = thisData - prevData;
+
+    function handleResult(result){
+      if(!result) return 0;
+      else if(result === Infinity) return 100
+      else return result;
+    }
+
     return {
       diff,
-      diffPercent: Math.round((thisData / prevData - 1) * 100) || 0,
+      diffPercent: handleResult(Math.round((thisData / prevData - 1) * 100)),
       signal: diff >= 0 ? '+' : '',
-      thisPercent: (thisData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0,
-      prevPercent: (prevData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0,
+      thisPercent: handleResult((thisData / (parseInt(thisData) + parseInt(prevData)) * 100)),
+      prevPercent: handleResult((prevData / (parseInt(thisData) + parseInt(prevData)) * 100)),
       redClass: diff < 0 ? 'red' : '',
       orangeClass: diff === 0 ? 'orange' : ''
     }
@@ -82,33 +91,41 @@ function StatsCard({ title, statType }) {
 
 
   return (
-    <section className="stats-card">
-      <FiHelpCircle className="help" />
-      <div className="heading">
-        {title}
-      </div>
-      <div className="data-wrapper">
-        <div className="quantity-wrapper">
-          {calc.diff === 0 ? <Stopped /> : calc.diff > 0 ? <Up /> : <Down />}
-          <div>
-            <div className="quantity">{thisData}</div>
-            <div className={`diff ${calc.redClass} ${calc.orangeClass}`}>
-              {calc.signal + calc.diff} ({calc.diffPercent}%)
+    <>
+      <section className="stats-card">
+        <FiHelpCircle className="help" onClick={setShowModal} />
+        <div className="heading">
+          {title}
+        </div>
+        <div className="data-wrapper">
+          <div className="quantity-wrapper">
+            {calc.diff === 0 ? <Stopped /> : calc.diff > 0 ? <Up /> : <Down />}
+            <div>
+              <div className="quantity">{thisData}</div>
+              <div className={`diff ${calc.redClass} ${calc.orangeClass}`}>
+                {calc.signal + calc.diff} ({calc.signal + calc.diffPercent}%)
+            </div>
+            </div>
+          </div>
+          <div className="progress-wrapper">
+            <label><Today /> Este período [{thisData}]</label>
+            <div className="progress">
+              <div className="progress-bar" style={{ width: `${calc.thisPercent}%` }}></div>
+            </div>
+            <label><History /> Período anterior [{prevData}]</label>
+            <div className="progress">
+              <div className="progress-bar" style={{ width: `${calc.prevPercent}%` }}></div>
             </div>
           </div>
         </div>
-        <div className="progress-wrapper">
-          <label><Today /> Este período [{thisData}]</label>
-          <div className="progress">
-            <div className="progress-bar" style={{ width: `${calc.thisPercent}%` }}></div>
-          </div>
-          <label><History /> Período anterior [{prevData}]</label>
-          <div className="progress">
-            <div className="progress-bar" style={{ width: `${calc.prevPercent}%` }}></div>
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
+
+      {showModal &&
+        <Modal close={setShowModal}>
+          {help}
+        </Modal>
+      }
+    </>
   );
 }
 
