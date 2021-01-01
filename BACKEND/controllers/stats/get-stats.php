@@ -77,11 +77,6 @@ try {
   if ((strtotime($to) - strtotime($from)) > (31 * 24 * 60 * 60)) {
     error('Ops... Escolha um período de até 31 dias.');
   }
-
-  $today = date('Y-m-d');
-  if ($to > $today) {
-    $to = $today;
-  }
 } catch (Exception $e) {
   error($e->getMessage());
 }
@@ -107,6 +102,16 @@ $oneDay = DateInterval::createFromDateString('1 days');
 $prevPeriodFrom = (new DateTime($from))->sub($diff)->format('Y-m-d');
 $prevPeriodTo = (new DateTime($from))->sub($oneDay)->format('Y-m-d');
 
+
+
+/**
+ * Se o $to é maior que hoje, ou seja, uma data no futuro, então limita a hoje.
+ * Isso deve ser feito após o calculo das $diffs (acima) para não atrapalhar o calculo das datas
+ */
+$today = date('Y-m-d');
+if ($to > $today) {
+  $to = $today;
+}
 
 
 
