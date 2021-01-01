@@ -82,7 +82,6 @@ try {
   if ($to > $today) {
     $to = $today;
   }
-  
 } catch (Exception $e) {
   error($e->getMessage());
 }
@@ -229,7 +228,7 @@ $getDataForSundaysAndSaturdays = fn ($dateFrom, $dateTo, $weekday, $columnToCoun
   ->andWhere('employer_id')->in($filtredEmployers)
   ->andWhere('time_in')->atLeast(0)
   ->andWhere('weekday')->is($weekday)
-  ->count($columnToCount) // um distinct é colocado automaticamente
+  ->count($columnToCount, true) // true é para adicionar um distinct
 );
 
 
@@ -295,7 +294,7 @@ if (in_array('extras-worked', $statType)) {
       $group->andWhere('time_before')->greaterThan(0)
         ->orWhere('time_after')->greaterThan(0);
     })
-    ->count('date') // se tem hora extra antes ou depois do expediente
+    ->count('date', true) // true é para adicionar um distinct
   );
 
   $result['extras-worked'] = [
@@ -327,6 +326,9 @@ if (in_array('extras-total', $statType)) {
   ];
 }
 
+// foreach ($db->getLog() as $log) {
+//   echo $log['query'] . '<br><br>';
+// }
 
 $json = _json_encode($result);
 die($json);
