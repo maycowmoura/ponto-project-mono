@@ -16,28 +16,23 @@ import { RiHistoryFill as History } from 'react-icons/ri';
 
 function StatsCard({ title, statType }) {
   const { periodFromString, periodToString, placeFilters, loadedData, setLoadedData } = useStatsContext();
-  const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [thisData, setThisData] = useState(0);
-  const [prevData, setPrevData] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [thisData, setThisData] = useState(loadedData[statType]?.thisData);
+  const [prevData, setPrevData] = useState(loadedData[statType]?.prevData);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
-    // se ja foi carregado retorna o dado carregado
+    // se ja foi carregado retorna não precisa fazer o request
     if (loadedData[statType]) {
-      const { thisData, prevData } = loadedData[statType];
-      setThisData(thisData);
-      setPrevData(prevData);
       setLoading(false);
-      return
+      return;
     }
 
+    setLoading(true);
+
     api.get('/stats', {
-      params: {
-        from: periodFromString,
-        to: periodToString,
-        type: statType,
-        'place-filters': placeFilters
-      }
+      params: { from: periodFromString, to: periodToString, type: statType, 'place-filters': placeFilters }
     })
       .then(({ data }) => {
         if (data.error) return setErrorMsg(data.error);
@@ -49,24 +44,38 @@ function StatsCard({ title, statType }) {
         setLoadedData({ [statType]: { thisData, prevData } })
       })
       .catch(setErrorMsg);
-  }, [periodFromString, periodToString, placeFilters])
+  }, [loadedData[statType], reload])
 
 
-  const diff = thisData - prevData;
-  const diffPercent = Math.round((thisData / prevData - 1) * 100) || 0;
-  const signal = diff >= 0 ? '+' : '';
-  const thisPercent = (thisData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0;
-  const prevPercent = (prevData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0;
-  const redClass = diff < 0 ? 'red' : '';
-  const orangeClass = diff === 0 ? 'orange' : '';
+  function clickToReload() {
+    if (!errorMsg) return;
+    setLoadedData({ [statType]: null });
+    setErrorMsg(null);
+    setReload(v => ++v);
+  }
 
 
-  
+  const calc = (function () {
+    const diff = thisData - prevData;
+    return {
+      diff,
+      diffPercent: Math.round((thisData / prevData - 1) * 100) || 0,
+      signal: diff >= 0 ? '+' : '',
+      thisPercent: (thisData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0,
+      prevPercent: (prevData / (parseInt(thisData) + parseInt(prevData)) * 100) || 0,
+      redClass: diff < 0 ? 'red' : '',
+      orangeClass: diff === 0 ? 'orange' : ''
+    }
+  })();
+
+
+
 
   if (loading) {
+    const msg = errorMsg && <>{errorMsg} <br /> Clique para tentar de novo.</>;
     return (
-      <section className="stats-card loading">
-        <LoadingInner />
+      <section className="stats-card loading" onClick={clickToReload}>
+        <LoadingInner text={msg} />
       </section>
     )
   }
@@ -80,22 +89,22 @@ function StatsCard({ title, statType }) {
       </div>
       <div className="data-wrapper">
         <div className="quantity-wrapper">
-          {diff === 0 ? <Stopped /> : diff > 0 ? <Up /> : <Down />}
+          {calc.diff === 0 ? <Stopped /> : calc.diff > 0 ? <Up /> : <Down />}
           <div>
             <div className="quantity">{thisData}</div>
-            <div className={`diff ${redClass} ${orangeClass}`}>
-              {signal + diff} ({diffPercent}%)
+            <div className={`diff ${calc.redClass} ${calc.orangeClass}`}>
+              {calc.signal + calc.diff} ({calc.diffPercent}%)
             </div>
           </div>
         </div>
         <div className="progress-wrapper">
           <label><Today /> Este período [{thisData}]</label>
           <div className="progress">
-            <div className="progress-bar" style={{ width: `${thisPercent}%` }}></div>
+            <div className="progress-bar" style={{ width: `${calc.thisPercent}%` }}></div>
           </div>
           <label><History /> Período anterior [{prevData}]</label>
           <div className="progress">
-            <div className="progress-bar" style={{ width: `${prevPercent}%` }}></div>
+            <div className="progress-bar" style={{ width: `${calc.prevPercent}%` }}></div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import './style.scss';
 import { useMainContext } from '../../../contexts/MainContext';
 import { useStatsContext } from '../../../contexts/StatsContext';
 import Header from '../../../components/Header'
+import MainTag from '../../../components/MainTag'
 import StatsCard from './StatsCard';
 import FloatMenu from '../../../components/FloatMenu'
 import SelectDate from '../../../components/SelectDate'
@@ -13,7 +14,7 @@ import { RiHistoryLine } from 'react-icons/ri';
 
 export default function Stats() {
   const { data: { places } } = useMainContext();
-  const { periodFrom, setPeriodFrom, periodTo, setPeriodTo, setPlaceFilters } = useStatsContext();
+  const { periodFrom, setPeriodFrom, periodTo, setPeriodTo, setPlaceFilters, setLoadedData } = useStatsContext();
 
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [showPlacesMenu, setShowPlacesMenu] = useState(false);
@@ -44,14 +45,17 @@ export default function Stats() {
     title: 'Total de domingos pagos:',
     statType: 'sundays-total'
   }]
+  const isAllLoaded = otherCardsLength.current === avaliableCards.length;
+
+
 
   useEffect(() => {
     const root = document.querySelector('#root');
 
     function scrollSpy() {
-      const isAllLoaded = otherCardsLength.current == avaliableCards.length;
-      const reachedTheBottom = (window.innerHeight + root.scrollTop) == root.scrollHeight;
-
+      const isAllLoaded = otherCardsLength.current === avaliableCards.length;
+      const reachedTheBottom = (window.innerHeight + root.scrollTop) === root.scrollHeight;
+      
       if (!isAllLoaded && reachedTheBottom) {
         const nextCardIndex = otherCardsLength.current;
         const nextCardProps = avaliableCards[nextCardIndex];
@@ -63,18 +67,33 @@ export default function Stats() {
     }
 
     root.addEventListener('scroll', scrollSpy);
-    return () => root.removeEventListener('scroll', scrollSpy);
+    root.addEventListener('click', scrollSpy); // caso n tenha scroll carrega ao clicar
+    return () => {
+      root.removeEventListener('scroll', scrollSpy);
+      root.removeEventListener('click', scrollSpy);
+    }
   }, [])
 
 
-
-  function handleFilterPlace() {
-
+  function resetComponent(){
+    setLoadedData({ reset: true });
+    setOtherCards([]);
+    otherCardsLength.current = 0;
+    setShowPeriodMenu(false);
+    setShowPlacesMenu(false);
   }
 
-  function handlePeriodChange() {
 
+  function handlePlaceFilters(e) {
+    const value = Array.from(e.target.selectedOptions)
+      .filter(option => option.value != 0) //eslint-disable-line
+      .map(option => option.value)
+      .join();
+      
+    setPlaceFilters(value);
+    resetComponent();
   }
+
 
   return (
     <div id="stats">
@@ -84,8 +103,7 @@ export default function Stats() {
         <div onClick={setShowPeriodMenu}><RiHistoryLine /></div>
       </Header>
 
-      <main>
-
+      <MainTag>
         <div className="title">
           <h2>Estatísticas do Ponto</h2>
           <small>
@@ -107,7 +125,8 @@ export default function Stats() {
 
         {otherCards}
 
-      </main>
+        {isAllLoaded || <div className="spacer"></div>}
+      </MainTag>
 
 
 
@@ -121,7 +140,7 @@ export default function Stats() {
             className="border"
             multiple
             defaultValue={[0]}
-            onChange={handleFilterPlace}
+            onChange={handlePlaceFilters}
           >
             <option value="0" hidden>Todos os locais</option>
             {places.map(({ id, name }) =>
@@ -148,7 +167,7 @@ export default function Stats() {
             initialDate={periodTo}
             onChange={setPeriodTo}
           />
-          <button onClick={handlePeriodChange}>Continuar</button>
+          <button onClick={resetComponent}>Continuar</button>
         </FloatMenu>
       }
     </div>

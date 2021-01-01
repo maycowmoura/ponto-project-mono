@@ -4,8 +4,9 @@ import { DateToString, firstDayOfMonth, lastDayOfMonth } from '../utils/TimeForm
 const StatsContext = React.createContext({});
 
 
-function reducerFunction(state, newValue){
-  return {...state, ...newValue};
+function reducerFunction(state, newValue) {
+  if (newValue.reset) return {};
+  return { ...state, ...newValue };
 }
 
 
@@ -15,6 +16,7 @@ export function StatsContextProvider({ children }) {
   const [placeFilters, setPlaceFilters] = useState('');
   const [loadedData, setLoadedData] = useReducer(reducerFunction, {});
 
+
   return (
     <StatsContext.Provider value={{
       periodFrom,
@@ -23,9 +25,9 @@ export function StatsContextProvider({ children }) {
       periodTo,
       periodToString: DateToString(periodTo),
       setPeriodTo,
-      placeFilters, 
+      placeFilters,
       setPlaceFilters,
-      loadedData, 
+      loadedData,
       setLoadedData
     }}>
       {children}
