@@ -8,13 +8,15 @@ import Uploading from './Uploading';
 import Header from '../../../components/Header';
 import ToastMsg from '../../../components/ToastMsg';
 import VideoModal from '../../../components/VideoModal';
-import { months, weekdays } from '../../../utils/MonthsAndWeekdays';
-import { DateToArray, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
 import Input from './Input';
 import Footer from './Footer';
-import { MdComment as Comment, MdViewAgenda as List, MdHelp as Help } from 'react-icons/md';
+import Menu from './Menu';
+import { months, weekdays } from '../../../utils/MonthsAndWeekdays';
+import { DateToArray, DateToString, MinutesToFormatedTime as format } from '../../../utils/TimeFormaters';
+import { MdComment as Comment } from 'react-icons/md';
 import { ImUserMinus as Missed } from 'react-icons/im';
 import { FaRegCalendarCheck as Calendar } from 'react-icons/fa';
+import { BsThreeDotsVertical as MenuIcon } from 'react-icons/bs';
 
 
 export default function SetMarks() {
@@ -24,6 +26,7 @@ export default function SetMarks() {
   const [animateMissed, setAnimateMissed] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = userType === 'admin';
   const history = useHistory();
@@ -92,7 +95,6 @@ export default function SetMarks() {
     return (
       <>
         <LoadingInner text="Carregando marcações..." />
-
         {errorMsg && <ToastMsg text={errorMsg} close={handleGetBack} />}
       </>
     );
@@ -117,9 +119,7 @@ export default function SetMarks() {
             <span className="bigger">{headerDate()}</span>
           </span>
         </div>
-        <div onClick={() => history.push('/marks/list')}>
-          <List />
-        </div>
+        {isAdmin && <div onClick={setShowMenu}><MenuIcon /></div>}
       </Header>
 
       <VideoModal />
@@ -162,6 +162,8 @@ export default function SetMarks() {
       <Footer
         {...{ missed, handleMissed, animationClass, setAnimationClass }}
       />
+
+      {showMenu && <Menu close={setShowMenu} />}
     </div>
   );
 }

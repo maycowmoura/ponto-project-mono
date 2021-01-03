@@ -9,8 +9,8 @@ import ToastMsg from '../../components/ToastMsg';
 import VideoModal from '../../components/VideoModal';
 import FloatMenu from '../../components/FloatMenu';
 import { ImCalendar } from 'react-icons/im';
-import { MdSecurity, MdLocationOn, MdHelpOutline } from 'react-icons/md';
-import { FaUserEdit, FaRegCalendarTimes, FaList } from 'react-icons/fa';
+import { MdSecurity, MdLocationOn, MdHelp as Help, MdViewAgenda as List } from 'react-icons/md';
+import { FaUserEdit, FaRegCalendarTimes } from 'react-icons/fa';
 import { FiEdit, FiFileText } from 'react-icons/fi';
 import { ImStatsBars } from 'react-icons/im';
 
@@ -77,6 +77,7 @@ export default function Dashboard() {
     <div id="dashboard">
       <Header logo>
         <div className="title">MarcaPonto</div>
+        <div onClick={() => history.push('/help')}><Help /></div>
       </Header>
 
       <VideoModal />
@@ -133,7 +134,7 @@ export default function Dashboard() {
               <FiEdit /> Editar ou fazer marcações
               </li>
             <li onClick={() => history.push('/marks/list')}>
-              <FaList /> Listar marcações
+              <List /> Listar marcações
             </li>
           </ul>
         </FloatMenu>
