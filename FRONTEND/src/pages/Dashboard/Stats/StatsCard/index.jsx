@@ -59,7 +59,7 @@ function StatsCard({ title, statType, help }) {
 
 
   function animateNumbers(finalValue, setState){
-    const rate = Math.round(finalValue / 17);
+    const rate = Math.ceil(finalValue / 17);
     const int = setInterval(() => {
       setState(prev => {
         const value = (prev + rate) || 0;
@@ -130,7 +130,7 @@ function StatsCard({ title, statType, help }) {
             </div>
             <label><History /> Período anterior [{prevData}]</label>
             <div className="progress">
-              <div className="progress-bar" style={{ width: `${calc.prevPercent}%` }}></div>
+              <div className="progress-bar prev" style={{ width: `${calc.prevPercent}%` }}></div>
             </div>
           </div>
         </div>
