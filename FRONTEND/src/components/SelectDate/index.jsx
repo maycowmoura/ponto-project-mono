@@ -17,9 +17,15 @@ export default function SelectDate({ initialDate, onChange }) {
     const isValid = [year, month, day].join('-') === date;
     const newDay = parseInt(isValid ? day : 0);
     const newMonth = parseInt(isValid ? month - 1 : month);
+    let newYear = year;
 
-    const correctDate = new Date(year, newMonth, newDay);
-    let [y, m, d] = DateToArray(correctDate);
+    /**
+     * se o mês selecionado for no futuro, pré-supõe que está selecionando
+     * um mês do ano passado, então diminui o ano
+     */
+    if (newMonth > (new Date()).getMonth()) {
+      newYear = (new Date()).getFullYear() - 1;
+    }
 
     // pisca se a data for invalida, mas no fim usará a data correta
     if (!isValid) {
@@ -27,13 +33,9 @@ export default function SelectDate({ initialDate, onChange }) {
       setTimeout(() => setInvalid(false), 1500);
     }
 
-    /**
-     * se o mês selecionado for no futuro, pré-supõe que está selecionando
-     * um mês do ano passado, então diminui o ano
-     */
-    if(newMonth > (new Date()).getMonth()){
-      y = (new Date()).getFullYear() - 1;
-    }
+
+    const correctDate = new Date(newYear, newMonth, newDay);
+    let [y, m, d] = DateToArray(correctDate);
 
     setDay(d);
     setMonth(m);
