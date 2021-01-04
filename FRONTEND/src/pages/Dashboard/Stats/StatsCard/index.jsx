@@ -40,8 +40,8 @@ function StatsCard({ title, statType, help }) {
         if (data.error) return setErrorMsg(data.error);
 
         const { thisData, prevData } = data[statType];
-        setThisData(thisData);
-        setPrevData(prevData);
+        animateNumbers(thisData, setThisData);
+        animateNumbers(prevData, setPrevData);
         setLoading(false);
         setLoadedData({ [statType]: { thisData, prevData } })
       })
@@ -54,6 +54,22 @@ function StatsCard({ title, statType, help }) {
     setLoadedData({ [statType]: null });
     setErrorMsg(null);
     setReload(v => ++v);
+  }
+
+
+
+  function animateNumbers(finalValue, setState){
+    const rate = Math.round(finalValue / 17);
+    const int = setInterval(() => {
+      setState(prev => {
+        const value = (prev + rate) || 0;
+        if (value >= finalValue) {
+          clearInterval(int);
+          return finalValue;
+        }
+        return value;
+      })
+    }, 30)
   }
 
 

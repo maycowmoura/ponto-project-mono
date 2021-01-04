@@ -84,6 +84,7 @@ export default function Stats() {
 
 
   function resetComponent(){
+    document.querySelector('#root').scrollTop = 0;
     setLoadedData({ reset: true });
     setOtherCards([]);
     otherCardsLength.current = 0;
