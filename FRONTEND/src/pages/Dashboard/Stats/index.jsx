@@ -4,6 +4,7 @@ import { useMainContext } from '../../../contexts/MainContext';
 import { useStatsContext } from '../../../contexts/StatsContext';
 import Header from '../../../components/Header'
 import MainTag from '../../../components/MainTag'
+import ToastMsg from '../../../components/ToastMsg'
 import StatsCard from './StatsCard';
 import FloatMenu from '../../../components/FloatMenu'
 import SelectDate from '../../../components/SelectDate'
@@ -18,6 +19,7 @@ export default function Stats() {
 
   const [showPeriodMenu, setShowPeriodMenu] = useState(false);
   const [showPlacesMenu, setShowPlacesMenu] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [otherCards, setOtherCards] = useState([]);
   const otherCardsLength = useRef(0);
   const avaliableCards = [{
@@ -63,7 +65,7 @@ export default function Stats() {
     function scrollSpy() {
       const isAllLoaded = otherCardsLength.current === avaliableCards.length;
       const reachedTheBottom = (window.innerHeight + root.scrollTop) === root.scrollHeight;
-      
+
       if (!isAllLoaded && reachedTheBottom) {
         const nextCardIndex = otherCardsLength.current;
         const nextCardProps = avaliableCards[nextCardIndex];
@@ -83,7 +85,7 @@ export default function Stats() {
   }, [])
 
 
-  function resetComponent(){
+  function resetComponent() {
     document.querySelector('#root').scrollTop = 0;
     setLoadedData({ reset: true });
     setOtherCards([]);
@@ -98,9 +100,17 @@ export default function Stats() {
       .filter(option => option.value != 0) //eslint-disable-line
       .map(option => option.value)
       .join();
-      
+
     setPlaceFilters(value);
     resetComponent();
+  }
+
+
+  function handlePeriodChange() {
+    const diff = Math.abs((periodTo - periodFrom) / (24 * 60 * 60 * 1000));
+    diff > 30
+      ? setErrorMsg('Por favor, selecione um período de no máximo 31 dias.')
+      : resetComponent();
   }
 
 
@@ -111,6 +121,8 @@ export default function Stats() {
         {places.length > 1 && <div onClick={setShowPlacesMenu}><MdLocationOn /></div>}
         <div onClick={setShowPeriodMenu}><RiHistoryLine /></div>
       </Header>
+
+      {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} aboveAll />}
 
       <MainTag>
         <div className="title">
@@ -179,7 +191,7 @@ export default function Stats() {
             initialDate={periodTo}
             onChange={setPeriodTo}
           />
-          <button onClick={resetComponent}>Continuar</button>
+          <button onClick={handlePeriodChange}>Continuar</button>
         </FloatMenu>
       }
     </div>
