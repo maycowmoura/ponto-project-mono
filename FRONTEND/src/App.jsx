@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
 import { useMainContext } from './contexts/MainContext';
-import { loadTokenFromHashOnSafari, disablePitchZoom } from './utils/OtherUtils';
+import { loadTokenFromHashOnSafari, disablePitchZoom, checkForUpdates } from './utils/OtherUtils';
 import Router from './Router';
 
 export default function App() {
@@ -10,6 +10,7 @@ export default function App() {
 
   loadTokenFromHashOnSafari();
   disablePitchZoom();
+  checkForUpdates();
 
   if (!data && !window.location.pathname.includes('/login')) {
     window.history.pushState(null, null, homepage);

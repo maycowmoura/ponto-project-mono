@@ -1,7 +1,6 @@
 import api from '../api';
 
 
-
 export function isNumber(num) {
   return /^-?\d+$/.test(num);
 }
@@ -50,4 +49,27 @@ export function disablePitchZoom() {
       e.preventDefault();
     }
   }, { passive: false })
+}
+
+
+
+
+export function checkForUpdates() {
+  function check() {
+    const now = Date.now();
+    const lastCheck = localStorage.lastUpdateCheck ?? now;
+    const diff = (now - lastCheck) / (24 * 60 * 60 * 1000);
+    const thisVersion = process.env.REACT_APP_VERSION;
+    if (diff < 2 || process.env.NODE_ENV !== 'production') return;
+
+    api.get(window.location.href)
+      .then(({ data: html }) => {
+        localStorage.lastUpdateCheck = now;
+        html.includes(`<template>${thisVersion}</template>`) || window.location.reload(true);
+      })
+  }
+
+  document.readyState === 'complete'
+    ? check()
+    : window.addEventListener('load', check);
 }
