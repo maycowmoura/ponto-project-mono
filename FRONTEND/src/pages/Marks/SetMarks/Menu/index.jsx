@@ -12,7 +12,9 @@ export default function Menu({ close }) {
         <li onClick={() => history.push('/marks/list')}>
           <List /> Listar marcações
         </li>
-        <li><Help /> Me ajuda</li>
+        <li onClick={() => history.push('/help')}>
+          <Help /> Me ajuda
+        </li>
       </ul>
     </FloatMenu>
   );

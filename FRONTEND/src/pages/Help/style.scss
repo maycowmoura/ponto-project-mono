@@ -1,3 +1,38 @@
+@import '../../utils/variables.scss';
+
 #help {
-  display: block;
+  @extend %page-with-header;
+
+  main {
+   padding-bottom: 64px;
+
+    .title {
+      text-align: center;
+      margin: 64px 0;
+
+      >svg {
+        font-size: 68px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+    }
+
+    textarea {
+      padding: 16px;
+      margin-top: 16px;
+      width: 100%;
+      background-color: #26282b30;
+      color: #FFF;
+      border: 1px solid #5e6068;
+      border-radius: 4px;
+    }
+
+    button {
+      display: block;
+      margin-top: 16px;
+      margin-left: auto;
+    }
+  }
 }

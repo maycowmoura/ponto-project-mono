@@ -119,7 +119,7 @@ export default function SetMarks() {
             <span className="bigger">{headerDate()}</span>
           </span>
         </div>
-        {isAdmin && <div onClick={setShowMenu}><MenuIcon /></div>}
+        {isAdmin || <div onClick={setShowMenu}><MenuIcon /></div>}
       </Header>
 
       <VideoModal />
