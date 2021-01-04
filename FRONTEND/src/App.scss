@@ -1,5 +1,5 @@
 html,
-body{
+body {
   overflow: hidden; // para evitar o pull to refresh do chrome
   height: 100%;
 }
@@ -27,9 +27,15 @@ body {
   textarea,
   button {
     font-size: 18px;
+
+    &:disabled {
+      opacity: .5;
+    }
   }
 
-  a, a:visited, a:hover {
+  a,
+  a:visited,
+  a:hover {
     color: #38c3ff;
   }
 }
@@ -50,13 +56,10 @@ button {
   &:active {
     opacity: .6;
   }
-
-  &:disabled {
-    opacity: .3;
-  }
 }
 
 input {
+
   &[type="text"],
   &[type="tel"],
   &[type="number"] {
