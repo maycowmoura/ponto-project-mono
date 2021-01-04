@@ -16,7 +16,7 @@ export default function LoadingInner({ text, fixed, loaderSize, loaderColor, err
   return (
     <div id="loading-inner"
       className={(fixed ? 'fixed' : '') + (error ? ' error' : '')}
-      onClick={e => e.stopPropagation()}
+      onClick={e => { e.stopPropagation(); e.preventDefault() }}
     >
       {!error
         ? <Loader size={loaderSize} color={loaderColor} />
