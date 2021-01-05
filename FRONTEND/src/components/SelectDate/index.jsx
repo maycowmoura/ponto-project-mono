@@ -8,24 +8,14 @@ export default function SelectDate({ initialDate, onChange }) {
   const [day, setDay] = useState(addZero(today.getDate()));
   const [month, setMonth] = useState(addZero(today.getMonth() + 1));
   const [year, setYear] = useState(today.getFullYear());
-  const [validate, setValidate] = useState(0);
   const [invalid, setInvalid] = useState(false);
 
 
   useEffect(() => {
-    const date = DateToString(new Date(year, month-1, day))
+    const date = DateToString(new Date(year, month - 1, day))
     const isValid = [year, month, day].join('-') === date;
     const newDay = parseInt(isValid ? day : 0);
     const newMonth = parseInt(isValid ? month - 1 : month);
-    let newYear = year;
-
-    /**
-     * se o mês selecionado for no futuro, pré-supõe que está selecionando
-     * um mês do ano passado, então diminui o ano
-     */
-    if (newMonth > (new Date()).getMonth()) {
-      newYear = (new Date()).getFullYear() - 1;
-    }
 
     // pisca se a data for invalida, mas no fim usará a data correta
     if (!isValid) {
@@ -33,21 +23,33 @@ export default function SelectDate({ initialDate, onChange }) {
       setTimeout(() => setInvalid(false), 1500);
     }
 
-
-    const correctDate = new Date(newYear, newMonth, newDay);
+    const correctDate = new Date(year, newMonth, newDay);
     let [y, m, d] = DateToArray(correctDate);
 
-    setDay(d);
-    setMonth(m);
-    setYear(y);
+    setDay(d); setMonth(m); setYear(y);
     onChange(correctDate);
-  }, [validate])
+  }, [day, month, year]);
+
+
+
+  const handleDay = (e) => setDay(e.target.value);
+  const handleYear = (e) => setYear(e.target.value);
+
+  function handleMonth(e) {
+    // se o mês selecionado for no futuro, pré-supõe que está selecionando
+    // um mês do ano passado, então diminui o ano
+    const dt = new Date();
+    const month = e.target.value;
+    if (month > dt.getMonth() && year === dt.getFullYear()) setYear(dt.getFullYear() - 1);
+    setMonth(month);
+  }
+
 
 
 
   return (
     <div className={'select-date' + (invalid ? ' invalid' : '')}>
-      <select onChange={e => { setDay(e.target.value); setValidate(v => ++v) }} value={day} >
+      <select onChange={handleDay} value={day} >
         <option value="01">01</option>
         <option value="02">02</option>
         <option value="03">03</option>
@@ -81,7 +83,7 @@ export default function SelectDate({ initialDate, onChange }) {
         <option value="31">31</option>
       </select>
 
-      <select onChange={e => { setMonth(e.target.value); setValidate(v => ++v) }} value={month}>
+      <select onChange={handleMonth} value={month}>
         <option value="01">Janeiro</option>
         <option value="02">Fevereiro</option>
         <option value="03">Março</option>
@@ -96,7 +98,7 @@ export default function SelectDate({ initialDate, onChange }) {
         <option value="12">Dezembro</option>
       </select>
 
-      <select onChange={e => { setYear(e.target.value); setValidate(v => ++v) }} value={year}>
+      <select onChange={handleYear} value={year}>
         <option value="2015">2015</option>
         <option value="2016">2016</option>
         <option value="2017">2017</option>
