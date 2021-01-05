@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './style.scss';
 import { useHistory } from 'react-router-dom';
 import api from '../../api';
@@ -9,12 +9,11 @@ import { MdHelpOutline as HelpBigIcon } from 'react-icons/md';
 
 export default function Help() {
   const history = useHistory();
+  const textarea = useRef();
   const [placeholder, setPlaceholder] = useState('Como podemos ajudar você?');
   const [reason, setReason] = useState(0);
   const [description, setDescription] = useState('');
   const [chars, setChars] = useState(500);
-  const [disableTextArea, setDisableTextArea] = useState(true);
-  const [disableButton, setDisableButton] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -28,21 +27,26 @@ export default function Help() {
       suggestion: 'Queremos sempre melhorar! Qual a sua sugestão?'
     }
     holders[value] && setPlaceholder(holders[value]);
-    setDisableTextArea(!value);
     setReason(value);
+    textarea.current.disabled = !value;
+    textarea.current.focus();
   }
 
   function handleTextarea(e) {
+    const maxLength = 500;
     const value = e.target.value;
+    if(value >= maxLength) return;
+
     setDescription(value);
-    setChars(500 - value.length);
-    setDisableButton(value.trim().length < 20);
+    setChars(maxLength - value.length);
   }
 
   function handleSubmit() {
+    if(description.trim().length < 20) return setErrorMsg('Escreva um pouco mais...');
+
     setLoading(true);
 
-    api.post('/help', { reason, description })
+    api.post('/help', { reason, description: description.trim() })
       .then(({ data }) => {
         if (data.error) return setErrorMsg(data.error);
 
@@ -60,7 +64,7 @@ export default function Help() {
 
   return (
     <div id="help">
-      {errorMsg && <ToastMsg text={errorMsg} />}
+      {errorMsg && <ToastMsg text={errorMsg} close={setErrorMsg} />}
       {loading && <LoadingInner text={loadingText} fixed />}
 
       <Header backButton>
@@ -86,16 +90,17 @@ export default function Help() {
           </select>
 
           <textarea
-            rows="6"
+            ref={textarea}
+            rows="7"
             placeholder={placeholder}
             value={description}
             onChange={handleTextarea}
             maxLength="500"
-            disabled={disableTextArea}
+            disabled
           ></textarea>
           <small>Restam {chars} caracteres.</small>
 
-          <button onClick={handleSubmit} disabled={disableButton}>Enviar</button>
+          <button onClick={handleSubmit}>Enviar</button>
         </div>
       </main>
     </div >
