@@ -37,6 +37,10 @@ function _json_decode($string) {
   return json_decode($string, true);
 }
 
+function filterString($string){
+  return filter_var(addslashes($string), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK);
+}
+
 
 function randomString($length = 30) {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
