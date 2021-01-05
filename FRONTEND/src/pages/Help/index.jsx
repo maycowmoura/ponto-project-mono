@@ -12,7 +12,7 @@ export default function Help() {
   const textarea = useRef();
   const [placeholder, setPlaceholder] = useState('Como podemos ajudar você?');
   const [reason, setReason] = useState(0);
-  const [description, setDescription] = useState('');
+  const [message, setMessage] = useState('');
   const [chars, setChars] = useState(500);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
@@ -37,16 +37,16 @@ export default function Help() {
     const value = e.target.value;
     if(value >= maxLength) return;
 
-    setDescription(value);
+    setMessage(value);
     setChars(maxLength - value.length);
   }
 
   function handleSubmit() {
-    if(description.trim().length < 20) return setErrorMsg('Escreva um pouco mais...');
+    if(message.trim().length < 20) return setErrorMsg('Escreva um pouco mais...');
 
     setLoading(true);
 
-    api.post('/help', { reason, description: description.trim() })
+    api.post('/help', { reason, message: message.trim() })
       .then(({ data }) => {
         if (data.error) return setErrorMsg(data.error);
 
@@ -93,7 +93,7 @@ export default function Help() {
             ref={textarea}
             rows="7"
             placeholder={placeholder}
-            value={description}
+            value={message}
             onChange={handleTextarea}
             maxLength="500"
             disabled
