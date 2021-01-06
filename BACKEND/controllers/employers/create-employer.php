@@ -19,7 +19,6 @@
  }
 */
 
-
 require_once __DIR__ . '/../../models/global.php';
 require_once __DIR__ . '/../../models/Auth.php';
 require_once __DIR__ . '/../../models/DB/DB.php';
@@ -35,7 +34,7 @@ $client = $auth->client;
 
 
 try {
-  v::key('name', v::stringType()->alpha(' ')->length(3, 60))
+  v::key('name', v::stringType()->regex('/^[A-zÀ-ú\s]+$/')->length(3, 60))
     ->key('job', v::stringType()->length(3, 60))
     ->key('place', v::intVal()->positive())->check(POST);
 } catch (Exception $e) {
