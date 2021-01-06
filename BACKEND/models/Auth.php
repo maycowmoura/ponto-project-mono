@@ -26,7 +26,7 @@ class Auth {
     $this->jwtKey = CONFIG['token-key'];
 
     if (!$checkToken) return;
-    
+
     $this->db = new DB;
     $this->decodeToken();
     $this->validateToken();
@@ -45,10 +45,10 @@ class Auth {
     [, $payload] = explode('.', $this->token);
     $this->payload = json_decode(base64_decode($payload), true);
 
-    $this->refreshToken = $this->payload['refresh'];
-    $this->client = $this->payload['client'];
-    $this->userId = $this->payload['user'];
-    $this->userType = $this->payload['typ'];
+    $this->refreshToken = $this->payload['refresh'] ?? null;
+    $this->client = $this->payload['client'] ?? null;
+    $this->userId = $this->payload['user'] ?? null;
+    $this->userType = $this->payload['typ'] ?? null;
   }
 
 
@@ -99,7 +99,7 @@ class Auth {
 
 
   public function mustBeAdmin() {
-    if (!$this->userType == 'admin') {
+    if ($this->userType != 'admin') {
       error("Acesso negado. Você precisa ser administrador para executar esta ação.");
     }
   }
