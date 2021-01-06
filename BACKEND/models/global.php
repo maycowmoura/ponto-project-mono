@@ -3,6 +3,8 @@
 
 date_default_timezone_set('America/Sao_Paulo');
 
+define('CONFIG', json_decode(file_get_contents(__DIR__ . '/../config/' . (getenv('DEV_MODE') ? 'dev' : 'prod') . '.json'), true));
+
 
 if (!getenv('DEV_MODE')) {
 
@@ -17,10 +19,6 @@ if (!getenv('DEV_MODE')) {
   });
 
 }
-
-
-
-
 
 function error($errstr, $errline = null) {
   $line = $errline ? $errline . ': ' : '';

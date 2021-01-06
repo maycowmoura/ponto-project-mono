@@ -1,5 +1,4 @@
 <?php
-
 require_once './vendor/autoload.php';
 
 
@@ -9,8 +8,6 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Authorization, Content-Type");
 
 define($_SERVER['REQUEST_METHOD'], json_decode(file_get_contents('php://input'), true));
-
-define('CONFIG', json_decode(file_get_contents('./config/' . (getenv('DEV_MODE') ? 'dev' : 'prod') . '.json'), true));
 
 $router = new \Bramus\Router\Router();
 
