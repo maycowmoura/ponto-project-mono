@@ -58,6 +58,7 @@ $result = $db->transaction(function ($db) use ($employerId, $client, $to_place, 
     ->first()
     ->place;
 
+
   $db->insert([
     'employer_id' => $employerId,
     'from_place' => $from,
@@ -72,8 +73,5 @@ $result = $db->transaction(function ($db) use ($employerId, $client, $to_place, 
     ->set(['place' => $to_place]);
 });
 
-
-
-$result || error('Erro inesperado ao inserir a data.');
 
 die('{"ok": true}');
