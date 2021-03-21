@@ -62,10 +62,6 @@ export default function SetMarks() {
     setTimeout(() => setAnimationClass(''), 400)
   }, [index]);
 
-  // remove os filtros ao 
-  useEffect(() => function () {
-    setDayMarks(dayMarksBackup);
-  }, [])
 
 
 
