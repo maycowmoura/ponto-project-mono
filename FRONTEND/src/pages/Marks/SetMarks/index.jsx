@@ -21,7 +21,7 @@ import { BsThreeDotsVertical as MenuIcon } from 'react-icons/bs';
 
 export default function SetMarks() {
   const { api, userType, placeFilters } = useMainContext();;
-  const { dayMarks, setDayMarks, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
+  const { dayMarks, setDayMarks, dayMarksBackup, setDayMarksBackup, date, setDate, current, setCurrent, index, uploadingMarks } = useSetMarks();
   const [animationClass, setAnimationClass] = useState('enter-bottom');
   const [animateMissed, setAnimateMissed] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,10 +29,10 @@ export default function SetMarks() {
   const [showMenu, setShowMenu] = useState(false);
   const missed = current?.time_in < 0 || (!current?.time_in && !/\d/.test(current?.default_time_in));
   const isAdmin = userType === 'admin';
+  const isFiltred = (dayMarks?.length === dayMarksBackup?.length) ? null : dayMarks?.length;
   const history = useHistory();
   const formatedTimeIn = format(/\d+/.test(current?.time_in) ? current?.time_in : current?.default_time_in);
   const formatedTimeOut = format(/\d+/.test(current?.time_out) ? current?.time_out : current?.default_time_out);
-
 
   useEffect(() => {
     if (dayMarks && sessionStorage.setMarksFilters === placeFilters) {
@@ -49,7 +49,7 @@ export default function SetMarks() {
 
       const mapped = data.map(item => ({ ...item, editingPrevious: !!item.time_in }))
       setDayMarks(mapped);
-      setCurrent(mapped[0]);
+      setDayMarksBackup(mapped);
       setLoading(false);
     })
       .catch(setErrorMsg)
@@ -61,6 +61,11 @@ export default function SetMarks() {
     setAnimateMissed('');
     setTimeout(() => setAnimationClass(''), 400)
   }, [index]);
+
+  // remove os filtros ao 
+  useEffect(() => function () {
+    setDayMarks(dayMarksBackup);
+  }, [])
 
 
 
@@ -119,7 +124,10 @@ export default function SetMarks() {
             <span className="bigger">{headerDate()}</span>
           </span>
         </div>
-        {isAdmin || <div onClick={setShowMenu}><MenuIcon /></div>}
+        <div className="menu-icon" onClick={setShowMenu}>
+          <MenuIcon />
+          {isFiltred && <span>{isFiltred}</span>}
+        </div>
       </Header>
 
       <VideoModal />
