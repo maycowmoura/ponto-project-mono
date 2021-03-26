@@ -3,10 +3,10 @@ const api = require('./utils/api');
 
 /**
  * 
- * CREATES THE FIRST PLACE
+ * RESETS THE DATABASE
  * 
  */
 it('should reset the database import the sql file', async () => {
-  const result = await api.get('/__test__/config-db/reset-db.php');
+  const result = await api.get('/__tests__/config-db/reset-db.php');
   expect(result.data).toEqual({ ok: true })
 });

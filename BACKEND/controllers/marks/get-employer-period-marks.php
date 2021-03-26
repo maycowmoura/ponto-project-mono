@@ -133,7 +133,7 @@ while ($currentDate <= $to) {
     $weekday = date('w', strtotime($currentDate));
     $resultMarks[$currentDate] = [
       'weekday' => $weekday,
-      'holiday' => $isHoliday
+      'holiday' => ($isHoliday ? $isHoliday : null)
     ];
   }
 

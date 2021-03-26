@@ -78,8 +78,6 @@ if ($closedDate) {
 }
 
 
-
-
 $result = $db
   ->from(["{$client}_employers" => 'e'])
   ->where(function ($group) use ($accessibleEmployers, $placeFilters) {
@@ -87,13 +85,13 @@ $result = $db
       ->andWhere('e.disabled_at')->isNull();
     $placeFilters && $group->andWhere('e.place')->in($placeFilters);
   })
-  ->leftJoin(["{$client}_default_times" => 't'], fn ($join) => ( //
-    $join->on('t.id', 'e.default_time')
-    ->andOn('t.weekday', fn ($expr) => $expr->value($weekday)) //
-  ))
   ->leftJoin(["{$client}_marks" => 'm'], fn ($join) => ( //
     $join->on('e.id', 'm.employer_id')
     ->andOn('m.date', fn ($expr) => $expr->value($date)) //
+  ))
+  ->leftJoin(["{$client}_default_times" => 't'], fn ($join) => ( //
+    $join->on('t.id', 'e.default_time')
+    ->andOn('t.weekday', fn ($expr) => $expr->value($weekday)) //
   ))
   ->orderBy('e.name')
   ->select([
@@ -110,7 +108,9 @@ $result = $db
   ->all();
 
 
-
+// foreach ($db->getLog() as $log) {
+//   echo $log['query'] . '<br><br>';
+// }
 
 $json = _json_encode($result);
 die($json);

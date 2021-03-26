@@ -62,7 +62,7 @@ $employers = $db
   ->from(["{$client}_employers" => 'e'])
   ->where('e.id')->in(array_map(fn ($employer) => $employer['id'], POST))
   ->andWhere('e.disabled_at')->isNull()
-  ->join(["{$client}_default_times" => 't'], fn ($join) => ( //
+  ->leftJoin(["{$client}_default_times" => 't'], fn ($join) => ( //
     $join->on('t.id', 'e.default_time')
     ->andOn('t.weekday', fn ($expr) => $expr->value($weekday)) //
   )) 
