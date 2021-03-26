@@ -93,12 +93,6 @@ class Marks {
       $this->time_before = $this->time_after = null;
     }
 
-    // Sendo falta, no feriado e sem comentário: deleta a marcação se existir e pula 
-    if ($this->time_in < 0 && $this->isHoliday && empty($this->comment)) {
-      $this->deleteMarkIfExists();
-      return;
-    }
-
     // Cria um IF em SQL para o campo de comentário
     $makeIf = function ($expr, $col, $value) {
       // se o comentário for o mesmo, mantém o valor, se mudou, coloca o novo valor
@@ -143,6 +137,16 @@ class Marks {
     $this->db->insert($valuesForInsert)
       ->onDuplicateKeyUpdate($valuesForUpdate)
       ->into("{$this->client}_marks");
+
+    // Sendo falta, sem comentário, no feriado/fim de semana: deleta a marcação
+    if ($this->isHoliday || in_array($this->weekday, [0, 6])) {
+      $this->db->from("{$this->client}_marks")
+        ->where('employer_id')->is($this->employerId)
+        ->andWhere('date')->is($this->date)
+        ->andWhere('time_in')->is(-1)
+        ->andWhere('comment')->isNull()
+        ->delete();
+    }
   }
 
 
