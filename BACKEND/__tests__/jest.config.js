@@ -11,6 +11,7 @@ module.exports = {
   bail: 1,
 
   testSequencer: "./utils/test-sequencer.js",
+  testTimeout: 20000,
 
   // The directory where Jest should store its cached dependency information
   // cacheDirectory: "C:\\Users\\user\\AppData\\Local\\Temp\\jest",
@@ -148,10 +149,9 @@ module.exports = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  // testMatch: [
-  //   "**/__tests__/**/*.[jt]s?(x)",
-  //   "**/?(*.)+(spec|test).[tj]s?(x)"
-  // ],
+  testMatch: [
+    "**/__tests__/**/*.test.js"
+  ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
