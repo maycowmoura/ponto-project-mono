@@ -1,4 +1,5 @@
 <?php
+ini_set('html_errors', false);
 require_once './vendor/autoload.php';
 
 
