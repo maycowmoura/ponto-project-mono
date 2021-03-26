@@ -30,13 +30,11 @@ $employersInPlace = $db
   ->from("{$client}_employers")
   ->where('place')->is($placeId)
   ->andWhere('disabled_at')->isNull()
-  ->select('id')
-  ->all();
+  ->count();
 
 
-$total = count($employersInPlace);
-if($total > 0){
-  error("Ops... $total funcionários ainda estão neste local. Você precisa transferir todos antes de apagá-lo.");
+if($employersInPlace > 0){
+  error("Ops... $employersInPlace funcionários ainda estão neste local. Você precisa transferir todos antes de apagá-lo.");
 }
 
 
