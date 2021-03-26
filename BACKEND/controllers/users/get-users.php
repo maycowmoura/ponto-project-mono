@@ -23,7 +23,7 @@ $userId = $auth->userId;
 $client = $auth->client;
 
 
-$users = new Users($client);
+$users = new Users($auth);
 $allUsers = $users->getAllExceptMyself($userId);
 
 $json = _json_encode($allUsers);
